@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredients:
   - cardData: {fileID: 11400000, guid: b5e6b6201178ee541adcaac69994e220, type: 2}
-    amount: 1
-  - cardData: {fileID: 11400000, guid: b5e6b6201178ee541adcaac69994e220, type: 2}
-    amount: 1
+    amount: 2
   output: {fileID: 11400000, guid: a5ba91907ffb00246ad2e70301caccd0, type: 2}
-  requireExactMatch: 1
-  craftTime: 0
+  craftTime: 3
