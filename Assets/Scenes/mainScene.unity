@@ -268,6 +268,55 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+--- !u!1 &904393325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 904393327}
+  - component: {fileID: 904393326}
+  m_Layer: 0
+  m_Name: Gamesystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &904393326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904393325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2355e58297274c44b83d4d6fcae91bbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recipes:
+  - {fileID: 11400000, guid: b78be0296d0f0bd4699d0156846aa11e, type: 2}
+  - {fileID: 11400000, guid: 55dfb776d4c9f9d49a0f8060b0a9eca6, type: 2}
+  cardPrefab: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  spawnOffset: {x: 1, y: 0}
+--- !u!4 &904393327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904393325}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.3355949, y: -0.6284639, z: 0.0304087}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1321718607
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,7 +485,7 @@ Transform:
   m_GameObject: {fileID: 1491918102}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2792, y: 0.1279, z: 0}
+  m_LocalPosition: {x: -0.42, y: -0.02, z: 0}
   m_LocalScale: {x: 18.701693, y: 10.957823, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -636,3 +685,4 @@ SceneRoots:
   - {fileID: 1687418313}
   - {fileID: 1874165179}
   - {fileID: 1491918104}
+  - {fileID: 904393327}
