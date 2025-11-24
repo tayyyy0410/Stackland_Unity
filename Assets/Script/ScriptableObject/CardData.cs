@@ -20,7 +20,7 @@ public enum CardClass
 public class CardData : ScriptableObject
 {
     [Header("Identity")]
-    [Tooltip("唯一ID，用来在代码里查找")]
+    [Tooltip("唯一ID")]
     public string id;
 
     [Tooltip("物品的UI名字")]
@@ -47,7 +47,7 @@ public class CardData : ScriptableObject
     public int saturation;
 
     [Header("Class")]
-    [Tooltip("卡牌所属的类别，见代码上面的enum")]
+    [Tooltip("卡牌所属的类别，看代码上面的enum")]
     public CardClass cardClass;
     
     [Header("Visual")]

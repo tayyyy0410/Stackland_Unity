@@ -140,9 +140,21 @@ public class DraggableCard : MonoBehaviour
 
         // 尝试root附近的stack
         TryStackOnOtherCard();
+        
+        // stack结束后，尝试触发recipe
+        if (RecipeManager.Instance != null)
+        {
+            // 当前这次拖拽对应的 root
+            Transform rootTransform = dragRoot != null ? dragRoot : transform;
+            Card rootCard = rootTransform.GetComponent<Card>();
+            if (rootCard != null)
+            {
+                RecipeManager.Instance.TryCraftFromStack(rootCard);
+            }
+        }
     }
     
-    /// 鼠标放开时，检测周围有没有其他牌
+    /// 检测周围有没有其他牌
     private void TryStackOnOtherCard()
     {
         if (card == null) return;
@@ -156,7 +168,7 @@ public class DraggableCard : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            // 跳过自己这整个stack里的牌（包括 root 和所有子物体）
+            // 跳过自己这整个stack里的牌
             if (hit.transform == dragRoot || hit.transform.IsChildOf(dragRoot))
                 continue;
 

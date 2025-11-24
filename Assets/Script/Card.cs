@@ -1,4 +1,5 @@
 using UnityEngine;
+
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
 
 public class Card : MonoBehaviour
@@ -23,14 +24,14 @@ public class Card : MonoBehaviour
         {
             Debug.LogWarning($"{name} 没有设置 CardData！");
         }
-        //如果没有stackRoot说明自己就是root
+        
         if (stackRoot == null)
         {
             stackRoot = transform;
         }
     }
 
-    private void ApplyData()
+    public void ApplyData()
     {
         // 替换Sprite
         if (data.backgroundSprite != null)
@@ -39,23 +40,6 @@ public class Card : MonoBehaviour
         }
     }
     
-
-    /// 是否是这个stack的最下面的
-    public bool IsBottomOfStack()
-    {
-        // 只有自己一个，自己既是root也是最下面
-        if (stackRoot == transform && transform.childCount == 0)
-            return true;
-
-        // 有子物体时，最下面是 root 的最后一个 child
-        if (transform.parent == stackRoot &&
-            transform.GetSiblingIndex() == stackRoot.childCount - 1)
-        {
-            return true;
-        }
-
-        return false;
-    }
 
     /// 把自己这一叠叠到 target 的那一叠上
     public void JoinStackOf(Card target)
@@ -81,7 +65,7 @@ public class Card : MonoBehaviour
         // 把整叠所有卡都挂到 targetRoot 下，形成一个大stack
         foreach (Transform t in cardsToMove)
         {
-            t.SetParent(targetRoot);                // 所有卡的父节点都变成 targetRoot
+            t.SetParent(targetRoot);               
             Card c = t.GetComponent<Card>();
             if (c != null)
             {
@@ -89,7 +73,7 @@ public class Card : MonoBehaviour
             }
         }
 
-        // 合并之后，对新的 target stack 排列一次
+        // 合并之后对新的 target stack 排
         Card targetRootCard = targetRoot.GetComponent<Card>();
         if (targetRootCard != null)
         {
