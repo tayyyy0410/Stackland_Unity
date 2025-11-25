@@ -51,7 +51,7 @@ public class DraggableCard : MonoBehaviour
                     // 当前这张卡在旧stack中的索引
                     int index = transform.GetSiblingIndex();
 
-                    // 先把“下面的牌”都记下来
+                    // 先把下面的牌都记下来
                     System.Collections.Generic.List<Transform> belowCards = new System.Collections.Generic.List<Transform>();
                     for (int i = index + 1; i < oldRoot.childCount; i++)
                     {
@@ -73,7 +73,7 @@ public class DraggableCard : MonoBehaviour
                         }
                     }
 
-                    // 让旧的那一叠（上面的牌们）重新排一下
+                    // 让旧的那一叠重新排一下
                     if (oldRoot != null)
                     {
                         Card rootCard = oldRoot.GetComponent<Card>();
@@ -150,6 +150,36 @@ public class DraggableCard : MonoBehaviour
             if (rootCard != null)
             {
                 RecipeManager.Instance.TryCraftFromStack(rootCard);
+            }
+        }
+
+        TryBuyPackIfOnShop();
+        
+    }
+    private void TryBuyPackIfOnShop()
+    {
+        // 没有Card就不处理
+        if (card == null) return;
+
+        // 找当前 stack 的 root
+        Transform root = card.stackRoot != null ? card.stackRoot : transform;
+
+        // 用 root 的位置做一个点检测，看看下面有没有 PackShopArea
+        Vector2 pos = root.position;
+        var hits = Physics2D.OverlapPointAll(pos);
+
+        foreach (var hit in hits)
+        {
+            var shop = hit.GetComponent<PackShopArea>();
+            if (shop != null)
+            {
+                // 把这叠提交给 shop 结算
+                Card rootCard = root.GetComponent<Card>();
+                if (rootCard != null)
+                {
+                    shop.TryBuyFromStack(rootCard);
+                }
+                break;
             }
         }
     }
