@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2615846190882381163}
   - component: {fileID: 1052498609267720169}
   m_Layer: 0
-  m_Name: testCard
+  m_Name: coin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f718c2252ec7dc41a1d26f42ece6e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: dfd844443da87784c891458391aa1918, type: 2}
   stackRoot: {fileID: 0}
   yOffset: -0.5
 --- !u!114 &1052498609267720169
