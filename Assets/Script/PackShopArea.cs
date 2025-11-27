@@ -114,26 +114,50 @@ public class PackShopArea : MonoBehaviour
         }
     }
 
-    /// 找零
+    // 找零
     private void GiveChange(int change)
     {
         if (change <= 0) return;
+
         if (changeCoinPrefab == null)
         {
             Debug.LogWarning($"[ShopArea] 需要找零 {change}，但没有设置 changeCoinPrefab。");
             return;
         }
 
-        for (int i = 0; i < change; i++)
-        {
-            Vector2 offset = Random.insideUnitCircle * changeSpawnRadius;
-            Vector3 spawnPos = transform.position + new Vector3(offset.x, offset.y, 0f);
+        // 随机一个偏移位置
+        Vector2 offset = Random.insideUnitCircle * changeSpawnRadius;
+        Vector3 basePos = transform.position + new Vector3(offset.x, offset.y, 0f);
 
-            GameObject coinObj = Instantiate(changeCoinPrefab, spawnPos, Quaternion.identity);
-            Debug.Log("[ShopArea] 生成了一枚找零 coin：" + coinObj.name);
+        // 生成第一个 coin，当作这一叠的 root
+        GameObject rootObj = Instantiate(changeCoinPrefab, basePos, Quaternion.identity);
+        Card rootCard = rootObj.GetComponent<Card>();
+
+        if (rootCard == null)
+        {
+            Debug.LogWarning("[ShopArea] changeCoinPrefab 上没有 Card 组件，无法做成一叠，只能生成一个。");
+            return;
         }
 
-        Debug.Log($"[ShopArea] 找零完成：生成 {change} 个找零coin。");
+      
+        rootCard.stackRoot = rootCard.transform;
+
+        // 全部挂在 root 下面
+        for (int i = 1; i < change; i++)
+        {
+            GameObject coinObj = Instantiate(changeCoinPrefab, basePos, Quaternion.identity);
+            Card c = coinObj.GetComponent<Card>();
+            if (c != null)
+            {
+                c.stackRoot = rootCard.transform;
+                coinObj.transform.SetParent(rootCard.transform);
+            }
+        }
+        
+        rootCard.LayoutStack();
+
+        Debug.Log($"[ShopArea] 找零完成：生成了一叠 {change} 个 coin。");
     }
+
     
 }

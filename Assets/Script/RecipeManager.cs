@@ -120,7 +120,7 @@ public class RecipeManager : MonoBehaviour
         }
     }
     
-    //这里是检查两个要求： stack 里的每种 CardData 数量要等于recipe要求的数量， stack 里的总数量 得等与 配方所有材料数量之和，不然会有bug我也不知道为啥
+    //stack 里的每种 CardData 数量要等于recipe要求的数量， stack 里的总数量 得等与 配方所有材料数量之和，不然会有bug我也不知道为啥
     private bool RecipeMatchesStackExact(RecipeData recipe, List<CardData> stackCards)
     {
         if (stackCards == null || stackCards.Count == 0) return false;
