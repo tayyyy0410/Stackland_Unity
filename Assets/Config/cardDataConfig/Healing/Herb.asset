@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: Herb
+  m_EditorClassIdentifier: 
+  id: Herb_id
+  displayName: Herb
+  description: Heals with a slap on the wound
+  value: 2
+  hasHP: 0
+  maxHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  HitChance: 0
+  hasSaturation: 0
+  saturation: 0
+  canBeFarmed: 0
+  cardAmmount: 0
+  hasDamage: 0
+  damage: 0
+  hasDefence: 0
+  defense: 0
+  hasHealing: 1
+  healing: 5
+  cardClass: 9
+  backgroundSprite: {fileID: 1813437582866609835, guid: f7517adeabf272342ae957de374b867a, type: 3}
+  maxStackSize: 100
+  canStackWithSameClass: 1

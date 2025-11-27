@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: Jet Pack
+  m_EditorClassIdentifier: 
+  id: Jet_pack_id
+  displayName: Jet Pack
+  description: The way out
+  value: 15
+  hasHP: 0
+  maxHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  HitChance: 0
+  hasSaturation: 0
+  saturation: 0
+  canBeFarmed: 0
+  cardAmmount: 0
+  hasDamage: 0
+  damage: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
+  hasHealing: 0
+  healing: 0
+  cardClass: 8
+  backgroundSprite: {fileID: 1232379031234263762, guid: c7423bc2acf331843a75ff43c732bf14, type: 3}
+  maxStackSize: 100
+  canStackWithSameClass: 1

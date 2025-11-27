@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: Rabbit
+  m_EditorClassIdentifier: 
+  id: Rabbit_id
+  displayName: Rabbit
+  description: Fluffy poop machine
+  value: 0
+  hasHP: 1
+  maxHP: 5
+  hasAttack: 1
+  attack: 2
+  hasHitChance: 1
+  HitChance: 0.6
+  hasSaturation: 0
+  saturation: 0
+  canBeFarmed: 0
+  cardAmmount: 0
+  hasDamage: 0
+  damage: 0
+  hasDefence: 0
+  defense: 0
+  hasHealing: 0
+  healing: 0
+  cardClass: 5
+  backgroundSprite: {fileID: 5110612511535974256, guid: 953329cbf4818c840a2a1a3d88a81d0b, type: 3}
+  maxStackSize: 1
+  canStackWithSameClass: 0
