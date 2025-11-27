@@ -15,7 +15,7 @@ MonoBehaviour:
   id: glass_id
   displayName: Glass
   description: "glass\u4E00\u4E2A"
-  value: 0
+  value: 3
   hasHP: 0
   maxHP: 0
   hasSaturation: 0
