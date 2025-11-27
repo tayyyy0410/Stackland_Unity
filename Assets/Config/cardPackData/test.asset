@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: test
   m_EditorClassIdentifier: Assembly-CSharp::PackData
-  id: begin_id
-  displayName: humble begining
-  description: this is a pack
-  price: 1
-  minCards: 2
-  maxCards: 2
+  id: humble_beginnings_id
+  displayName: Humble Beginnings
+  description: 
+  price: 3
+  minCards: 3
+  maxCards: 4
   entries:
   - cardData: {fileID: 11400000, guid: b5e6b6201178ee541adcaac69994e220, type: 2}
     weight: 50

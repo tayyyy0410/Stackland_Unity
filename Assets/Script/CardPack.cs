@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public class CardPack : MonoBehaviour
 {
     [Header("Pack Config")]
@@ -9,22 +8,39 @@ public class CardPack : MonoBehaviour
     
     public GameObject cardPrefab;
 
-    [Tooltip("卡牌偏移")]
-    public float spawnRadius = 0.5f;
+    [Header("开包槽位")]
+    public Vector2[] slotOffsets = new Vector2[4]
+    {
+        new Vector2(-0.7f,  0.7f), 
+        new Vector2(-0.7f, -0.7f), 
+        new Vector2( 0.7f,  0.7f), 
+        new Vector2( 0.7f, -0.7f)  
+    };
 
-    [Header("Click Settings")]
-    public float clickThreshold = 10f;  // 鼠标移动小于这个像素就当点击
+    [Header(" Drag Settings")]
+    [Tooltip("鼠标移动小于这个像素就当点击")]
+    public float clickThreshold = 10f;
+
+    [Tooltip("开始判定为拖动的屏幕距离")]
+    public float dragStartThreshold = 5f;
+
+    [Tooltip("拖动时的世界坐标敏感度，可以根据需要调整")]
+    public float dragSensitivity = 1f;
 
     // 一次卡包一共能开几张
     private int remainingOpens = 0;
+    private int totalOpens = 0;
     private bool initialized = false;
 
- 
+    // 用来记录每一张卡应该用哪个槽位
+    private int[] slotOrder;
+
+    // 点击/拖动判定
     private Vector3 mouseDownScreenPos;
+    private bool isDragging = false;
+    private Vector3 dragStartWorldPos;
+    private Vector3 dragStartPackPos;
 
- 
-
-    // 初始化当前这包一共能开多少张（
     private void EnsureInitialized()
     {
         if (initialized) return;
@@ -33,6 +49,7 @@ public class CardPack : MonoBehaviour
         {
             Debug.LogWarning("CardPack 没有设置 packData，无法初始化剩余次数。");
             remainingOpens = 0;
+            totalOpens = 0;
             initialized = true;
             return;
         }
@@ -40,25 +57,126 @@ public class CardPack : MonoBehaviour
         remainingOpens = Random.Range(packData.minCards, packData.maxCards + 1);
         if (remainingOpens < 1) remainingOpens = 1;
 
+        totalOpens = remainingOpens;
+
+        InitSlotOrder();
+
         initialized = true;
+    }
+
+    //决定每次开包的槽位
+    private void InitSlotOrder()
+    {
+        if (slotOffsets == null || slotOffsets.Length == 0)
+        {
+            slotOrder = null;
+            return;
+        }
+
+        int maxSlots = Mathf.Min(4, slotOffsets.Length);
+
+        if (totalOpens <= maxSlots)
+        {
+            int[] indices = new int[maxSlots];
+            for (int i = 0; i < maxSlots; i++)
+                indices[i] = i;
+
+            for (int i = 0; i < maxSlots; i++)
+            {
+                int r = Random.Range(i, maxSlots);
+                int tmp = indices[i];
+                indices[i] = indices[r];
+                indices[r] = tmp;
+            }
+
+            slotOrder = new int[totalOpens];
+            for (int i = 0; i < totalOpens; i++)
+            {
+                slotOrder[i] = indices[i];
+            }
+        }
+        else
+        {
+            slotOrder = new int[totalOpens];
+
+            int[] firstFour = new int[maxSlots];
+            for (int i = 0; i < maxSlots; i++)
+                firstFour[i] = i;
+
+            for (int i = 0; i < maxSlots; i++)
+            {
+                int r = Random.Range(i, maxSlots);
+                int tmp = firstFour[i];
+                firstFour[i] = firstFour[r];
+                firstFour[r] = tmp;
+            }
+
+            for (int i = 0; i < maxSlots && i < totalOpens; i++)
+            {
+                slotOrder[i] = firstFour[i];
+            }
+
+            for (int i = maxSlots; i < totalOpens; i++)
+            {
+                slotOrder[i] = i % maxSlots;
+            }
+        }
     }
 
     private void OnMouseDown()
     {
+        EnsureInitialized();
+
         mouseDownScreenPos = Input.mousePosition;
+        isDragging = false;
+
+        // 记录世界坐标，用于拖动时计算偏移
+        Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        world.z = 0f;
+
+        dragStartWorldPos = world;
+        dragStartPackPos = transform.position;
+    }
+
+    private void OnMouseDrag()
+    {
+        
+        if (!isDragging)
+        {
+            float dist = Vector3.Distance(Input.mousePosition, mouseDownScreenPos);
+            if (dist >= dragStartThreshold)
+            {
+                isDragging = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        // 已经在拖动状态更新位置
+        Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        world.z = 0f;
+
+        Vector3 deltaWorld = world - dragStartWorldPos;
+        Vector3 newPos = dragStartPackPos + deltaWorld * dragSensitivity;
+
+        newPos.z = transform.position.z;
+        transform.position = newPos;
     }
 
     private void OnMouseUp()
     {
-        Vector3 mouseUpScreenPos = Input.mousePosition;
-        float distance = Vector3.Distance(mouseDownScreenPos, mouseUpScreenPos);
         
-        if (distance <= clickThreshold)
+        float screenDist = Vector3.Distance(Input.mousePosition, mouseDownScreenPos);
+
+        if (!isDragging && screenDist <= clickThreshold)
         {
             HandleClick();
         }
-    }
 
+        isDragging = false;
+    }
 
     private void HandleClick()
     {
@@ -74,8 +192,6 @@ public class CardPack : MonoBehaviour
             return;
         }
 
-        EnsureInitialized();
-
         if (remainingOpens <= 0)
         {
             return;
@@ -85,22 +201,37 @@ public class CardPack : MonoBehaviour
         SpawnOneCard();
         remainingOpens--;
 
-        // 销毁卡包
+        // 打完就销毁卡包
         if (remainingOpens <= 0)
         {
             Destroy(gameObject);
         }
     }
 
-    // 生成一张卡
+    // 生成一张卡使用预定的槽位
     private void SpawnOneCard()
     {
         CardData dropData = GetRandomCardFromPack();
         if (dropData == null) return;
 
-        // 偏移位置
-        Vector2 offset = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPos = transform.position + new Vector3(offset.x, offset.y, 0f);
+        int openedCount = totalOpens - remainingOpens; 
+
+        Vector3 spawnPos = transform.position;
+
+        if (slotOrder != null && slotOffsets != null && slotOffsets.Length > 0)
+        {
+            int idx = Mathf.Clamp(openedCount, 0, slotOrder.Length - 1);
+            int slotIndex = slotOrder[idx];
+            slotIndex = Mathf.Clamp(slotIndex, 0, slotOffsets.Length - 1);
+
+            Vector2 offset2D = slotOffsets[slotIndex];
+            spawnPos += new Vector3(offset2D.x, offset2D.y, 0f);
+        }
+        else
+        {
+            Vector2 offset = Random.insideUnitCircle * 0.5f;
+            spawnPos += new Vector3(offset.x, offset.y, 0f);
+        }
 
         GameObject newCardObj = Instantiate(cardPrefab, spawnPos, Quaternion.identity);
         Card newCard = newCardObj.GetComponent<Card>();

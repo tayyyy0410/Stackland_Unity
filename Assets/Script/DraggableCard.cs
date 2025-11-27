@@ -50,8 +50,7 @@ public class DraggableCard : MonoBehaviour
                 {
                     // 当前这张卡在旧stack中的索引
                     int index = transform.GetSiblingIndex();
-
-                    // 先把下面的牌都记下来
+                    
                     System.Collections.Generic.List<Transform> belowCards = new System.Collections.Generic.List<Transform>();
                     for (int i = index + 1; i < oldRoot.childCount; i++)
                     {
@@ -156,34 +155,49 @@ public class DraggableCard : MonoBehaviour
         TryBuyPackIfOnShop();
         
     }
+    /// 松手时检查：当前这叠在不在某个 Shop 或 Sell 区域上
     private void TryBuyPackIfOnShop()
     {
-        // 没有Card就不处理
         if (card == null) return;
 
-        // 找当前 stack 的 root
+        // 当前 stack 的 root
         Transform root = card.stackRoot != null ? card.stackRoot : transform;
-
-        // 用 root 的位置做一个点检测，看看下面有没有 PackShopArea
         Vector2 pos = root.position;
+
+        // 用 root 的位置做点检测
         var hits = Physics2D.OverlapPointAll(pos);
 
         foreach (var hit in hits)
         {
-            var shop = hit.GetComponent<PackShopArea>();
+            // 先看是不是买卡包的区域（注意这里用 InParent，防止脚本挂父物体、Collider 在子物体）
+            var shop = hit.GetComponentInParent<PackShopArea>();
             if (shop != null)
             {
-                // 把这叠提交给 shop 结算
                 Card rootCard = root.GetComponent<Card>();
                 if (rootCard != null)
                 {
+                    Debug.Log("[DraggableCard] 在 Shop 区域上松手，尝试买卡包");
                     shop.TryBuyFromStack(rootCard);
                 }
-                break;
+                return; // 已经在 shop 上结算了，就不再检查卖卡
+            }
+
+            // 再看是不是卖卡的区域
+            var sellArea = hit.GetComponentInParent<CardSellArea>();
+            if (sellArea != null)
+            {
+                Card rootCard = root.GetComponent<Card>();
+                if (rootCard != null)
+                {
+                    Debug.Log("[DraggableCard] 在 Sell 区域上松手，尝试卖卡");
+                    sellArea.TrySellFromStack(rootCard);
+                }
+                return; // 卖卡成功后就退出
             }
         }
     }
-    
+
+
     /// 检测周围有没有其他牌
     private void TryStackOnOtherCard()
     {

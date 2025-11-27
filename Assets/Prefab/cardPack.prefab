@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 1879312006604667942}
   - component: {fileID: 5533021820864196124}
   - component: {fileID: -8320320532278184730}
-  - component: {fileID: 6223180615298745962}
-  - component: {fileID: 9150977973445688522}
   - component: {fileID: 3401736009181381809}
   - component: {fileID: 4463180135427144767}
   m_Layer: 0
@@ -138,34 +136,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6223180615298745962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2787357699189455665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f718c2252ec7dc41a1d26f42ece6e51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data: {fileID: 0}
-  stackRoot: {fileID: 0}
-  yOffset: -0.5
---- !u!114 &9150977973445688522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2787357699189455665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19febb04753c8a947892bc5c4d1b11db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 0.2
 --- !u!114 &3401736009181381809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,8 +150,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packData: {fileID: 11400000, guid: 9d410e3c70bf268499f90e10f8769e67, type: 2}
   cardPrefab: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-  spawnRadius: 1
+  slotOffsets:
+  - {x: -0.7, y: 0.7}
+  - {x: -0.7, y: -0.7}
+  - {x: 0.7, y: 0.7}
+  - {x: 0.7, y: -0.7}
   clickThreshold: 10
+  dragStartThreshold: 5
+  dragSensitivity: 1
 --- !u!114 &4463180135427144767
 MonoBehaviour:
   m_ObjectHideFlags: 0
