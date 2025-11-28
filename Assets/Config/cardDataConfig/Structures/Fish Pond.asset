@@ -24,8 +24,6 @@ MonoBehaviour:
   HitChance: 0
   hasSaturation: 0
   saturation: 0
-  canBeFarmed: 0
-  cardAmmount: 0
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
@@ -36,3 +34,7 @@ MonoBehaviour:
   backgroundSprite: {fileID: -7985617846496312500, guid: bab60f505be0ae742a0175ea340c78b9, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
+  isHarvestable: 1
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}

@@ -10,10 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
-  m_Name: testRecipe
+  m_Name: berrybushTest
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: b5e6b6201178ee541adcaac69994e220, type: 2}
-    amount: 2
-  output: {fileID: 11400000, guid: a5ba91907ffb00246ad2e70301caccd0, type: 2}
-  craftTime: 3
+  - cardData: {fileID: 11400000, guid: 44ca7c61f0ae40e4a885a63e2490fd63, type: 2}
+    amount: 1
+    consume: 0
+  - cardData: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
+    amount: 1
+    consume: 0
+  output: {fileID: 0}
+  useOutputPack: 1
+  outputPack: {fileID: 11400000, guid: 944c50a1d518c174ab9c2acf1d620ac4, type: 2}
+  craftTime: 9

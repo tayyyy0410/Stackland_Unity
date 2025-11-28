@@ -31,7 +31,44 @@ public class RecipeManager : MonoBehaviour
 
         Instance = this;
     }
+    
+    /// 按权重从 PackData 里随机出一张 CardData
+    private CardData GetRandomFromPack(PackData pack)
+    {
+        if (pack == null || pack.entries == null || pack.entries.Count == 0)
+        {
+            Debug.Log("[Loot] pack 为空或没有 entries");
+            return null;
+        }
+           
 
+        int totalWeight = 0;
+        foreach (var e in pack.entries)
+        {
+            if (e.cardData == null || e.weight <= 0) continue;
+            totalWeight += e.weight;
+        }
+
+        if (totalWeight <= 0) return null;
+
+        int rand = Random.Range(0, totalWeight);
+        int cumulative = 0;
+
+        foreach (var e in pack.entries)
+        {
+            if (e.cardData == null || e.weight <= 0) continue;
+
+            cumulative += e.weight;
+            if (rand < cumulative)
+            {
+                return e.cardData;
+            }
+        }
+
+        return null;
+    }
+
+    
     // 对一个 stack尝试匹配所有Recipe
     public void TryCraftFromStack(Card rootCard)
     {
@@ -69,7 +106,7 @@ public class RecipeManager : MonoBehaviour
 
         foreach (var recipe in recipes)
         {
-            if (recipe == null || recipe.output == null) continue;
+            if (recipe == null) continue;
 
             if (RecipeMatchesStackExact(recipe, stackCards))
             {
@@ -177,91 +214,203 @@ public class RecipeManager : MonoBehaviour
 
         craftingStacks.Add(stackRoot);
 
-        float timer = 0f;
-        int originalCount = originalCards.Count;
-
-        // UI，比如在 stack 上显示剩余时间
-        while (timer < recipe.craftTime)
+        // 先看看这次参与制作的卡里有没有可采集
+        Card harvestCard = null;
+        foreach (var c in originalCards)
         {
-            // 如果 stack 在过程中被销毁，直接中止
-            if (stackRoot == null || stackRoot.gameObject == null)
+            if (c != null && c.data != null && c.data.harvestLootPack != null)
             {
-                craftingStacks.Remove(stackRoot);
-                yield break;
+                harvestCard = c;
+                break;
             }
-
-            // 检查 stack 是否被拖走
-            var currentCards = stackRoot.GetComponentsInChildren<Card>();
-            if (currentCards.Length != originalCount)
-            {
+        }
         
-                craftingStacks.Remove(stackRoot);
-                Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次合成。");
-                yield break;
-            }
+        if (harvestCard == null || recipe.craftTime <= 0f)
+        {
+            float timer = 0f;
+            int originalCount = originalCards.Count;
 
-            // 每一张参与制作的卡，必须仍然在这个 stackRoot 下
-            foreach (var c in originalCards)
+            while (timer < recipe.craftTime)
             {
-                if (c == null) 
+                // 如果 stack 在过程中被销毁，直接中止
+                if (stackRoot == null || stackRoot.gameObject == null)
                 {
                     craftingStacks.Remove(stackRoot);
-                    Debug.Log("制作被打断：有参与制作的卡被销毁，取消本次合成。");
                     yield break;
                 }
 
-                // 仍然是该 stack 的 root 或子物体
-                if (c.transform != stackRoot && !c.transform.IsChildOf(stackRoot))
+                // 检查 stack 是否被拖走
+                var currentCards = stackRoot.GetComponentsInChildren<Card>();
+                if (currentCards.Length != originalCount)
                 {
                     craftingStacks.Remove(stackRoot);
-                    Debug.Log("制作被打断：有参与制作的卡不再属于这个 stack，取消本次合成。");
+                    Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次合成。");
                     yield break;
                 }
+
+                // 每一张参与制作的卡必须仍然在这个 stackRoot 下
+                foreach (var c in originalCards)
+                {
+                    if (c == null)
+                    {
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：有参与制作的卡被销毁，取消本次合成。");
+                        yield break;
+                    }
+
+                    if (c.transform != stackRoot && !c.transform.IsChildOf(stackRoot))
+                    {
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：有参与制作的卡不再属于这个 stack，取消本次合成。");
+                        yield break;
+                    }
+                }
+
+                timer += Time.deltaTime;
+                yield return null;
             }
 
-            timer += Time.deltaTime;
-            // 这里也可以把 timer / craftTime 传给 UI 显示进度
-            yield return null;
+            // 正常完成一次制作
+            if (stackRoot != null && stackRoot.gameObject != null)
+            {
+                CraftRecipeInstant(recipe, stackRoot);
+            }
+
+            craftingStacks.Remove(stackRoot);
+            yield break;
         }
 
-        // 如果 stack 还存在就执行合成
-        if (stackRoot != null && stackRoot.gameObject != null)
+        // ---------- 采集多次的逻辑 ----------
+
+        // 初始化 Bush 的采集次数
+        harvestCard.EnsureHarvestInit();
+        
+        int maxUses = Mathf.Max(1, harvestCard.data.maxHarvestUses);
+
+        // craftTime / 最大次数
+        float perUseTime = recipe.craftTime / maxUses;
+
+        int originalTotalCount = originalCards.Count;
+
+        while (true)
         {
-            CraftRecipeInstant(recipe, stackRoot);
+            //  被打断就结束
+            if (stackRoot == null || stackRoot.gameObject == null) break;
+            if (harvestCard == null || harvestCard.data == null) break;
+            if (harvestCard.harvestUsesLeft <= 0) break;
+
+            float timer = 0f;
+
+            // 过程中随时可以被打断
+            while (timer < perUseTime)
+            {
+                if (stackRoot == null || stackRoot.gameObject == null)
+                {
+                    craftingStacks.Remove(stackRoot);
+                    yield break;
+                }
+
+                var currentCards = stackRoot.GetComponentsInChildren<Card>();
+                if (currentCards.Length != originalTotalCount)
+                {
+                    craftingStacks.Remove(stackRoot);
+                    Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次采集循环。");
+                    yield break;
+                }
+
+                foreach (var c in originalCards)
+                {
+                    if (c == null)
+                    {
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：有参与制作的卡被销毁，取消本次采集循环。");
+                        yield break;
+                    }
+
+                    if (c.transform != stackRoot && !c.transform.IsChildOf(stackRoot))
+                    {
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：有参与制作的卡不再属于这个 stack，取消本次采集循环。");
+                        yield break;
+                    }
+                }
+
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            if (stackRoot != null && stackRoot.gameObject != null)
+            {
+                CraftRecipeInstant(recipe, stackRoot);
+            }
+            else
+            {
+                break;
+            }
         }
 
         craftingStacks.Remove(stackRoot);
     }
+
 
     /// 生成新card
     private void CraftRecipeInstant(RecipeData recipe, Transform stackRoot)
     {
         if (cardPrefab == null)
         {
-            Debug.LogError("RecipeManager 没有设置 cardPrefab，无法生成结果卡！");
+            Debug.LogError("RecipeManager 没有设置 cardPrefab，无法生成结果卡");
             return;
         }
 
+        if (stackRoot == null) return;
+
         Vector3 spawnPos = stackRoot.position + (Vector3)spawnOffset;
 
-        // 先收集所有要删的卡
-        List<GameObject> toDestroy = new List<GameObject>();
-        Card rootCard = stackRoot.GetComponent<Card>();
-        if (rootCard != null)
+       
+        Dictionary<CardData, int> needConsume = new Dictionary<CardData, int>();
+        foreach (var ing in recipe.ingredients)
         {
-            toDestroy.Add(rootCard.gameObject);
+            if (ing.cardData == null || ing.amount <= 0) continue;
+            if (!ing.consume) continue;              
+
+            if (!needConsume.ContainsKey(ing.cardData))
+                needConsume[ing.cardData] = 0;
+
+            needConsume[ing.cardData] += ing.amount;
         }
-        for (int i = 0; i < stackRoot.childCount; i++)
+
+        // stack 里所有 Card
+        List<Card> allCards = new List<Card>(stackRoot.GetComponentsInChildren<Card>());
+        List<GameObject> toDestroy = new List<GameObject>();
+
+
+        foreach (var c in allCards)
         {
-            Transform child = stackRoot.GetChild(i);
-            Card c = child.GetComponent<Card>();
-            if (c != null)
+            if (c == null || c.data == null) continue;
+
+            if (needConsume.TryGetValue(c.data, out int remaining) && remaining > 0)
             {
+                Debug.Log($"[Recipe] 将要消耗：{c.data.displayName}");
                 toDestroy.Add(c.gameObject);
+                needConsume[c.data] = remaining - 1;
             }
         }
 
-        // 删掉旧的 stack
+        if (toDestroy.Count > 0)
+        {
+            foreach (var c in allCards)
+            {
+                if (c == null) continue;
+                if (toDestroy.Contains(c.gameObject)) 
+                    continue;  
+
+                Transform t = c.transform;
+                t.SetParent(null); 
+                c.stackRoot = t;         // 让自己当自己的 stackRoot
+                c.LayoutStack();
+                Debug.Log($"[Recipe] 保留：{c.data.displayName}");
+            }
+        }
         foreach (var go in toDestroy)
         {
             if (go != null)
@@ -269,18 +418,89 @@ public class RecipeManager : MonoBehaviour
                 Destroy(go);
             }
         }
+        
+        CardData harvestOutput = null;  // 这次采集要掉的那张卡
 
-        // 生成新卡
+        foreach (var c in allCards)
+        {
+            if (c == null) continue;
+            if (toDestroy.Contains(c.gameObject)) 
+                continue;  // 已经被删掉的不管
+
+            if (c.data != null && c.data.harvestLootPack != null)
+            {
+                // 初始化次数
+                c.EnsureHarvestInit();
+                c.harvestUsesLeft--;
+
+                Debug.Log($"[Harvest] {c.data.displayName} 被采集一次，剩余 {c.harvestUsesLeft}");
+
+                // 本次掉落
+                if (harvestOutput == null)
+                {
+                    harvestOutput = GetRandomFromPack(c.data.harvestLootPack);
+                }
+
+                // 用完了就销毁
+                if (c.harvestUsesLeft <= 0)
+                {
+                    if (c.data.depletedCardData != null)
+                    {
+                        c.data = c.data.depletedCardData;
+                        c.ApplyData();
+                        c.LayoutStack();
+                    }
+                    else
+                    {
+                        
+                        var children = new List<Transform>();
+                        foreach (Transform child in c.transform)
+                        {
+                            children.Add(child);
+                        }
+
+                        // 逐个脱离 parent
+                        foreach (var child in children)
+                        {
+                            child.SetParent(null);
+                            Card childCard = child.GetComponent<Card>();
+                            if (childCard != null)
+                            {
+                                childCard.stackRoot = child;
+                                childCard.LayoutStack();
+                            }
+                        }
+
+                
+                        Destroy(c.gameObject);
+                    }
+                }
+            }
+        }
+        
+        CardData resultData = harvestOutput != null ? harvestOutput : recipe.output;
+
+        if (resultData == null)
+        {
+            Debug.Log("[Recipe] resultData 为 null，本次不生成新卡。");
+            return;
+        }
+
+        // 生成结果卡
         GameObject newCardObj = Instantiate(cardPrefab, spawnPos, Quaternion.identity);
         Card newCard = newCardObj.GetComponent<Card>();
         if (newCard != null)
         {
-            newCard.data = recipe.output;
+            newCard.data = resultData;
             newCard.stackRoot = newCard.transform;
-            newCard.ApplyData();   // 根据 data 更新sprite
-            newCard.LayoutStack(); // 以防以后有子卡
+            newCard.ApplyData();
+            newCard.LayoutStack();
         }
 
-        Debug.Log($"配方合成完成：生成 {recipe.output.displayName}");
+        Debug.Log($"配方合成完成：生成 {resultData.displayName}");
     }
+
+
+
+
 }
