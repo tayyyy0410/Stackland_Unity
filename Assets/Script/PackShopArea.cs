@@ -129,7 +129,7 @@ public class PackShopArea : MonoBehaviour
         Vector2 offset = Random.insideUnitCircle * changeSpawnRadius;
         Vector3 basePos = transform.position + new Vector3(offset.x, offset.y, 0f);
 
-        // 生成第一个 coin，当作这一叠的 root
+        // 生成第一个 coin当作这一叠的 root
         GameObject rootObj = Instantiate(changeCoinPrefab, basePos, Quaternion.identity);
         Card rootCard = rootObj.GetComponent<Card>();
 
