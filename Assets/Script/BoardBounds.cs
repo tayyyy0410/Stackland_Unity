@@ -19,7 +19,7 @@ public class BoardBounds : MonoBehaviour
         I = this;
         col = GetComponent<Collider2D>();
     }
-    
+    public Bounds WorldBounds => col.bounds;
     public Vector3 ClampPosition(Vector3 worldPos, float margin = 0f)
     {
         if (col == null) return worldPos;

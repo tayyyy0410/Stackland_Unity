@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cd5050d88cbd89409d5d5ecd6621261, type: 3}
+  m_Name: HumbleBeginnings
+  m_EditorClassIdentifier: 
+  id: humble_beginning_id
+  displayName: Humble Beginning
+  description: 
+  price: 3
+  minCards: 3
+  maxCards: 3
+  entries:
+  - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}
+    weight: 19
+  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
+    weight: 19
+  - cardData: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
+    weight: 13
+  - cardData: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
+    weight: 13
+  - cardData: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
+    weight: 13
+  - cardData: {fileID: 11400000, guid: 63dd630b081b74d4d85d28fb39061b94, type: 2}
+    weight: 3
+  - cardData: {fileID: 11400000, guid: efa29f835883ed54d979c2c8ca233171, type: 2}
+    weight: 3

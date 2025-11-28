@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cd5050d88cbd89409d5d5ecd6621261, type: 3}
+  m_Name: CrashSite
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  description: 
+  price: 10
+  minCards: 4
+  maxCards: 4
+  entries:
+  - cardData: {fileID: 11400000, guid: 07774db9f595b6941a2062f1f24eb69e, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 5aee05d10a74cda42b27bd718c8a8d6f, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 7b889c209ff4dae45a9c4cd05c0e575e, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 1b40802e94e68e3408ef33ddeed5d022, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 50e9313462d16b34991a6247a7fc0dc9, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: bc862c480b26ea94994f4499a7bb4bea, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: e344d4088d50ca443833fa0a0b028440, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 0facefd2c1f7c3a4babc81a36488d779, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 1aad7ae798473ed41b159fb81bc2c8a3, type: 2}
+    weight: 1
