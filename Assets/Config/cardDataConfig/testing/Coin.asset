@@ -18,9 +18,21 @@ MonoBehaviour:
   value: 1
   hasHP: 0
   maxHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  HitChance: 0
   hasSaturation: 0
   saturation: 0
+  canBeFarmed: 0
+  cardAmmount: 0
+  hasDamage: 0
+  damage: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
+  hasHealing: 0
+  healing: 0
   cardClass: 2
-  backgroundSprite: {fileID: -3338749442709606003, guid: 7e586088cd66aa247be6ed5477db6175, type: 3}
+  backgroundSprite: {fileID: -3338749442709606003, guid: 52be3d69a0ab05b4aa13d0a367563d9d, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
