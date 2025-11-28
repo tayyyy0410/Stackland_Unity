@@ -11,6 +11,9 @@ public class Card : MonoBehaviour
     [Header("Stacking")] 
     public Transform stackRoot; //一个stack的root
     public float yOffset = -0.5f; // 往下偏移
+    
+    [Header("Harvest Runtime")]
+    [HideInInspector] public int harvestUsesLeft = -1;
 
     private void Awake()
     {
@@ -30,6 +33,18 @@ public class Card : MonoBehaviour
             stackRoot = transform;
         }
     }
+    
+    public void EnsureHarvestInit()
+    {
+        if (data == null) return;
+        if (!data.isHarvestable) return;
+
+        if (harvestUsesLeft < 0)
+        {
+            harvestUsesLeft = Mathf.Max(1, data.maxHarvestUses);
+        }
+    }
+
 
     public void ApplyData()
     {
@@ -38,6 +53,9 @@ public class Card : MonoBehaviour
         {
             sr.sprite = data.backgroundSprite;
         }
+        
+        harvestUsesLeft = -1;
+        EnsureHarvestInit();
     }
     
 
