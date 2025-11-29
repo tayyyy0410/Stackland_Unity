@@ -110,7 +110,10 @@ public class DayManager : MonoBehaviour
         }
     }
 
-    private void UpdateUI()     //更新day progress和天数UI
+    /// <summary>
+    /// 更新day progress和天数UI
+    /// </summary>
+    private void UpdateUI()
     {
         if (moonProgressFill != null)
         {
@@ -122,6 +125,9 @@ public class DayManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 更新DayState并广播newState，由PanelManager接收后调出对应Panel
+    /// </summary>
     private void SetState(DayState newState)
     {
         if (CurrentState == newState) return;
@@ -139,7 +145,7 @@ public class DayManager : MonoBehaviour
     {
         if (CurrentState != DayState.Running) return;
 
-        Time.timeScale = 0f;       //一天结束之后卡牌操作被冻结
+        Time.timeScale = 0f;       //一天结束之后卡牌coroutine被冻结
         SetState(DayState.WaitingFeed);
     }
 
@@ -188,7 +194,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 由 FeedingSequenceController 调用
+    /// 由 FeedingSequenceController 结束喂食动画后调用
+    /// 结算有没有人活着，进入对应 UI Panel
     /// </summary>
     public void OnFeedingAnimationFinished()
     {
@@ -241,7 +248,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultAllFullPanel 上按“所有人都吃饱了”
+    /// UI：在 FeedingResultAllFullPanel 上按 “所有人都吃饱了”
     /// </summary>
     public void ConfirmAllFedResult()
     {
@@ -250,7 +257,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultHungryPanel 上按 “啊哦”。
+    /// UI：在 FeedingResultHungryPanel 上按 “啊哦”
     /// </summary>
     public void ConfirmHungryResult()
     {
@@ -262,7 +269,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 由 FeedAnimationController 在播完变尸体动画后调用。
+    /// 由 FeedAnimationController 在播完变尸体动画后调用
+    /// 结算还有没有人活着。进入对应Panel
     /// </summary>
     public void OnStarvingAnimationFinished()
     {
@@ -289,7 +297,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 在WaitingNextDayPanel 按“开始下一天
+    /// 在WaitingNextDayPanel 按 “开始下一天“
     /// </summary>
     public void RequestNextDay()
     {
@@ -298,13 +306,13 @@ public class DayManager : MonoBehaviour
         currentMoon++;
         timer = 0f;
 
-        Time.timeScale = 1f;    //恢复冻结状态
+        Time.timeScale = 1f;    //恢复时间流逝，coroutine恢复
         SetState(DayState.Running);
         UpdateUI();
     }
 
     /// <summary>
-    /// UI：在 WaitingEndGame 面板按“结束游戏”。
+    /// UI：在 WaitingEndGame 面板按 “结束游戏”
     /// </summary>
     public void RequestEndGame()
     {

@@ -4,29 +4,30 @@ using UnityEngine;
 
 /// <summary>
 /// 负责在 DayManager 的 FeedingAnimation / StarvingAnimation 状态下播放镜头 + 卡牌动画，
-/// 并在“吃一口”的时刻实时修改 Card.currentHunger / currentSaturation
+/// 并实时修改 Card.currentHunger / currentSaturation
 /// 播放完后会调用 DayManager.OnFeedingAnimationFinished / OnStarvingAnimationFinished
-/// 使用 unscaled time，这样即使 timeScale = 0 动画也会正常播放。
+/// 使用 unscaled time，这样即使 timeScale = 0 动画也会正常播放
 /// </summary>
+
 public class FeedAnimationController : MonoBehaviour
 {
     [Header("Camera")]
     public Camera targetCamera;                 
-    public float zoomInSize = 4f;              // 聚焦在村民时的 orthographic size
-    public float zoomOutSize = 8f;             // 动画结束后恢复的 orthographic size
-    public float cameraMoveDuration = 0.5f;    // 镜头移动 + 缩放时长
+    public float zoomInSize = 4f;       // 镜头聚焦村民时的 orthographic size
+    public float zoomOutSize = 8f;      // 动画结束后恢复的 orthographic size
+    public float cameraMoveDuration = 0.5f;     // 镜头移动 + 缩放时长
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f);
 
     [Header("Feeding Animation")]
-    public float delayBeforeFeeding = 0.3f;        // 进入 FeedingAnimation 后稍等
-    public float delayBetweenVillagers = 0.3f;     // 每个 villager 之间间隔
-    public float foodMoveDuration = 0.35f;         // 食物飞到 villager 身上的时间
-    public float foodHoldDuration = 0.2f;          // 食物停在 villager 身上的时间
+    public float delayBeforeFeeding = 0.3f;     // 进入 FeedingAnimation 后稍等
+    public float delayBetweenVillagers = 0.3f;      // 每个 villager 之间间隔
+    public float foodMoveDuration = 0.35f;      // 食物飞到 villager 身上的时间
+    public float foodHoldDuration = 0.2f;       // 食物停在 villager 身上的时间
     public Vector3 foodOffsetOnVillager = new Vector3(0.3f, 0.3f, 0f);
 
     [Header("Starving Animation")]
-    public float delayBeforeStarving = 0.3f;
-    public float starvingPerVillagerDelay = 0.6f;  // 每个没吃饱村民的展示时间
+    public float delayBeforeStarving = 0.3f;        //进入 StarvingAnimation 后稍等
+    public float starvingPerVillagerDelay = 0.6f;       // 每个要死掉的村民的展示时间
 
     private bool isPlaying = false;
     private Vector3 originalCameraPos;
@@ -48,6 +49,7 @@ public class FeedAnimationController : MonoBehaviour
         if (DayManager.Instance != null)
         {
             DayManager.Instance.OnStateChanged += HandleDayStateChanged;
+            // 订阅 DayManager 的 State 变化
         }
     }
 
@@ -59,6 +61,8 @@ public class FeedAnimationController : MonoBehaviour
         }
     }
 
+
+    // 接收 DayManager 的 State 变化，如果是 AnimationState 就开始镜头动画
     private void HandleDayStateChanged(DayManager.DayState state)
     {
         if (state == DayManager.DayState.FeedingAnimation)
@@ -77,12 +81,12 @@ public class FeedAnimationController : MonoBehaviour
         }
     }
 
-    // ================== Feeding ==================
+
+    // ================== Feeding Animation ==================
 
     /// <summary>
     /// 播放喂食动画：依次镜头对准每个 villager
-    /// 只要还有 currentHunger > 0 且有食物，就一口一口吃
-    /// 每一口吃饭的时刻直接扣 currentHunger / currentSaturation
+    /// 吃饭同时update currentHunger / currentSaturation
     /// </summary>
     private IEnumerator PlayFeedingSequence()
     {
@@ -134,7 +138,7 @@ public class FeedAnimationController : MonoBehaviour
         // 等一点时间，让 UI 切换好
         yield return new WaitForSecondsRealtime(delayBeforeFeeding);
 
-        // 对每个 villager 依次处理
+        // 对每个 villager 依次聚焦 + 食物飞过去
         foreach (Card villager in villagers)
         {
             if (villager == null) continue;
@@ -165,10 +169,10 @@ public class FeedAnimationController : MonoBehaviour
                     break;
                 }
 
-                // 这一口能吃多少
+                // 这一口能吃多少饱腹值
                 int eatAmount = Mathf.Min(villager.currentHunger, food.currentSaturation);
 
-                // 播放一口吃饭的动画，并在动画中扣数
+                // 播放一口吃饭的动画，并在动画中扣 currentSaturation 和 currentHunger
                 yield return AnimateFoodBite(food, villager, eatAmount);
 
                 // 如果这个食物被吃光了，从列表中移除
@@ -200,18 +204,20 @@ public class FeedAnimationController : MonoBehaviour
             yield return new WaitForSecondsRealtime(delayBetweenVillagers);
         }
 
-        // 镜头拉回初始位置 / size
+        // 镜头拉回
         yield return MoveCameraTo(originalCameraPos,
             (zoomOutSize > 0 && targetCamera.orthographic) ? zoomOutSize : originalCameraSize);
 
-        // 此时 currentHunger / currentSaturation 已经是最终状态
+        // 此时 currentHunger / currentSaturation 已经更新完成，等待结算本轮
+        // 通知 DayManager 动画完成，切换 State
         dm.OnFeedingAnimationFinished();
 
         isPlaying = false;
     }
 
+
     /// <summary>
-    /// 一口吃饭：食物飞到 villager 身边 → 扣数 → 停留 → 吃光就 Destroy，不然飞回原位。
+    /// 一口吃饭：食物飞到 villager 身边，扣数值，hover停留一下，吃光就 Destroy，否则飞回原位
     /// </summary>
     private IEnumerator AnimateFoodBite(Card food, Card villager, int eatAmount)
     {
@@ -240,7 +246,7 @@ public class FeedAnimationController : MonoBehaviour
             foodTf.position = targetPos;
         }
 
-        // 到达时扣数
+        // 飞到villager脸上后改变 food的饱腹值 和 villager的饥饿值
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
         food.currentSaturation = Mathf.Max(0, food.currentSaturation - eatAmount);
 
@@ -251,12 +257,12 @@ public class FeedAnimationController : MonoBehaviour
 
         if (isDepleted)
         {
-            // 食物吃光，真正销毁
+            // 食物吃光，销毁卡牌
             DayManager.Instance.ConsumeFoodCompletely(food);
         }
         else
         {
-            // 飞回原位
+            // 食物还有饱腹值，飞回原位
             t = 0f;
             while (t < foodMoveDuration)
             {
@@ -276,7 +282,8 @@ public class FeedAnimationController : MonoBehaviour
         }
     }
 
-    // ================== Starving ==================
+
+    // ================== Starving Aniation ==================
 
     private IEnumerator PlayStarvingSequence()
     {
@@ -288,7 +295,7 @@ public class FeedAnimationController : MonoBehaviour
         isPlaying = true;
         var dm = DayManager.Instance;
 
-        // 从 DayManager 拿到本轮未吃饱的村民列表
+        // 从 DayManager 拿到本轮要饿死的村民列表
         List<Card> hungryVillagers = new List<Card>(dm.LastHungryVillagers);
 
         // 备份相机
@@ -308,13 +315,13 @@ public class FeedAnimationController : MonoBehaviour
             // 镜头对准这个 villager
             yield return MoveCameraToTarget(villager.transform.position);
 
-            // 停顿一下给玩家看
+            // 停顿一下
             yield return new WaitForSecondsRealtime(starvingPerVillagerDelay * 0.5f);
 
             // 调用 DayManager，把这个 villager 变尸体 / Destroy
             DayManager.Instance.KillVillager(villager);
 
-            // 再等一会儿再去下一个
+            // 再等一会儿再去下一个 vilalger
             yield return new WaitForSecondsRealtime(starvingPerVillagerDelay * 0.5f);
         }
 
@@ -322,13 +329,14 @@ public class FeedAnimationController : MonoBehaviour
         yield return MoveCameraTo(originalCameraPos,
             (zoomOutSize > 0 && targetCamera.orthographic) ? zoomOutSize : originalCameraSize);
 
-        // 通知 DayManager：饿死动画播完
+        // 通知 DayManager 动画完成，切换 State
         DayManager.Instance.OnStarvingAnimationFinished();
 
         isPlaying = false;
     }
 
-    // ================== Camera Helpers ==================
+
+    // ================== Camera Movement Helpers ==================
 
     private IEnumerator MoveCameraToTarget(Vector3 worldTarget)
     {

@@ -29,7 +29,7 @@ public class PanelManager : MonoBehaviour
 
     private void Start()
     {
-        //绑定button onClick和DayManager中change state的method
+        //绑定 Button onClick 和 DayManager 中用来 change state 的 method
 
         if (feedButton != null)
         {
@@ -73,7 +73,7 @@ public class PanelManager : MonoBehaviour
 
 
 
-        //DayManager的CurrentState改变时更新对应Panel
+        // DayManager 的 CurrentState 改变时更新对应 Panel
         if (DayManager.Instance != null)
         {
             DayManager.Instance.OnStateChanged += HandleDayStateChanged;
@@ -95,7 +95,7 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    //根据DayManager的state显示对应Panel
+    //根据 DayManager 的 State 显示对应 Panel
     private void HandleDayStateChanged(DayManager.DayState state)
     {
         // 先全部关掉
@@ -109,6 +109,7 @@ public class PanelManager : MonoBehaviour
         SetPanelActive(waitingEndGamePanel, false);
         SetPanelActive(gameOverPanel, false);
 
+        // 再打开一个 Panel
         switch (state)
         {
             case DayManager.DayState.Running:
