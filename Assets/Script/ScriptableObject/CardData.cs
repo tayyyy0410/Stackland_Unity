@@ -59,7 +59,13 @@ public class CardData : ScriptableObject
     
     [Tooltip("饱腹值")]
     public int saturation;
-  
+
+    [Tooltip("是否有饥饿值")]
+    public bool hasHunger;
+
+    [Tooltip("饥饿值")]
+    public int hunger;
+
     /// 
 
     [Header("weapons")]

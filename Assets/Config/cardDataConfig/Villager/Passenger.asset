@@ -24,15 +24,19 @@ MonoBehaviour:
   HitChance: 70
   hasSaturation: 0
   saturation: 0
-  canBeFarmed: 0
-  cardAmmount: 0
+  hasHunger: 1
+  hunger: 2
   hasDamage: 0
   damage: 0
-  hasDefence: 0
-  defense: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
   hasHealing: 0
   healing: 0
   cardClass: 6
   backgroundSprite: {fileID: -1330291129118527448, guid: 396152b047219424e8d1caa5bf388745, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}
