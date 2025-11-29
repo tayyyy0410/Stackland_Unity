@@ -41,6 +41,13 @@ public class CameraControllers : MonoBehaviour
 
     private void Update()
     {
+        if (DayManager.Instance != null &&
+        DayManager.Instance.CurrentState != DayManager.DayState.Running)
+        {
+            // 非 Running 状态（等待喂养 / 动画 / 结算），相机交给 DayAnimationController 控制
+            return;
+        }
+
         UpdateBasePos();
         HandleZoom();
         HandleDrag();

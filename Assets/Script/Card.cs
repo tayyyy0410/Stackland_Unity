@@ -15,6 +15,10 @@ public class Card : MonoBehaviour
     [Header("Harvest Runtime")]
     [HideInInspector] public int harvestUsesLeft = -1;
 
+    [Header("Feeding Runtime")]
+    public int currentSaturation = -1;  //food剩余的饱腹值，卡牌ui显示这个
+    public int currentHunger = 0;   //villager的饥饿值
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -45,6 +49,24 @@ public class Card : MonoBehaviour
         }
     }
 
+    public void FoodInit()
+    {
+        if (data.cardClass == CardClass.Food && data.hasSaturation && data.saturation > 0)
+        {
+            currentSaturation = data.saturation;
+        }
+        else currentSaturation = -1;    //不是食物没有饱腹值
+    }
+
+    public void HungerInit()
+    {
+        if (data.cardClass == CardClass.Villager)
+        {
+            currentHunger = data.hunger;
+        }
+        else currentHunger = -1;    //不是villager没有饥饿值
+    }
+
 
     public void ApplyData()
     {
@@ -56,6 +78,8 @@ public class Card : MonoBehaviour
         
         harvestUsesLeft = -1;
         EnsureHarvestInit();
+        FoodInit();
+        HungerInit();
     }
     
 
