@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
@@ -19,6 +20,9 @@ public class Card : MonoBehaviour
     public int currentSaturation = -1;  //food剩余的饱腹值，卡牌ui显示这个
     public int currentHunger = 0;   //villager的饥饿值
 
+    [Header("UI Display")]
+    private InfoBarIndep infoBar;
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -36,6 +40,9 @@ public class Card : MonoBehaviour
         {
             stackRoot = transform;
         }
+
+        GameObject infoBarObj = GameObject.FindWithTag("UI-Infobar");
+        infoBar = infoBarObj.GetComponent<InfoBarIndep>();
     }
     
     public void EnsureHarvestInit()
@@ -140,4 +147,15 @@ public class Card : MonoBehaviour
             child.localPosition = new Vector3(0f, i * yOffset, 0f);
         }
     }
+
+    private void OnMouseEnter()
+    {
+        infoBar.ShowInfoBar(data);
+    }
+
+    private void OnMouseExit()
+    {
+        infoBar.HideInfoBar();
+    }
+
 }
