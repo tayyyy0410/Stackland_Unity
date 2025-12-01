@@ -13,8 +13,8 @@ public class FeedAnimationController : MonoBehaviour
 {
     [Header("Camera")]
     public Camera targetCamera;                 
-    public float zoomInSize = 4f;       // 镜头聚焦村民时的 orthographic size
-    public float zoomOutSize = 8f;      // 动画结束后恢复的 orthographic size
+    public float zoomInSize = 3f;       // 镜头聚焦村民时的 orthographic size
+    public float zoomOutSize = 6f;      // 动画结束后恢复的 orthographic size
     public float cameraMoveDuration = 0.5f;     // 镜头移动 + 缩放时长
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f);
 

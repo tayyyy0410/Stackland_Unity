@@ -4692,8 +4692,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 323916412}
-  zoomInSize: 4
-  zoomOutSize: 8
+  zoomInSize: 3
+  zoomOutSize: 5
   cameraMoveDuration: 0.5
   cameraOffset: {x: 0, y: 0, z: -10}
   delayBeforeFeeding: 0.3
