@@ -121,7 +121,7 @@ public class FeedAnimationController : MonoBehaviour
 
         if (foods.Count > 0)
         {
-            sortFoodQueue(foods);
+            //sortFoodQueue(foods);
         }
 
         if (villagers.Count == 0)
@@ -177,6 +177,7 @@ public class FeedAnimationController : MonoBehaviour
 
                 // 这一口能吃多少饱腹值
                 int eatAmount = Mathf.Min(villager.currentHunger, food.currentSaturation);
+                food.TakeOutOfStack();
 
                 // 播放一口吃饭的动画，并在动画中扣 currentSaturation 和 currentHunger
                 yield return AnimateFoodBite(food, villager, eatAmount);
@@ -194,7 +195,7 @@ public class FeedAnimationController : MonoBehaviour
                     if (foods[i] != null && foods[i].currentSaturation > 0)
                     {
                         anyFoodLeft = true;
-                        sortFoodQueue(foods);
+                        //sortFoodQueue(foods);
                         break;
                     }
                 }
@@ -216,6 +217,16 @@ public class FeedAnimationController : MonoBehaviour
             (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
         foods.Clear();
+
+        // 重新layout场景中所有卡牌
+        Card[] all = FindObjectsByType<Card>(FindObjectsSortMode.None);
+        foreach (Card c in all)
+        {
+            if (c.transform == c.stackRoot)
+            {
+                c.LayoutStack();
+            }
+        }
 
         // 此时 currentHunger / currentSaturation 已经更新完成，等待结算本轮
         // 通知 DayManager 动画完成，切换 State
@@ -358,7 +369,7 @@ public class FeedAnimationController : MonoBehaviour
             // 调用 DayManager，把这个 villager 变尸体 / Destroy
             DayManager.Instance.KillVillager(villager);
 
-            // 再等一会儿再去下一个 vilalger
+            // 再等一会儿再去下一个 villager
             yield return new WaitForSecondsRealtime(starvingPerVillagerDelay * 0.5f);
         }
 
