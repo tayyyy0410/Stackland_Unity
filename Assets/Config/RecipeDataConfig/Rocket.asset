@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
+  m_Name: Rocket
+  m_EditorClassIdentifier: 
+  ingredients:
+  - cardData: {fileID: 11400000, guid: 5aee05d10a74cda42b27bd718c8a8d6f, type: 2}
+    amount: 2
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 7b889c209ff4dae45a9c4cd05c0e575e, type: 2}
+    amount: 1
+    consume: 1
+  - cardData: {fileID: 11400000, guid: e344d4088d50ca443833fa0a0b028440, type: 2}
+    amount: 2
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 0facefd2c1f7c3a4babc81a36488d779, type: 2}
+    amount: 1
+    consume: 1
+  output: {fileID: 11400000, guid: 92000df5386a96946b0d3e9f86a3de55, type: 2}
+  useOutputPack: 0
+  outputPack: {fileID: 0}
+  craftTime: 30

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
+  m_Name: Rock
+  m_EditorClassIdentifier: 
+  ingredients:
+  - cardData: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
+    amount: 1
+    consume: 0
+  - cardData: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
+    amount: 1
+    consume: 0
+  output: {fileID: 0}
+  useOutputPack: 1
+  outputPack: {fileID: 11400000, guid: 4ba0bc6f6642ce74193c7ae59db1aa61, type: 2}
+  craftTime: 9
