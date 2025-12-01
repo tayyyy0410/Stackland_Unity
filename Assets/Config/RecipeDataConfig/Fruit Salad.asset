@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
-  m_Name: Campfire
+  m_Name: Fruit Salad
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: afee59ef48ebcb64b836c86ab852d6a8, type: 2}
+  - cardData: {fileID: 11400000, guid: bd114ca33b12b8a40ad45ba8dfbf90c2, type: 2}
     amount: 1
     consume: 1
-  - cardData: {fileID: 11400000, guid: 08cde1d0384325e41a2c4890fc25f77b, type: 2}
+  - cardData: {fileID: 11400000, guid: 0027cce9279c0b749a5a619a688e95ed, type: 2}
     amount: 1
     consume: 1
-  output: {fileID: 11400000, guid: 817241ee399928c42bc3df27875feaa8, type: 2}
+  output: {fileID: 11400000, guid: 81bdd13712fa0fb4285e24e9fae64ad6, type: 2}
   useOutputPack: 0
   outputPack: {fileID: 0}
-  craftTime: 15
+  craftTime: 20

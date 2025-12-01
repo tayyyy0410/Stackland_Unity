@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
-  m_Name: Fish Pond
+  m_Name: Fauna
   m_EditorClassIdentifier: 
-  id: Fish_Pond_id
-  displayName: Fish Pond
-  description: Stable Source of Fish
-  value: 5
-  hasHP: 0
-  maxHP: 0
-  hasAttack: 0
-  attack: 0
-  hasHitChance: 0
-  HitChance: 0
+  id: Fauna_id
+  displayName: Fauna
+  description: A not so friendly... friend?
+  value: 0
+  hasHP: 1
+  maxHP: 15
+  hasAttack: 1
+  attack: 2
+  hasHitChance: 1
+  HitChance: 0.7
   hasSaturation: 0
   saturation: 0
   hasHunger: 0
@@ -32,11 +32,11 @@ MonoBehaviour:
   IncreasedHP: 0
   hasHealing: 0
   healing: 0
-  cardClass: 4
-  backgroundSprite: {fileID: -7985617846496312500, guid: bab60f505be0ae742a0175ea340c78b9, type: 3}
-  maxStackSize: 2
-  canStackWithSameClass: 1
-  isHarvestable: 1
+  cardClass: 5
+  backgroundSprite: {fileID: 7197568307356981599, guid: e42af5c428f6538428109ae7e3ee7281, type: 3}
+  maxStackSize: 1
+  canStackWithSameClass: 0
+  isHarvestable: 0
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 46172d16ae4113d4b981b522e5eed2ea
+guid: 4396883bea1981940801d12e85fd939f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 400943140461129864
-    second: Empty Idea_0
+      213: 6608858702902643248
+    second: aspirin 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Empty Idea_0
+      name: aspirin 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 880b05679af609500800000000000000
-      internalID: 400943140461129864
+      spriteID: 03ac24d99f167bb50800000000000000
+      internalID: 6608858702902643248
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Empty Idea_0: 400943140461129864
+      aspirin 1_0: 6608858702902643248
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

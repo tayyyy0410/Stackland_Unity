@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Medic_Kit_id
   displayName: Medic Kit
   description: Effecient way to heal after combat
-  value: 3
+  value: 5
   hasHP: 0
   maxHP: 0
   hasAttack: 0
@@ -24,8 +24,8 @@ MonoBehaviour:
   HitChance: 0
   hasSaturation: 0
   saturation: 0
-  canBeFarmed: 0
-  cardAmmount: 0
+  hasHunger: 0
+  hunger: 0
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
@@ -36,3 +36,7 @@ MonoBehaviour:
   backgroundSprite: {fileID: 9160455754742523078, guid: 44533aba172b7d1458c7f37d0e9b57f4, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}

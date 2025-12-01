@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 46172d16ae4113d4b981b522e5eed2ea
+guid: ae4b058bf3e198f4eac55fe97203c5cd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 400943140461129864
-    second: Empty Idea_0
+      213: 8736721264076695914
+    second: Christmas_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Empty Idea_0
+      name: Christmas_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 880b05679af609500800000000000000
-      internalID: 400943140461129864
+      spriteID: a69a4e653b11f3970800000000000000
+      internalID: 8736721264076695914
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Empty Idea_0: 400943140461129864
+      Christmas_0: 8736721264076695914
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -10,19 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
-  m_Name: Fish Pond
+  m_Name: Rocket
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
-    amount: 2
-    consume: 1
-  - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}
-    amount: 1
-    consume: 1
   - cardData: {fileID: 11400000, guid: 5aee05d10a74cda42b27bd718c8a8d6f, type: 2}
     amount: 2
     consume: 1
-  output: {fileID: 11400000, guid: 93bf071bed9c14047b98f537348a5b64, type: 2}
+  - cardData: {fileID: 11400000, guid: 7b889c209ff4dae45a9c4cd05c0e575e, type: 2}
+    amount: 1
+    consume: 1
+  - cardData: {fileID: 11400000, guid: e344d4088d50ca443833fa0a0b028440, type: 2}
+    amount: 2
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 0facefd2c1f7c3a4babc81a36488d779, type: 2}
+    amount: 1
+    consume: 1
+  output: {fileID: 11400000, guid: 92000df5386a96946b0d3e9f86a3de55, type: 2}
   useOutputPack: 0
   outputPack: {fileID: 0}
   craftTime: 30
