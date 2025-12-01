@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 46172d16ae4113d4b981b522e5eed2ea
+guid: a19e54dfcfe2cf54e950941983198143
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 400943140461129864
-    second: Empty Idea_0
+      213: 5068768094841002191
+    second: Fainted_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Empty Idea_0
+      name: Fainted_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 880b05679af609500800000000000000
-      internalID: 400943140461129864
+      spriteID: fc8d4dd0ab1e75640800000000000000
+      internalID: 5068768094841002191
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Empty Idea_0: 400943140461129864
+      Fainted_0: 5068768094841002191
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

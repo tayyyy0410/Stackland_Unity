@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
-  m_Name: Campfire
+  m_Name: Medic Kit
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: afee59ef48ebcb64b836c86ab852d6a8, type: 2}
+  - cardData: {fileID: 11400000, guid: e344d4088d50ca443833fa0a0b028440, type: 2}
     amount: 1
     consume: 1
-  - cardData: {fileID: 11400000, guid: 08cde1d0384325e41a2c4890fc25f77b, type: 2}
+  - cardData: {fileID: 11400000, guid: 50e9313462d16b34991a6247a7fc0dc9, type: 2}
     amount: 1
     consume: 1
-  output: {fileID: 11400000, guid: 817241ee399928c42bc3df27875feaa8, type: 2}
+  - cardData: {fileID: 11400000, guid: 8427221bb4817b9409b2504f04b69308, type: 2}
+    amount: 1
+    consume: 1
+  output: {fileID: 11400000, guid: 556fe71c42813f84885f3b957d677489, type: 2}
   useOutputPack: 0
   outputPack: {fileID: 0}
   craftTime: 15

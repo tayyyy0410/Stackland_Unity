@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
-  m_Name: Fish Pond
+  m_Name: Aspirin
   m_EditorClassIdentifier: 
-  id: Fish_Pond_id
-  displayName: Fish Pond
-  description: Stable Source of Fish
-  value: 5
+  id: Aspirin_id
+  displayName: Aspirin
+  description: White pills that can treat every condition
+  value: 3
   hasHP: 0
   maxHP: 0
   hasAttack: 0
@@ -32,11 +32,11 @@ MonoBehaviour:
   IncreasedHP: 0
   hasHealing: 0
   healing: 0
-  cardClass: 4
-  backgroundSprite: {fileID: -7985617846496312500, guid: bab60f505be0ae742a0175ea340c78b9, type: 3}
-  maxStackSize: 2
+  cardClass: 3
+  backgroundSprite: {fileID: 6608858702902643248, guid: 4396883bea1981940801d12e85fd939f, type: 3}
+  maxStackSize: 100
   canStackWithSameClass: 1
-  isHarvestable: 1
+  isHarvestable: 0
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
