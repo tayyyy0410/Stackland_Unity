@@ -33,86 +33,107 @@ public class PackShopArea : MonoBehaviour
         }
     }
 
-    //用某一叠 coin 来尝试购买
-    public void TryBuyFromStack(Card anyCardInStack)
+public void TryBuyFromStack(Card anyCardInStack)
+{
+
+    if (anyCardInStack == null)
     {
-        if (packToSell == null || packCardPrefab == null)
+        Debug.Log("[ShopArea] anyCardInStack 为 null，无法买卡包");
+        return;
+    }
+
+    if (anyCardInStack.stackRoot == null)
+    {
+        Debug.Log("[ShopArea] anyCardInStack.stackRoot 为 null，无法买卡包");
+        return;
+    }
+
+    if (packToSell == null)
+    {
+        Debug.LogWarning("[ShopArea] packToSell 没有设置！请在 Inspector 里给这个 Shop 绑定一个 PackData。");
+        return;
+    }
+
+    if (packCardPrefab == null)
+    {
+        Debug.LogWarning("[ShopArea] packCardPrefab 没有设置！请在 Inspector 里绑定一个 CardPack 的 prefab。");
+        return;
+    }
+
+    if (anyCardInStack.data == null)
+    {
+        Debug.Log("[ShopArea] anyCardInStack.data 为 null");
+        return;
+    }
+
+    Debug.Log($"[ShopArea] 传进来的卡是：{anyCardInStack.data.displayName}，cardClass = {anyCardInStack.data.cardClass}");
+    Collider2D col = GetComponent<Collider2D>();
+    if (col != null)
+    {
+        Vector2 pos = anyCardInStack.stackRoot.position;
+        if (!col.OverlapPoint(pos))
         {
-            Debug.LogWarning("[ShopArea] packToSell 或 packCardPrefab 没设置，无法购买卡包。");
+            Debug.Log("[ShopArea] stackRoot 没有在当前这个 Shop 的 Collider 里，返回");
             return;
-        }
-
-        if (anyCardInStack == null || anyCardInStack.data == null)
-            return;
-        
-        if (anyCardInStack.data.cardClass != CardClass.Coin)
-            return;
-
-        // 先确认这个 stack 的位置是在 shop 区域里
-        if (col != null)
-        {
-            Vector2 pos = anyCardInStack.stackRoot.position;
-            if (!col.OverlapPoint(pos))
-            {
-                return;
-            }
-        }
-
-        // 找到这一stack的root
-        Transform root = anyCardInStack.stackRoot;
-        if (root == null) root = anyCardInStack.transform;
-        
-        List<Card> coinsInStack = new List<Card>();
-
-        // root 自己
-        Card rootCard = root.GetComponent<Card>();
-        if (rootCard != null && rootCard.data != null && rootCard.data.cardClass == CardClass.Coin)
-        {
-            coinsInStack.Add(rootCard);
-        }
-
-        // 子物体
-        for (int i = 0; i < root.childCount; i++)
-        {
-            Transform child = root.GetChild(i);
-            Card c = child.GetComponent<Card>();
-            if (c != null && c.data != null && c.data.cardClass == CardClass.Coin)
-            {
-                coinsInStack.Add(c);
-            }
-        }
-
-        int coinCount = coinsInStack.Count;
-        Debug.Log($"[ShopArea] 当前 stack 中 coin 张数 = {coinCount} / 需要价格 = {packToSell.price}");
-
-        if (coinCount < packToSell.price)
-            return; // 钱不够
-
-        int change = coinCount - packToSell.price;
-
-        // 生成卡包
-        Vector3 packPos = transform.position + (Vector3)packSpawnOffset;
-        GameObject packObj = Instantiate(packCardPrefab, packPos, Quaternion.identity);
-
-        CardPack cp = packObj.GetComponent<CardPack>();
-        if (cp != null)
-        {
-            cp.packData = packToSell;
-        }
-
-        // 销毁这叠里的 coin
-        foreach (var coin in coinsInStack)
-        {
-            if (coin != null)
-                Destroy(coin.gameObject);
-        }
-
-        // 生成找零
-        if (change > 0)
-        {
-            GiveChange(change);
         }
     }
+    else
+    {
+        Debug.LogWarning("[ShopArea] 当前物体上没有 Collider2D，无法用 OverlapPoint 检测位置");
+    }
+    
+    List<Card> coinCards = new List<Card>();
+    Transform root = anyCardInStack.stackRoot;
+    var allCards = root.GetComponentsInChildren<Card>();
+
+    foreach (var c in allCards)
+    {
+        if (c == null || c.data == null) continue;
+        if (c.data.cardClass == CardClass.Coin)
+        {
+            coinCards.Add(c);
+        }
+    }
+
+    int coinCount = coinCards.Count;
+    Debug.Log($"[ShopArea] 当前 stack 中 coin 张数 = {coinCount} / 需要价格 = {packToSell.price}");
+
+    if (coinCount < packToSell.price)
+    {
+        Debug.Log("[ShopArea] 钱不够，不能买卡包。");
+        return;
+    }
+
+    int need = packToSell.price;
+
+    // 随便从列表里拿几张就行，这里从后往前删
+    for (int i = coinCards.Count - 1; i >= 0 && need > 0; i--)
+    {
+        Card coinCard = coinCards[i];
+        if (coinCard == null) continue;
+
+        Debug.Log("[ShopArea] 消耗一枚金币：" + coinCard.name);
+        Destroy(coinCard.gameObject);
+        need--;
+    }
+
+    //  生成卡包 
+    Vector3 packPos = transform.position + (Vector3)packSpawnOffset;
+    GameObject packObj = Instantiate(packCardPrefab, packPos, Quaternion.identity);
+
+    CardPack cp = packObj.GetComponent<CardPack>();
+    if (cp != null)
+    {
+        cp.packData = packToSell;
+    }
+    else
+    {
+        Debug.LogWarning("[ShopArea] 生成的 packCardPrefab 上没有 CardPack 组件！");
+    }
+
+    Debug.Log("[ShopArea] 成功购买卡包：" + packToSell.name);
+}
+
 
     // 找零
     private void GiveChange(int change)

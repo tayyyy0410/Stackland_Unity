@@ -165,6 +165,9 @@ MonoBehaviour:
   data: {fileID: 0}
   stackRoot: {fileID: 0}
   yOffset: -0.5
+  harvestUsesLeft: -1
+  currentSaturation: -1
+  currentHunger: 0
 --- !u!114 &1052498609267720169
 MonoBehaviour:
   m_ObjectHideFlags: 0

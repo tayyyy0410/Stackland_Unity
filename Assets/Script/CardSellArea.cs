@@ -9,7 +9,11 @@ public class CardSellArea : MonoBehaviour
     public GameObject coinPrefab;
 
     [Tooltip("找零的 coin 在卖卡区域附近随机一点偏移")]
-    public float coinSpawnRadius = 0.3f;
+    public float coinSpawnRadius = 0.5f;
+    
+    
+    [Tooltip("金币生成位置相对卖卡区域的偏移）")]
+    public Vector2 coinSpawnOffset = new Vector2(0f, -1f);
 
     private Collider2D col;
 
@@ -102,7 +106,7 @@ public class CardSellArea : MonoBehaviour
         }
 
         // 生成第一个 coin，当作这一叠的 root
-        Vector3 basePos = transform.position;
+        Vector3 basePos = (Vector3)(coinSpawnOffset)+transform.position;
         GameObject rootObj = Instantiate(coinPrefab, basePos, Quaternion.identity);
         Card rootCard = rootObj.GetComponent<Card>();
 
