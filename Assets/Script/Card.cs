@@ -140,6 +140,4 @@ public class Card : MonoBehaviour
             child.localPosition = new Vector3(0f, i * yOffset, 0f);
         }
     }
-    //onMouseenter-gameUImanager.
-    //onmousexit
 }
