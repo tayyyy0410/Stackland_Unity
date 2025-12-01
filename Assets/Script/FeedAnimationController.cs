@@ -20,10 +20,10 @@ public class FeedAnimationController : MonoBehaviour
 
     [Header("Feeding Animation")]
     public float delayBeforeFeeding = 0.3f;     // 进入 FeedingAnimation 后稍等
-    public float delayBetweenVillagers = 0.3f;      // 每个 villager 之间间隔
+    public float delayBetweenVillagers = 0.4f;      // 每个 villager 之间间隔
     public float foodMoveDuration = 0.35f;      // 食物飞到 villager 身上的时间
-    public float foodHoldDuration = 0.2f;       // 食物停在 villager 身上的时间
-    public Vector3 foodOffsetOnVillager = new Vector3(0.3f, 0.3f, 0f);
+    public float foodHoldDuration = 0.3f;       // 食物停在 villager 身上的时间
+    //public Vector3 foodOffsetOnVillager = new Vector3(0.3f, 0.3f, 0f);
 
     [Header("Starving Animation")]
     public float delayBeforeStarving = 0.3f;        //进入 StarvingAnimation 后稍等
@@ -120,6 +120,11 @@ public class FeedAnimationController : MonoBehaviour
             }
         }
 
+        if (foods.Count > 0)
+        {
+            sortFoodQueue(foods);
+        }
+
         if (villagers.Count == 0)
         {
             // 没有村民，直接结束
@@ -188,6 +193,7 @@ public class FeedAnimationController : MonoBehaviour
                     if (foods[i] != null && foods[i].currentSaturation > 0)
                     {
                         anyFoodLeft = true;
+                        sortFoodQueue(foods);
                         break;
                     }
                 }
@@ -208,11 +214,31 @@ public class FeedAnimationController : MonoBehaviour
         yield return MoveCameraTo(originalCameraPos,
             (zoomOutSize > 0 && targetCamera.orthographic) ? zoomOutSize : originalCameraSize);
 
+        foods.Clear();
+
         // 此时 currentHunger / currentSaturation 已经更新完成，等待结算本轮
         // 通知 DayManager 动画完成，切换 State
         dm.OnFeedingAnimationFinished();
 
         isPlaying = false;
+    }
+
+
+    /// <summary>
+    /// 排列食物，把没有 child stack 的食物排到最前
+    /// 防止 stackRoot 带着一整个 stack 飞了，，
+    /// </summary>
+    private void sortFoodQueue(List<Card> foods)
+    {
+        for (int i = 0; i < foods.Count; i++)
+        {
+            if (foods[i].IsTopOfStack())
+            {
+                var temp = foods[i];
+                foods.RemoveAt(i);
+                foods.Insert(0, temp);
+            }
+        }
     }
 
 
@@ -225,7 +251,7 @@ public class FeedAnimationController : MonoBehaviour
 
         Transform foodTf = food.transform;
         Vector3 originPos = foodTf.position;
-        Vector3 targetPos = villager.transform.position + foodOffsetOnVillager;
+        Vector3 targetPos = villager.transform.position; //+ foodOffsetOnVillager;
 
         float t = 0f;
 

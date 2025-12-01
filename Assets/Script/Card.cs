@@ -69,6 +69,8 @@ public class Card : MonoBehaviour
     {
         if (data.cardClass == CardClass.Villager)
         {
+            sr= GetComponent<SpriteRenderer>();
+            sr.sortingOrder = -100;
             currentHunger = data.hunger;
         }
         else currentHunger = -1;    //不是villager没有饥饿值
@@ -148,6 +150,8 @@ public class Card : MonoBehaviour
         }
     }
 
+
+
     private void OnMouseEnter()
     {
         infoBar.ShowInfoBar(data);
@@ -156,6 +160,25 @@ public class Card : MonoBehaviour
     private void OnMouseExit()
     {
         infoBar.HideInfoBar();
+    }
+
+
+    // ====================== Feeding Helper =====================
+    public bool IsTopOfStack()
+    {
+        Transform parentRoot = stackRoot != null ? stackRoot : transform;
+        if (parentRoot.childCount == 0)
+        {
+            return transform == parentRoot;
+        }
+
+        if (transform == parentRoot)
+        {
+            return false;
+        }
+
+        return transform.parent == parentRoot && 
+               transform.GetSiblingIndex() == parentRoot.childCount - 1;
     }
 
 }
