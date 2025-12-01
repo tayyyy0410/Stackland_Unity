@@ -23,10 +23,9 @@ public class FeedAnimationController : MonoBehaviour
     public float delayBetweenVillagers = 0.4f;      // 每个 villager 之间间隔
     public float foodMoveDuration = 0.35f;      // 食物飞到 villager 身上的时间
     public float foodHoldDuration = 0.3f;       // 食物停在 villager 身上的时间
-    //public Vector3 foodOffsetOnVillager = new Vector3(0.3f, 0.3f, 0f);
 
     [Header("Starving Animation")]
-    public float delayBeforeStarving = 0.3f;        //进入 StarvingAnimation 后稍等
+    public float delayBeforeStarving = 0.3f;        // 进入 StarvingAnimation 后稍等
     public float starvingPerVillagerDelay = 0.6f;       // 每个要死掉的村民的展示时间
 
     private bool isPlaying = false;
@@ -146,6 +145,7 @@ public class FeedAnimationController : MonoBehaviour
         // 对每个 villager 依次聚焦 + 食物飞过去
         foreach (Card villager in villagers)
         {
+            if (foods.Count == 0) break;
             if (villager == null) continue;
 
             if (villager.currentHunger <= 0)
@@ -153,6 +153,7 @@ public class FeedAnimationController : MonoBehaviour
 
             // 镜头对准这个 villager
             yield return MoveCameraToTarget(villager.transform.position);
+            
 
             // 只要这个人还没吃饱且还有可用食物，就一口一口吃
             while (villager.currentHunger > 0)
@@ -212,7 +213,7 @@ public class FeedAnimationController : MonoBehaviour
 
         // 镜头拉回
         yield return MoveCameraTo(originalCameraPos,
-            (zoomOutSize > 0 && targetCamera.orthographic) ? zoomOutSize : originalCameraSize);
+            (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
         foods.Clear();
 
@@ -254,6 +255,14 @@ public class FeedAnimationController : MonoBehaviour
         Vector3 targetPos = villager.transform.position; //+ foodOffsetOnVillager;
 
         float t = 0f;
+
+        // 确保食物始终在villager上层显示
+        var villagerSR = villager.GetComponent<SpriteRenderer>();
+        var foodSR = food.GetComponent<SpriteRenderer>();
+        int villagerSO = villagerSR.sortingOrder;
+
+        int temp = foodSR.sortingOrder;
+        foodSR.sortingOrder = villagerSO + 1;
 
         // 飞过去
         while (t < foodMoveDuration)
@@ -305,6 +314,8 @@ public class FeedAnimationController : MonoBehaviour
             {
                 foodTf.position = originPos;
             }
+
+            foodSR.sortingOrder = temp;
         }
     }
 
@@ -353,7 +364,7 @@ public class FeedAnimationController : MonoBehaviour
 
         // 镜头拉回
         yield return MoveCameraTo(originalCameraPos,
-            (zoomOutSize > 0 && targetCamera.orthographic) ? zoomOutSize : originalCameraSize);
+            (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
         // 通知 DayManager 动画完成，切换 State
         DayManager.Instance.OnStarvingAnimationFinished();

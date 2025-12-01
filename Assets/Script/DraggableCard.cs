@@ -168,7 +168,7 @@ public class DraggableCard : MonoBehaviour
         if (rootCard == null) return;
 
         // ========== ① 先查所有 PackShopArea（优先买卡包） ==========
-        PackShopArea[] shops = FindObjectsOfType<PackShopArea>();
+        PackShopArea[] shops = FindObjectsByType<PackShopArea>(FindObjectsSortMode.None);
         foreach (var shop in shops)
         {
             if (shop == null) continue;
@@ -186,7 +186,7 @@ public class DraggableCard : MonoBehaviour
         }
 
         // ========== ② 如果没有 Shop 命中，再查所有 Sell 区域 ==========
-        CardSellArea[] sells = FindObjectsOfType<CardSellArea>();
+        CardSellArea[] sells = FindObjectsByType<CardSellArea>(FindObjectsSortMode.None);
         foreach (var sellArea in sells)
         {
             if (sellArea == null) continue;

@@ -10,26 +10,26 @@ using UnityEngine.UI;
 public class PanelManager : MonoBehaviour
 {
     [Header("Panels")]
-    public GameObject runningPanel;     //月亮年进行中
-    public GameObject waitingFeedPanel;     //一天结束，提示“喂养村民”button
-    public GameObject feedingAnimationPanel;        //进食动画
-    public GameObject feedingResultAllFullPanel;        //所有人都吃饱了结算画面
-    public GameObject feedingResultHungryPanel;     //有人没吃饱结算画面
-    public GameObject starvingAnimationPanel;       //有人被饿死的动画
-    public GameObject waitingNextDayPanel;      //有人还活着，等待下一天的button
-    public GameObject waitingEndGamePanel;      //死光了，等待“结束游戏”button
-    public GameObject gameOverPanel;        //GameOver结算面板
+    public GameObject runningPanel;     // 月亮年进行中
+    public GameObject waitingFeedPanel;     // 一天结束，提示“喂养村民”button
+    public GameObject feedingAnimationPanel;        // 进食动画
+    public GameObject feedingResultAllFullPanel;        // 所有人都吃饱了结算画面
+    public GameObject feedingResultHungryPanel;     // 有人没吃饱结算画面
+    public GameObject starvingAnimationPanel;       // 有人被饿死的动画
+    public GameObject waitingNextDayPanel;      // 有人还活着，等待下一天的button
+    public GameObject waitingEndGamePanel;      // 死光了，等待“结束游戏”button
+    public GameObject gameOverPanel;        // GameOver结算面板
 
     [Header("Buttons")]
-    public Button feedButton;   //waitingFeedPanel的喂养村民
-    public Button AllFedContinueButton;     //FeedingResultAllFullPanel 的 所有人都吃饱了
-    public Button hungryContinueButton;     //FeedingResultHungryPanel 的 “啊哦”
+    public Button feedButton;   // waitingFeedPanel的喂养村民
+    public Button AllFedContinueButton;     // FeedingResultAllFullPanel 的 所有人都吃饱了
+    public Button hungryContinueButton;     // FeedingResultHungryPanel 的 “啊哦”
     public Button startNextDayButton;   // WaitingNextDayPanel 的 “开始下一天”
     public Button endGameButton;        // WaitingEndGamePanel 的 “结束游戏”
 
     private void Start()
     {
-        //绑定 Button onClick 和 DayManager 中用来 change state 的 method
+        // 绑定 Button onClick 和 DayManager 中用来 change state 的 method
 
         if (feedButton != null)
         {
@@ -95,7 +95,7 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    //根据 DayManager 的 State 显示对应 Panel
+    // 根据 DayManager 的 State 显示对应 Panel
     private void HandleDayStateChanged(DayManager.DayState state)
     {
         // 先全部关掉
