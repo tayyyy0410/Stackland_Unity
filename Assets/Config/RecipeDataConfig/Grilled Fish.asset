@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
+  m_Name: Grilled Fish
+  m_EditorClassIdentifier: 
+  ingredients:
+  - cardData: {fileID: 11400000, guid: cdb0a43403a5765489b602f47df30bd0, type: 2}
+    amount: 1
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 817241ee399928c42bc3df27875feaa8, type: 2}
+    amount: 1
+    consume: 0
+  output: {fileID: 11400000, guid: 616e62eab1aedde4486c95bf4015bcbe, type: 2}
+  useOutputPack: 0
+  outputPack: {fileID: 0}
+  craftTime: 20

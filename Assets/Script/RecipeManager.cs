@@ -282,7 +282,7 @@ public class RecipeManager : MonoBehaviour
 
         // ---------- 采集多次的逻辑 ----------
 
-        // 初始化 Bush 的采集次数
+      
         harvestCard.EnsureHarvestInit();
         
         int maxUses = Mathf.Max(1, harvestCard.data.maxHarvestUses);

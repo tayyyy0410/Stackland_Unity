@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: Fish Pond
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 602c82aae161148458a0e00734436410, type: 2}
+  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
     amount: 2
+    consume: 1
   - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}
     amount: 1
+    consume: 1
   - cardData: {fileID: 11400000, guid: 5aee05d10a74cda42b27bd718c8a8d6f, type: 2}
     amount: 2
+    consume: 1
   output: {fileID: 11400000, guid: 93bf071bed9c14047b98f537348a5b64, type: 2}
+  useOutputPack: 0
+  outputPack: {fileID: 0}
   craftTime: 30
