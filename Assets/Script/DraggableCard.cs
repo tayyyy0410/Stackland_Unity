@@ -15,7 +15,7 @@ public class DraggableCard : MonoBehaviour
     private Card card;
     private Transform dragRoot;
 
-    public float radius = 0.2f; //检测堆叠的范围
+    public float radius = 0.2f; // 检测堆叠的范围
 
     private void Awake()
     {
@@ -26,7 +26,6 @@ public class DraggableCard : MonoBehaviour
 
     private void OnMouseDown()
     {
- 
         if (card == null)
         {
             dragRoot = transform;
@@ -37,21 +36,20 @@ public class DraggableCard : MonoBehaviour
 
             if (isRoot)
             {
-
                 dragRoot = card.stackRoot;
             }
             else
             {
                 // 如果中间这张下面还有牌，就和它下面的牌一起组成一个新stack
-
                 Transform oldRoot = card.stackRoot;
 
                 if (oldRoot != null)
                 {
                     // 当前这张卡在旧stack中的索引
                     int index = transform.GetSiblingIndex();
-                    
-                    System.Collections.Generic.List<Transform> belowCards = new System.Collections.Generic.List<Transform>();
+
+                    System.Collections.Generic.List<Transform> belowCards =
+                        new System.Collections.Generic.List<Transform>();
                     for (int i = index + 1; i < oldRoot.childCount; i++)
                     {
                         belowCards.Add(oldRoot.GetChild(i));
@@ -68,7 +66,7 @@ public class DraggableCard : MonoBehaviour
                         Card c = t.GetComponent<Card>();
                         if (c != null)
                         {
-                            c.stackRoot = transform; 
+                            c.stackRoot = transform;
                         }
                     }
 
@@ -85,7 +83,7 @@ public class DraggableCard : MonoBehaviour
                     // 新的子stack 也排一下
                     card.LayoutStack();
                 }
-                
+
                 dragRoot = card.stackRoot;
             }
         }
@@ -100,8 +98,9 @@ public class DraggableCard : MonoBehaviour
         if (sr != null)
         {
             originalSortingOrder = sr.sortingOrder;
-            
-            bool isSingleCard = (card == null) || (card.stackRoot == transform && transform.childCount == 0);
+
+            bool isSingleCard = (card == null) ||
+                                (card.stackRoot == transform && transform.childCount == 0);
 
             // 每次点击分配一个新的排序区间
             int baseOrder = (++globalSortingOrder) * 10;
@@ -111,7 +110,7 @@ public class DraggableCard : MonoBehaviour
                 sr.sortingOrder = baseOrder;
             }
             else
-            { 
+            {
                 int i = 0;
                 foreach (var s in dragRoot.GetComponentsInChildren<SpriteRenderer>())
                 {
@@ -129,7 +128,8 @@ public class DraggableCard : MonoBehaviour
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = dragRoot.position.z;
 
-        dragRoot.position = mouseWorldPos + offset;   //移动一整个stack
+        // 移动一整个 stack
+        dragRoot.position = mouseWorldPos + offset;
     }
 
     private void OnMouseUp()
@@ -137,13 +137,12 @@ public class DraggableCard : MonoBehaviour
         if (!isDragging) return;
         isDragging = false;
 
-        // 尝试root附近的stack
+        // 尝试和附近的 stack 合并
         TryStackOnOtherCard();
-        
-        // stack结束后，尝试触发recipe
+
+        // stack 结束后，尝试触发 recipe
         if (RecipeManager.Instance != null)
         {
-            // 当前这次拖拽对应的 root
             Transform rootTransform = dragRoot != null ? dragRoot : transform;
             Card rootCard = rootTransform.GetComponent<Card>();
             if (rootCard != null)
@@ -152,9 +151,10 @@ public class DraggableCard : MonoBehaviour
             }
         }
 
+        // 松手时检查是否在 Shop / Sell 区域
         TryBuyPackIfOnShop();
-        
     }
+    
     /// 松手时检查：当前这叠在不在某个 Shop 或 Sell 区域上
     private void TryBuyPackIfOnShop()
     {
@@ -164,55 +164,62 @@ public class DraggableCard : MonoBehaviour
         Transform root = card.stackRoot != null ? card.stackRoot : transform;
         Vector2 pos = root.position;
 
-        // 用 root 的位置做点检测
-        var hits = Physics2D.OverlapPointAll(pos);
+        Card rootCard = root.GetComponent<Card>();
+        if (rootCard == null) return;
 
-        foreach (var hit in hits)
+        // ========== ① 先查所有 PackShopArea（优先买卡包） ==========
+        PackShopArea[] shops = FindObjectsOfType<PackShopArea>();
+        foreach (var shop in shops)
         {
-            // 先看是不是买卡包的区域（注意这里用 InParent，防止脚本挂父物体、Collider 在子物体）
-            var shop = hit.GetComponentInParent<PackShopArea>();
-            if (shop != null)
-            {
-                Card rootCard = root.GetComponent<Card>();
-                if (rootCard != null)
-                {
-                    Debug.Log("[DraggableCard] 在 Shop 区域上松手，尝试买卡包");
-                    shop.TryBuyFromStack(rootCard);
-                }
-                return; // 已经在 shop 上结算了，就不再检查卖卡
-            }
+            if (shop == null) continue;
 
-            // 再看是不是卖卡的区域
-            var sellArea = hit.GetComponentInParent<CardSellArea>();
-            if (sellArea != null)
+            var shopCol = shop.GetComponent<Collider2D>();
+            if (shopCol == null) continue;
+
+            // 用自己的 collider 来判断 root 是否在里面
+            if (shopCol.OverlapPoint(pos))
             {
-                Card rootCard = root.GetComponent<Card>();
-                if (rootCard != null)
-                {
-                    Debug.Log("[DraggableCard] 在 Sell 区域上松手，尝试卖卡");
-                    sellArea.TrySellFromStack(rootCard);
-                }
-                return; // 卖卡成功后就退出
+                Debug.Log("[DraggableCard] 在 Shop 区域上松手，尝试买卡包");
+                shop.TryBuyFromStack(rootCard);
+                return;    // 找到 Shop 就直接结束，不再检查 Sell
             }
         }
+
+        // ========== ② 如果没有 Shop 命中，再查所有 Sell 区域 ==========
+        CardSellArea[] sells = FindObjectsOfType<CardSellArea>();
+        foreach (var sellArea in sells)
+        {
+            if (sellArea == null) continue;
+
+            var sellCol = sellArea.GetComponent<Collider2D>();
+            if (sellCol == null) continue;
+
+            if (sellCol.OverlapPoint(pos))
+            {
+                Debug.Log("[DraggableCard] 在 Sell 区域上松手，尝试卖卡");
+                sellArea.TrySellFromStack(rootCard);
+                return;
+            }
+        }
+
+        // 如果同时不在 Shop / Sell 上，就什么都不做
     }
 
-
-    /// 检测周围有没有其他牌
+    /// 检测周围有没有其他牌，用来自动堆叠
     private void TryStackOnOtherCard()
     {
         if (card == null) return;
         if (dragRoot == null) return;
 
-        radius = 0.2f; 
+        radius = 0.2f;
         var hits = Physics2D.OverlapCircleAll(dragRoot.position, radius);
-        
+
         Card sourceRootCard = dragRoot.GetComponent<Card>();
         if (sourceRootCard == null) return;
 
         foreach (var hit in hits)
         {
-            // 跳过自己这整个stack里的牌
+            // 跳过自己这整个 stack 里的牌
             if (hit.transform == dragRoot || hit.transform.IsChildOf(dragRoot))
                 continue;
 

@@ -151,10 +151,10 @@ MonoBehaviour:
   packData: {fileID: 11400000, guid: b8c0cc1da4d3d324ca473ff4c41a4568, type: 2}
   cardPrefab: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
   slotOffsets:
-  - {x: -0.7, y: 0.7}
-  - {x: -0.7, y: -0.7}
-  - {x: 0.7, y: 0.7}
-  - {x: 0.7, y: -0.7}
+  - {x: -0.6, y: 0.7}
+  - {x: -0.8, y: -0.7}
+  - {x: 0.6, y: 0.7}
+  - {x: 0.8, y: -0.7}
   clickThreshold: 10
   dragStartThreshold: 5
   dragSensitivity: 1
