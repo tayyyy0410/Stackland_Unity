@@ -149,6 +149,7 @@ public class RecipeManager : MonoBehaviour
         // 根据 craftTime决定延时合成
         if (selectedRecipe.craftTime > 0f)
         {
+            //UI：stack开始的时间/craftTime
             StartCoroutine(CraftRecipeWithDelay(selectedRecipe, stackRoot, originalCards));
         }
         else
