@@ -167,7 +167,7 @@ public class DraggableCard : MonoBehaviour
         Card rootCard = root.GetComponent<Card>();
         if (rootCard == null) return;
 
-        // ========== ① 先查所有 PackShopArea（优先买卡包） ==========
+        //先查所有 PackShopArea
         PackShopArea[] shops = FindObjectsByType<PackShopArea>(FindObjectsSortMode.None);
         foreach (var shop in shops)
         {
@@ -185,7 +185,7 @@ public class DraggableCard : MonoBehaviour
             }
         }
 
-        // ========== ② 如果没有 Shop 命中，再查所有 Sell 区域 ==========
+        // 如果没有 Shop 命中，再查所有 Sell 区域
         CardSellArea[] sells = FindObjectsByType<CardSellArea>(FindObjectsSortMode.None);
         foreach (var sellArea in sells)
         {
@@ -202,7 +202,7 @@ public class DraggableCard : MonoBehaviour
             }
         }
 
-        // 如果同时不在 Shop / Sell 上，就什么都不做
+        
     }
 
     /// 检测周围有没有其他牌，用来自动堆叠
