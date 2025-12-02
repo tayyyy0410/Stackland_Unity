@@ -44,7 +44,7 @@ public class CameraControllers : MonoBehaviour
         if (DayManager.Instance != null &&
         DayManager.Instance.CurrentState != DayManager.DayState.Running)
         {
-            // 非 Running 状态（等待喂养 / 动画 / 结算），相机交给 DayAnimationController 控制
+            // 非 Running 状态（等待喂养 / 动画 / 结算）镜头操作被冻结，相机交给 DayAnimationController 控制
             return;
         }
 

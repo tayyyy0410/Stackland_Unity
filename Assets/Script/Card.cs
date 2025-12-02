@@ -1,5 +1,7 @@
 using NUnit.Framework.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections.Generic;
 
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
 
@@ -69,6 +71,8 @@ public class Card : MonoBehaviour
     {
         if (data.cardClass == CardClass.Villager)
         {
+            sr= GetComponent<SpriteRenderer>();
+            sr.sortingOrder = -100;
             currentHunger = data.hunger;
         }
         else currentHunger = -1;    //不是villager没有饥饿值
@@ -148,6 +152,8 @@ public class Card : MonoBehaviour
         }
     }
 
+
+
     private void OnMouseEnter()
     {
         infoBar.ShowInfoBar(data);
@@ -156,6 +162,90 @@ public class Card : MonoBehaviour
     private void OnMouseExit()
     {
         infoBar.HideInfoBar();
+    }
+
+
+    // ====================== Feeding Helpers =====================
+    public bool IsTopOfStack()
+    {
+        Transform parentRoot = stackRoot != null ? stackRoot : transform;
+        if (parentRoot.childCount == 0)
+        {
+            return transform == parentRoot;
+        }
+
+        if (transform == parentRoot)
+        {
+            return false;
+        }
+
+        return transform.parent == parentRoot && 
+               transform.GetSiblingIndex() == parentRoot.childCount - 1;
+    }
+
+
+    /// <summary>
+    /// 从 stack 中抽出一张卡牌
+    /// </summary>
+    public void TakeOutOfStack()
+    {
+        Transform root = stackRoot != null ? stackRoot : transform;
+
+        // 自己是stackRoot
+        if (transform == root && root.childCount > 0)
+        {
+            Transform newRoot = root.GetChild(0);
+            List<Transform> toMove = new List<Transform>();
+
+            for (int i = 1; i < root.childCount; i++)
+            {
+                toMove.Add(root.GetChild(i));
+            }
+
+            foreach (Transform child in toMove)
+            {
+                child.SetParent(newRoot);
+            }
+
+            newRoot.SetParent(null);
+            Card newRootCard = newRoot.GetComponent<Card>();
+
+            if (newRootCard != null)
+            {
+                newRootCard.stackRoot = newRoot;
+
+                foreach (Transform t in newRoot)
+                {
+                    Card c = t.GetComponent<Card>();
+
+                    if (c != null)
+                    {
+                        c.stackRoot = newRoot;
+                    }
+                }
+
+                newRootCard.LayoutStack();
+            }
+
+            stackRoot = transform;
+            transform.SetParent(null);
+            
+        }
+
+        /*// 自己是 stack 中间的卡牌
+        else if (transform != root)
+        {
+            Transform oldRoot = root;
+
+            transform.SetParent(null);
+            stackRoot = transform;
+
+            Card oldRootCard = root.GetComponent<Card>();
+            if (oldRootCard != null)
+            {
+                oldRootCard.LayoutStack();
+            }
+        }*/
     }
 
 }

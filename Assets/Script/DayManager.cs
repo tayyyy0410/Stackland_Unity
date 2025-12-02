@@ -17,15 +17,15 @@ public class DayManager : MonoBehaviour
 
     public enum DayState
     {
-        Running,        //正常玩
-        WaitingFeed,        //一天结束，等待玩家按 Feed（全局冻结）
-        FeedingAnimation,       //进食动画播放中（摄像机依次聚焦村民 + 食物卡飞来飞去）
-        FeedingResultAllFull,       //动画结束，本轮所有人都吃饱的结算 UI
-        FeedingResultHungry,        //动画结束，有人没吃饱的结算 UI（显示“啊哦”）
-        StarvingAnimation,      //点击“啊哦”后，没吃饱的人一个个变尸体的动画
-        WaitingNextDay,     //还有活人，等待点击“开始下一天”
-        WaitingEndGame,     //死亡动画播完，死光了，等待点击“结束游戏”
-        GameOver        //真正的GameOver结算页面
+        Running,        // 正常玩
+        WaitingFeed,        // 一天结束，等待玩家按 Feed（全局冻结）
+        FeedingAnimation,       // 进食动画播放中（摄像机依次聚焦村民 + 食物卡飞来飞去）
+        FeedingResultAllFull,       // 动画结束，本轮所有人都吃饱的结算 UI
+        FeedingResultHungry,        // 动画结束，有人没吃饱的结算 UI（显示“啊哦”）
+        StarvingAnimation,      // 点击“啊哦”后，没吃饱的人一个个变尸体的动画
+        WaitingNextDay,     // 还有活人，等待点击“开始下一天”
+        WaitingEndGame,     // 死亡动画播完，死光了，等待点击“结束游戏”
+        GameOver        // 真正的GameOver结算页面
     }
 
     [Header("Moon Settings")]
@@ -35,7 +35,7 @@ public class DayManager : MonoBehaviour
     [Tooltip("开始时是第几个 Moon（一般是 1）")]
     public int startMoon = 1;
 
-    [Header("Day Progress UI")]     //day progress的读条
+    [Header("Day Progress UI")]     // day progress的读条
     [Tooltip("显示 Moon 进度的 Image，Type 要改成 Filled, Horizontal")]
     public Image moonProgressFill;
 
@@ -50,12 +50,12 @@ public class DayManager : MonoBehaviour
     public System.Action<DayState> OnStateChanged;
 
     private int currentMoon;
-    private float timer;    //每天的剩余时间
+    private float timer;    // 每天的时间
 
     public int CurrentMoon => currentMoon;
     public float NormalizedTime => Mathf.Clamp01(timer / Mathf.Max(0.01f, moonLength));
 
-    //结算 food 和 villager
+    // 结算 food 和 villager
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
     private readonly List<Card> lastFoodCards = new List<Card>();
@@ -84,7 +84,7 @@ public class DayManager : MonoBehaviour
         currentMoon = Mathf.Max(1, startMoon);
         timer = 0f;
 
-        Time.timeScale = 1f;    //时间流逝速度
+        Time.timeScale = 1f;    // 时间流逝速度
         SetState(DayState.Running);
 
         UpdateUI();
@@ -98,7 +98,7 @@ public class DayManager : MonoBehaviour
 
         timer += Time.deltaTime;
 
-        if (timer >= moonLength)    //一天倒计时结束
+        if (timer >= moonLength)    // 一天倒计时结束
         {
             timer = moonLength;
             UpdateUI();
@@ -110,7 +110,10 @@ public class DayManager : MonoBehaviour
         }
     }
 
-    private void UpdateUI()     //更新day progress和天数UI
+    /// <summary>
+    /// 更新day progress和天数UI
+    /// </summary>
+    private void UpdateUI()
     {
         if (moonProgressFill != null)
         {
@@ -122,6 +125,9 @@ public class DayManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 更新DayState并广播newState，由PanelManager接收后调出对应Panel
+    /// </summary>
     private void SetState(DayState newState)
     {
         if (CurrentState == newState) return;
@@ -139,7 +145,7 @@ public class DayManager : MonoBehaviour
     {
         if (CurrentState != DayState.Running) return;
 
-        Time.timeScale = 0f;       //一天结束之后卡牌操作被冻结
+        Time.timeScale = 0f;       // 一天结束之后卡牌coroutine被冻结
         SetState(DayState.WaitingFeed);
     }
 
@@ -151,8 +157,8 @@ public class DayManager : MonoBehaviour
         if (CurrentState != DayState.WaitingFeed) return;
         InitializeFeedingRuntimeValues();
         SetState(DayState.FeedingAnimation);
-        //此时 FeedingSequenceController 控制食物飞来飞去的动画
-        //动画结束后调用 DayManager.Instance.OnFeedingAnimationFinished()
+        // 此时 FeedingSequenceController 控制食物飞来飞去的动画
+        // 动画结束后调用 DayManager.Instance.OnFeedingAnimationFinished()
     }
 
 
@@ -188,7 +194,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 由 FeedingSequenceController 调用
+    /// 由 FeedingSequenceController 结束喂食动画后调用
+    /// 结算有没有人活着，进入对应 UI Panel
     /// </summary>
     public void OnFeedingAnimationFinished()
     {
@@ -241,7 +248,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultAllFullPanel 上按“所有人都吃饱了”
+    /// UI：在 FeedingResultAllFullPanel 上按 “所有人都吃饱了”
     /// </summary>
     public void ConfirmAllFedResult()
     {
@@ -250,7 +257,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultHungryPanel 上按 “啊哦”。
+    /// UI：在 FeedingResultHungryPanel 上按 “啊哦”
     /// </summary>
     public void ConfirmHungryResult()
     {
@@ -262,7 +269,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 由 FeedAnimationController 在播完变尸体动画后调用。
+    /// 由 FeedAnimationController 在播完变尸体动画后调用
+    /// 结算还有没有人活着。进入对应Panel
     /// </summary>
     public void OnStarvingAnimationFinished()
     {
@@ -289,7 +297,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 在WaitingNextDayPanel 按“开始下一天
+    /// 在WaitingNextDayPanel 按 “开始下一天“
     /// </summary>
     public void RequestNextDay()
     {
@@ -298,13 +306,14 @@ public class DayManager : MonoBehaviour
         currentMoon++;
         timer = 0f;
 
-        Time.timeScale = 1f;    //恢复冻结状态
+        Time.timeScale = 1f;    // 恢复时间流逝，coroutine恢复
+
         SetState(DayState.Running);
         UpdateUI();
     }
 
     /// <summary>
-    /// UI：在 WaitingEndGame 面板按“结束游戏”。
+    /// UI：在 WaitingEndGame 面板按 “结束游戏”
     /// </summary>
     public void RequestEndGame()
     {
@@ -317,113 +326,6 @@ public class DayManager : MonoBehaviour
         Time.timeScale = 0f;
         SetState(DayState.GameOver);
     }
-
-
-
-    //不用管这个了
-
-    // ==================== Feeding Logic =======================
-    /// <summary>
-    /// 这里先不搞动画，纯逻辑结算
-    /// 不 destroy 卡牌，留给其他 Controller 处理
-    /// </summary>
-    /*private void ComputeFeedingLogic()
-    {
-        lastVillagers.Clear();
-        lastHungryVillagers.Clear();
-        lastFoodCards.Clear();
-        lastAllFed = false;
-
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
-
-        List<Card> villagers = new List<Card>();
-        List<Card> foods = new List<Card>();
-
-        foreach (var c in allCards)
-        {
-            if (c == null || c.data == null) continue;
-
-            if (c.data.cardClass == CardClass.Villager)
-            {
-                int baseHunger = Mathf.Max(0, c.data.hunger);
-                c.currentHunger = baseHunger;
-                villagers.Add(c);
-            }
-            else if (c.data.cardClass == CardClass.Food && c.data.hasSaturation && c.data.saturation > 0)
-            {
-                if (c.currentSaturation <= 0 || c.currentSaturation > c.data.saturation)
-                {
-                    c.currentSaturation = c.data.saturation;
-                }
-
-                if (c.currentSaturation > 0)
-                {
-                    foods.Add(c);
-                }
-            }
-        }
-
-        //备份
-        lastVillagers.AddRange(villagers);
-        lastFoodCards.AddRange(foods);
-
-        if (villagers.Count == 0)
-        {
-            lastAllFed = false;
-            lastHungryVillagers.Clear();
-            return;
-        }
-
-        // 用队列来分配食物（不 Destroy，只改 currentSaturation）
-        Queue<Card> foodQueue = new Queue<Card>(foods);
-
-        foreach (var v in villagers)
-        {
-            while (v.currentHunger > 0 && foodQueue.Count > 0)
-            {
-                Card food = foodQueue.Peek();
-
-                if (food == null || food.data == null)
-                {
-                    foodQueue.Dequeue();
-                    continue;
-                }
-
-                if (food.currentSaturation <= 0)
-                {
-                    foodQueue.Dequeue();
-                    continue;
-                }
-
-                int eat = Mathf.Min(v.currentHunger, food.currentSaturation);
-                v.currentHunger -= eat;
-                food.currentSaturation -= eat;
-
-                // 食物被吃光，但此处不 Destroy，只留给动画阶段处理
-                if (food.currentSaturation <= 0)
-                {
-                    foodQueue.Dequeue();
-                }
-            }
-
-            if (foodQueue.Count == 0)
-            {
-                // 没食物了，后面的都吃不到
-                break;
-            }
-        }
-
-        // 统计谁没吃饱
-        foreach (var v in villagers)
-        {
-            if (v.currentHunger > 0)
-                lastHungryVillagers.Add(v);
-        }
-
-        lastAllFed = lastHungryVillagers.Count == 0;
-    }
-    */
-
 
 
     // ============================ animation helpers ========================
