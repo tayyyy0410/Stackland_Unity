@@ -225,7 +225,7 @@
         // 为这个 stackRoot  获取一个进度条
         CraftBar bar = GetOrCreateCraftBar(stackRoot);
 
-        // 先看看这次参与制作的卡里有没有“可采集”的结构（
+        // 先看看这次参与制作的卡里有没有“可采集”的结构
         Card harvestCard = null;
         foreach (var c in originalCards)
         {
