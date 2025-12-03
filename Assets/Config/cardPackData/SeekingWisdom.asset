@@ -19,27 +19,27 @@ MonoBehaviour:
   minCards: 4
   maxCards: 4
   entries:
-  - cardData: {fileID: 11400000, guid: afee59ef48ebcb64b836c86ab852d6a8, type: 2}
-    weight: 13
   - cardData: {fileID: 11400000, guid: be565cc79f20e55499f438b358e94be5, type: 2}
-    weight: 13
+    weight: 2
+  - cardData: {fileID: 11400000, guid: afee59ef48ebcb64b836c86ab852d6a8, type: 2}
+    weight: 4
   - cardData: {fileID: 11400000, guid: 08cde1d0384325e41a2c4890fc25f77b, type: 2}
-    weight: 13
+    weight: 4
   - cardData: {fileID: 11400000, guid: 602c82aae161148458a0e00734436410, type: 2}
-    weight: 7
-  - cardData: {fileID: 11400000, guid: a6ac1b77fbd55994eb3b45dd7de9c594, type: 2}
-    weight: 10
+    weight: 2
   - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}
-    weight: 19
+    weight: 5
   - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
-    weight: 19
+    weight: 5
   - cardData: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
-    weight: 13
+    weight: 2
+  - cardData: {fileID: 11400000, guid: 4ab51be9dfe2dae4f8959fb5b75bd3a7, type: 2}
+    weight: 2
   - cardData: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
-    weight: 13
-  - cardData: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
-    weight: 13
+    weight: 2
   - cardData: {fileID: 11400000, guid: 63dd630b081b74d4d85d28fb39061b94, type: 2}
-    weight: 3
+    weight: 1
+  - cardData: {fileID: 11400000, guid: a6ac1b77fbd55994eb3b45dd7de9c594, type: 2}
+    weight: 1
   - cardData: {fileID: 11400000, guid: efa29f835883ed54d979c2c8ca233171, type: 2}
-    weight: 3
+    weight: 1

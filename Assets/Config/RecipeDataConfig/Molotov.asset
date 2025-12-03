@@ -15,11 +15,14 @@ MonoBehaviour:
   ingredients:
   - cardData: {fileID: 11400000, guid: 12c70012c6c39a44c8c711b6439b349e, type: 2}
     amount: 1
+    consume: 1
   - cardData: {fileID: 11400000, guid: 50e9313462d16b34991a6247a7fc0dc9, type: 2}
     amount: 1
+    consume: 1
   - cardData: {fileID: 11400000, guid: 0facefd2c1f7c3a4babc81a36488d779, type: 2}
     amount: 1
+    consume: 1
   output: {fileID: 11400000, guid: ac2ea662b73bc074bbc5caf0da060964, type: 2}
-  hasMultiple: 0
-  ammount: 0
-  craftTime: 30
+  useOutputPack: 0
+  outputPack: {fileID: 0}
+  craftTime: 20
