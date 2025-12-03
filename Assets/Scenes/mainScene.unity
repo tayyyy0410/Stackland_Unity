@@ -2689,7 +2689,6 @@ GameObject:
   - component: {fileID: 744041082}
   - component: {fileID: 744041084}
   - component: {fileID: 744041083}
-  - component: {fileID: 744041085}
   m_Layer: 5
   m_Name: PauseText
   m_TagString: Untagged
@@ -2754,28 +2753,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 744041081}
   m_CullTransparentMesh: 1
---- !u!95 &744041085
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 744041081}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4a19b9a8f375faf4cb001e3cce641a67, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &744055683
 GameObject:
   m_ObjectHideFlags: 0
