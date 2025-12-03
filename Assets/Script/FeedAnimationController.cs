@@ -98,33 +98,14 @@ public class FeedAnimationController : MonoBehaviour
         var dm = DayManager.Instance;
 
         // 从场景里重新扫一遍当前的 villager / food
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
-        List<Card> villagers = new List<Card>();
-        List<Card> foods = new List<Card>();
 
-        foreach (var c in allCards)
+        if (CardManager.Instance == null)
         {
-            if (c == null || c.data == null) continue;
-
-            if (c.data.cardClass == CardClass.Villager)
-            {
-                villagers.Add(c);
-            }
-            else if (c.data.cardClass == CardClass.Food &&
-                     c.data.hasSaturation &&
-                     c.data.saturation > 0 &&
-                     c.currentSaturation > 0)
-            {
-                foods.Add(c);
-            }
+            yield break;
         }
+        var cm = CardManager.Instance;
 
-        if (foods.Count > 0)
-        {
-            sortFoodQueue(foods);
-        }
-
-        if (villagers.Count == 0)
+        if (cm.VillagerCards.Count == 0)
         {
             // 没有村民，直接结束
             dm.OnFeedingAnimationFinished();
@@ -143,9 +124,9 @@ public class FeedAnimationController : MonoBehaviour
         yield return new WaitForSecondsRealtime(delayBeforeFeeding);
 
         // 对每个 villager 依次聚焦 + 食物飞过去
-        foreach (Card villager in villagers)
+        foreach (Card villager in cm.VillagerCards)
         {
-            if (foods.Count == 0) break;
+            if (cm.FoodCards.Count == 0) break;
             if (villager == null) continue;
 
             if (villager.currentHunger <= 0)
@@ -160,11 +141,11 @@ public class FeedAnimationController : MonoBehaviour
             {
                 // 找第一个还有饱腹值的食物
                 Card food = null;
-                for (int i = 0; i < foods.Count; i++)
+                for (int i = 0; i < cm.FoodCards.Count; i++)
                 {
-                    if (foods[i] != null && foods[i].currentSaturation > 0)
+                    if (cm.FoodCards[i] != null && cm.FoodCards[i].currentSaturation > 0)
                     {
-                        food = foods[i];
+                        food = cm.FoodCards[i];
                         break;
                     }
                 }
@@ -182,24 +163,8 @@ public class FeedAnimationController : MonoBehaviour
                 // 播放一口吃饭的动画，并在动画中扣 currentSaturation 和 currentHunger
                 yield return AnimateFoodBite(food, villager, eatAmount);
 
-                // 如果这个食物被吃光了，从列表中移除
-                if (food == null || food.currentSaturation <= 0 || food.gameObject == null)
-                {
-                    foods.Remove(food);
-                }
-
                 // 检查是否还有任何食物
-                bool anyFoodLeft = false;
-                for (int i = 0; i < foods.Count; i++)
-                {
-                    if (foods[i] != null && foods[i].currentSaturation > 0)
-                    {
-                        anyFoodLeft = true;
-                        sortFoodQueue(foods);
-                        break;
-                    }
-                }
-                if (!anyFoodLeft)
+                if (cm.FoodCards.Count == 0 || cm.TotalSaturation == 0)
                 {
                     break;
                 }
@@ -216,11 +181,8 @@ public class FeedAnimationController : MonoBehaviour
         yield return MoveCameraTo(originalCameraPos,
             (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
-        foods.Clear();
-
         // 重新layout场景中所有卡牌
-        Card[] all = FindObjectsByType<Card>(FindObjectsSortMode.None);
-        foreach (Card c in all)
+        foreach (Card c in cm.AllCards)
         {
             if (c.transform == c.stackRoot)
             {
@@ -239,24 +201,6 @@ public class FeedAnimationController : MonoBehaviour
         dm.OnFeedingAnimationFinished();
 
         isPlaying = false;
-    }
-
-
-    /// <summary>
-    /// 排列食物，把没有 child stack 的食物排到最前
-    /// 防止 stackRoot 带着一整个 stack 飞了，，
-    /// </summary>
-    private void sortFoodQueue(List<Card> foods)
-    {
-        for (int i = 0; i < foods.Count; i++)
-        {
-            if (foods[i].IsTopOfStack())
-            {
-                var temp = foods[i];
-                foods.RemoveAt(i);
-                foods.Insert(0, temp);
-            }
-        }
     }
 
 
@@ -302,7 +246,7 @@ public class FeedAnimationController : MonoBehaviour
 
         // 飞到villager脸上后改变 food的饱腹值 和 villager的饥饿值
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
-        food.currentSaturation = Mathf.Max(0, food.currentSaturation - eatAmount);
+        food.ChangeSaturation(eatAmount);
 
         // 停留一下
         yield return new WaitForSecondsRealtime(foodHoldDuration);

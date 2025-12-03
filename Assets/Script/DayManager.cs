@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -70,12 +69,10 @@ public class DayManager : MonoBehaviour
     // 结算 food 和 villager
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
-    private readonly List<Card> lastFoodCards = new List<Card>();
     private bool lastAllFed = false;
 
     public IReadOnlyList<Card> LastVillagers => lastVillagers;
-    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;
-    public IReadOnlyList<Card> LastFoodCards => lastFoodCards;
+    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: 调用多少个村民挨饿 LastHungryVillager.Count
 
 
     private void Awake()
@@ -121,12 +118,12 @@ public class DayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             HandleFastForawrd();
-            Debug.Log("Game Speed: " + gameSpeed + "x");
+            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             HandlePause();
-            Debug.Log("Game Speed: " + gameSpeed + "x");
+            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
 
 
@@ -200,9 +197,10 @@ public class DayManager : MonoBehaviour
     /// </summary>
     private void InitializeFeedingRuntimeValues()
     {
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
 
-        foreach (var c in allCards)
+        foreach (var c in cm.AllCards)
         {
             if (c == null || c.data == null) continue;
 
@@ -232,15 +230,14 @@ public class DayManager : MonoBehaviour
     public void OnFeedingAnimationFinished()
     {
         if (CurrentState != DayState.FeedingAnimation) return;
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
 
         lastVillagers.Clear();
         lastHungryVillagers.Clear();
-        lastFoodCards.Clear();
         lastAllFed = false;
 
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
-
-        foreach (var c in allCards)
+        foreach (var c in cm.AllCards)
         {
             if (c == null || c.data == null) continue;
 
@@ -252,13 +249,6 @@ public class DayManager : MonoBehaviour
                     lastHungryVillagers.Add(c);
                 }
             }
-            else if (c.data.cardClass == CardClass.Food &&
-                c.data.hasSaturation &&
-                c.data.saturation > 0 &&
-                c.currentSaturation > 0)
-            {
-                lastFoodCards.Add(c);
-            }
         }
 
         if (lastVillagers.Count == 0)
@@ -268,6 +258,14 @@ public class DayManager : MonoBehaviour
         }
 
         lastAllFed = lastHungryVillagers.Count == 0;
+
+        foreach (var v in lastVillagers)
+        {
+            v.currentHunger = v.data.hunger;
+        }
+
+        cm.RecalculateTotals();
+        Debug.Log($"[Daymanager]HungryVillagers={lastHungryVillagers.Count}");
 
         if (lastAllFed)
         {
@@ -307,18 +305,11 @@ public class DayManager : MonoBehaviour
     public void OnStarvingAnimationFinished()
     {
         if (CurrentState != DayState.StarvingAnimation) return;
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
+        Debug.Log($"[CardManager]Villager={cm.VillagerCards.Count}");
 
-        bool anyLiving = false;
-        foreach (var c in FindObjectsByType<Card>(FindObjectsSortMode.None))
-        {
-            if (c != null && c.data != null && c.data.cardClass == CardClass.Villager)
-            {
-                anyLiving = true;
-                break;
-            }
-        }
-
-        if (anyLiving)
+        if (cm.VillagerCards.Count > 0)
         {
             SetState(DayState.WaitingNextDay);
         }
@@ -378,6 +369,7 @@ public class DayManager : MonoBehaviour
     public void KillVillager(Card villager)
     {
         if (villager == null) return;
+        villager.TakeOutOfStack();
 
         if (corpseCardData != null)
         {

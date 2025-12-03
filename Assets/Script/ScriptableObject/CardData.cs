@@ -11,6 +11,7 @@ public enum CardClass
     Resource,
     Structure,
     Enemy,
+    Animals,
     Villager,
     Idea,
     Equipment,
@@ -36,24 +37,6 @@ public class CardData : ScriptableObject
     [Tooltip("卡牌的价值")]
     public int value;
 
-    [Tooltip("是否有生命值")]
-    public bool hasHP;
-
-    [Tooltip("最大生命值")]
-    public int maxHP;
-
-    [Tooltip("是否有伤害")]
-    public bool hasAttack;
-
-    [Tooltip("伤害值")]
-    public int attack;
-
-    [Tooltip("是否有HitChance")]
-    public bool hasHitChance;
-
-    [Tooltip("HitChance值")]
-    public float HitChance;
-
     [Tooltip("是否有饱腹值")]
     public bool hasSaturation;
     
@@ -65,9 +48,44 @@ public class CardData : ScriptableObject
 
     [Tooltip("饥饿值")]
     public int hunger;
+    
+   
+    /// <summary>
+    /// ////战斗相关
+    /// </summary>
+    [Tooltip("是否有生命值")]
+    public bool hasHP;
 
-    /// 
+    [Tooltip("最大生命值")]
+    public int baseHP;
 
+    [Tooltip("是否有伤害")]
+    public bool hasAttack;
+
+    [Tooltip("伤害值")]
+    public int attack;
+
+    [Tooltip("是否有HitChance")]
+    public bool hasHitChance;
+
+    [Tooltip("HitChance值")]
+    public int hitChance;
+    
+    [Header("Battle Loot")]
+    [Tooltip("是否有战斗死亡掉落")]
+    public bool hasDeathLoot = false;
+    
+    
+    [Tooltip("死亡时使用的掉落池（PackData）")]
+    public PackData deathLootPack;
+
+    [Tooltip("每次死亡至少掉几张卡")]
+    public int minDeathLoot = 1;
+
+    [Tooltip("每次死亡最多掉几张卡")]
+    public int maxDeathLoot = 1;
+
+    //
     [Header("weapons")]
     [Tooltip("是否增加伤害")]
     public bool hasDamage;
