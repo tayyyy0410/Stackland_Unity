@@ -26,6 +26,8 @@ public class DraggableCard : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!CanInteract()) return;
+
         if (card == null)
         {
             dragRoot = transform;
@@ -123,6 +125,7 @@ public class DraggableCard : MonoBehaviour
 
     private void OnMouseDrag()
     {
+        if (!CanInteract()) return;
         if (!isDragging) return;
 
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -134,6 +137,7 @@ public class DraggableCard : MonoBehaviour
 
     private void OnMouseUp()
     {
+        if (!CanInteract()) return;
         if (!isDragging) return;
         isDragging = false;
 
@@ -206,7 +210,7 @@ public class DraggableCard : MonoBehaviour
     }
 
     /// 检测周围有没有其他牌，用来自动堆叠
-    private void TryStackOnOtherCard()
+    public void TryStackOnOtherCard()
     {
         if (card == null) return;
         if (dragRoot == null) return;
@@ -231,6 +235,20 @@ public class DraggableCard : MonoBehaviour
             // 把这个子stack整叠的 root 叠到对方那一个stack上
             sourceRootCard.JoinStackOf(otherCard);
             break;
+        }
+    }
+
+
+    // 在结算阶段锁死卡牌拖拽
+    private bool CanInteract()
+    {
+        if (DayManager.Instance == null)
+        {
+            return false;
+        }
+        else
+        {
+            return DayManager.Instance.CurrentState == DayManager.DayState.Running;
         }
     }
 }

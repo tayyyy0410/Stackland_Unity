@@ -46,6 +46,14 @@ public class DayManager : MonoBehaviour
     [Tooltip("Villager 饿死之后变成的尸体卡（可以为空，为空则直接 Destroy）")]
     public CardData corpseCardData;
 
+    [Header("Time Scale")]
+    public float gameSpeed = 1f;
+    public bool dayPaused = false;
+    // 这里需要一个ui，就是读条上面显示的标识
+    // 正常速度 (gameSpeed == 1) 的时候是一个小三角，快进 (gameSpeed == 2) 是一个快进标识
+    // 暂停 (dayPaused）有一个灰色蒙版
+    // !但是暂停的时候不要切换 Panel 或者 DayState，代码还是写在 DayState.Running 下的
+
     public DayState CurrentState { get; private set; } = DayState.Running;
     public System.Action<DayState> OnStateChanged;
 
@@ -84,7 +92,8 @@ public class DayManager : MonoBehaviour
         currentMoon = Mathf.Max(1, startMoon);
         timer = 0f;
 
-        Time.timeScale = 1f;    // 时间流逝速度
+        gameSpeed = 1f;
+        dayPaused = false;
         SetState(DayState.Running);
 
         UpdateUI();
@@ -96,7 +105,20 @@ public class DayManager : MonoBehaviour
         if (CurrentState != DayState.Running) return;
         if (moonLength <= 0f) return;
 
-        timer += Time.deltaTime;
+        if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
+
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            HandleFastForawrd();
+            Debug.Log("Game Speed: " + gameSpeed + "x");
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            HandlePause();
+            Debug.Log("Game Speed: " + gameSpeed + "x");
+        }
+
 
         if (timer >= moonLength)    // 一天倒计时结束
         {
@@ -145,7 +167,7 @@ public class DayManager : MonoBehaviour
     {
         if (CurrentState != DayState.Running) return;
 
-        Time.timeScale = 0f;       // 一天结束之后卡牌coroutine被冻结
+        dayPaused = true;       // 一天结束之后卡牌coroutine被冻结
         SetState(DayState.WaitingFeed);
     }
 
@@ -306,7 +328,8 @@ public class DayManager : MonoBehaviour
         currentMoon++;
         timer = 0f;
 
-        Time.timeScale = 1f;    // 恢复时间流逝，coroutine恢复
+        dayPaused = false;    // 恢复时间流逝，coroutine恢复
+        gameSpeed = 1f;
 
         SetState(DayState.Running);
         UpdateUI();
@@ -323,12 +346,12 @@ public class DayManager : MonoBehaviour
 
     private void EnterGameOver()
     {
-        Time.timeScale = 0f;
+        dayPaused = true;
         SetState(DayState.GameOver);
     }
 
 
-    // ============================ animation helpers ========================
+    // ============================ Animation Helpers ========================
     /// <summary>
     /// 视觉上要把食物“吃掉”时，调用函数destroy
     /// </summary>
@@ -361,4 +384,23 @@ public class DayManager : MonoBehaviour
         }
     }
 
+
+    // ========================= Time Scale Control ========================
+    private void HandleFastForawrd()
+    {
+        if (dayPaused)
+        {
+            gameSpeed = 1f;
+            dayPaused = false;
+        }
+        else
+        {
+            gameSpeed = gameSpeed == 1 ? 2f : 1f;
+        }
+    }
+
+    private void HandlePause()
+    {
+        dayPaused = dayPaused ? false : true;
+    }
 }

@@ -236,6 +236,7 @@
             }
         }
 
+
         // 一般配方
         if (harvestCard == null || recipe.craftTime <= 0f)
         {
@@ -244,6 +245,28 @@
 
             while (timer < recipe.craftTime)
             {
+                // dayManager 控制合成暂停
+                while (DayManager.Instance.dayPaused)
+                {
+                    // 确保即使在暂停时停止合成也能立刻移除 craftBar
+                    if (stackRoot == null || stackRoot.gameObject == null)
+                    {
+                        if (bar != null) RemoveCraftBar(stackRoot);
+                        craftingStacks.Remove(stackRoot);
+                        yield break;
+                    }
+                    var _currentCards = stackRoot.GetComponentsInChildren<Card>();
+                    if (_currentCards.Length != originalCount)
+                    {
+                        if (bar != null) RemoveCraftBar(stackRoot);
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次合成。");
+                        yield break;
+                    }
+
+                    yield return null;
+                }
+
                 // 如果 stack 在过程中被销毁，直接中止
                 if (stackRoot == null || stackRoot.gameObject == null)
                 {
@@ -288,7 +311,7 @@
                     bar.SetProgress(timer / recipe.craftTime);
                 }
 
-                timer += Time.deltaTime;
+                timer += Time.deltaTime * DayManager.Instance.gameSpeed;
                 yield return null;
             }
 
@@ -328,6 +351,29 @@
             // 每一“口”的计时循环
             while (timer < perUseTime)
             {
+                // dayManager 控制合成暂停
+                while (DayManager.Instance.dayPaused)
+                {
+                    // 确保即使在暂停时停止合成也能立刻移除 craftBar
+                    if (stackRoot == null || stackRoot.gameObject == null)
+                    {
+                        if (bar != null) RemoveCraftBar(stackRoot);
+                        craftingStacks.Remove(stackRoot);
+                        yield break;
+                    }
+                    var _currentCards = stackRoot.GetComponentsInChildren<Card>();
+                    if (_currentCards.Length != originalTotalCount2)
+                    {
+                        if (bar != null) RemoveCraftBar(stackRoot);
+                        craftingStacks.Remove(stackRoot);
+                        Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次采集循环。");
+                        yield break;
+                    }
+
+                    yield return null;
+
+                }
+
                 if (stackRoot == null || stackRoot.gameObject == null)
                 {
                     if (bar != null) RemoveCraftBar(stackRoot);
@@ -369,7 +415,7 @@
                     bar.SetProgress(timer / perUseTime);
                 }
 
-                timer += Time.deltaTime;
+                timer += Time.deltaTime * DayManager.Instance.gameSpeed;
                 yield return null;
             }
 

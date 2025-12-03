@@ -21,6 +21,7 @@ public class Card : MonoBehaviour
     [Header("Feeding Runtime")]
     public int currentSaturation = -1;  //food剩余的饱腹值，卡牌ui显示这个
     public int currentHunger = 0;   //villager的饥饿值
+    public bool HasMovedDuringFeed { get; set; } = false;    //food是否在feeding过程中被抓取过
 
     [Header("UI Display")]
     private InfoBarIndep infoBar;
@@ -88,6 +89,7 @@ public class Card : MonoBehaviour
         }
         
         harvestUsesLeft = -1;
+        HasMovedDuringFeed = false;
         EnsureHarvestInit();
         FoodInit();
         HungerInit();

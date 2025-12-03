@@ -121,7 +121,7 @@ public class FeedAnimationController : MonoBehaviour
 
         if (foods.Count > 0)
         {
-            //sortFoodQueue(foods);
+            sortFoodQueue(foods);
         }
 
         if (villagers.Count == 0)
@@ -195,7 +195,7 @@ public class FeedAnimationController : MonoBehaviour
                     if (foods[i] != null && foods[i].currentSaturation > 0)
                     {
                         anyFoodLeft = true;
-                        //sortFoodQueue(foods);
+                        sortFoodQueue(foods);
                         break;
                     }
                 }
@@ -225,6 +225,12 @@ public class FeedAnimationController : MonoBehaviour
             if (c.transform == c.stackRoot)
             {
                 c.LayoutStack();
+
+                if (!c.HasMovedDuringFeed)
+                {
+                    var dc = c.GetComponent<DraggableCard>();
+                    dc.TryStackOnOtherCard();
+                }
             }
         }
 
@@ -274,6 +280,8 @@ public class FeedAnimationController : MonoBehaviour
 
         int temp = foodSR.sortingOrder;
         foodSR.sortingOrder = villagerSO + 1;
+
+        food.HasMovedDuringFeed = true;
 
         // ·É¹ýÈ¥
         while (t < foodMoveDuration)
@@ -331,7 +339,7 @@ public class FeedAnimationController : MonoBehaviour
     }
 
 
-    // ================== Starving Aniation ==================
+    // ================== Starving Animation ==================
 
     private IEnumerator PlayStarvingSequence()
     {
