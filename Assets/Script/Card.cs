@@ -26,6 +26,9 @@ public class Card : MonoBehaviour
     [Header("UI Display")]
     private InfoBarIndep infoBar;
 
+    private bool hasRegisteredToManager = false;
+
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -93,6 +96,7 @@ public class Card : MonoBehaviour
         EnsureHarvestInit();
         FoodInit();
         HungerInit();
+        TryRegisterToManager();
     }
     
 
@@ -233,21 +237,43 @@ public class Card : MonoBehaviour
             transform.SetParent(null);
             
         }
+    }
 
-        /*// 自己是 stack 中间的卡牌
-        else if (transform != root)
+    // =========================== Card Manager Helpers ==========================
+
+    private void OnEnable()
+    {
+        TryRegisterToManager();
+    }
+
+    private void OnDisable()
+    {
+        if (CardManager.Instance != null && hasRegisteredToManager)
         {
-            Transform oldRoot = root;
+            CardManager.Instance.UnregisterCard(this);
+        }
+    }
 
-            transform.SetParent(null);
-            stackRoot = transform;
+    public void ChangeSaturation(int eaten)
+    {
+        int old = currentSaturation;
+        int now = old - eaten;
+        currentSaturation = now;
 
-            Card oldRootCard = root.GetComponent<Card>();
-            if (oldRootCard != null)
-            {
-                oldRootCard.LayoutStack();
-            }
-        }*/
+        if (CardManager.Instance != null && data != null && data.cardClass == CardClass.Food)
+        {
+            CardManager.Instance.ReduceSaturation(eaten);
+        }
+    }
+
+    private void TryRegisterToManager()
+    {
+        if (hasRegisteredToManager) return;
+        if (CardManager.Instance == null) return;
+        if (data == null) return;   // 没 data 先别注册
+
+        CardManager.Instance.RegisterCard(this);
+        hasRegisteredToManager = true;
     }
 
 }

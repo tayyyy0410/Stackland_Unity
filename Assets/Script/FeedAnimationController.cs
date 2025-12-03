@@ -119,11 +119,6 @@ public class FeedAnimationController : MonoBehaviour
             }
         }
 
-        if (foods.Count > 0)
-        {
-            sortFoodQueue(foods);
-        }
-
         if (villagers.Count == 0)
         {
             // 没有村民，直接结束
@@ -195,7 +190,6 @@ public class FeedAnimationController : MonoBehaviour
                     if (foods[i] != null && foods[i].currentSaturation > 0)
                     {
                         anyFoodLeft = true;
-                        sortFoodQueue(foods);
                         break;
                     }
                 }
@@ -243,24 +237,6 @@ public class FeedAnimationController : MonoBehaviour
 
 
     /// <summary>
-    /// 排列食物，把没有 child stack 的食物排到最前
-    /// 防止 stackRoot 带着一整个 stack 飞了，，
-    /// </summary>
-    private void sortFoodQueue(List<Card> foods)
-    {
-        for (int i = 0; i < foods.Count; i++)
-        {
-            if (foods[i].IsTopOfStack())
-            {
-                var temp = foods[i];
-                foods.RemoveAt(i);
-                foods.Insert(0, temp);
-            }
-        }
-    }
-
-
-    /// <summary>
     /// 一口吃饭：食物飞到 villager 身边，扣数值，hover停留一下，吃光就 Destroy，否则飞回原位
     /// </summary>
     private IEnumerator AnimateFoodBite(Card food, Card villager, int eatAmount)
@@ -302,7 +278,7 @@ public class FeedAnimationController : MonoBehaviour
 
         // 飞到villager脸上后改变 food的饱腹值 和 villager的饥饿值
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
-        food.currentSaturation = Mathf.Max(0, food.currentSaturation - eatAmount);
+        food.ChangeSaturation(eatAmount);
 
         // 停留一下
         yield return new WaitForSecondsRealtime(foodHoldDuration);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -258,6 +257,15 @@ public class DayManager : MonoBehaviour
         }
 
         lastAllFed = lastHungryVillagers.Count == 0;
+
+        foreach (var v in lastVillagers)
+        {
+            v.currentHunger = v.data.hunger;
+        }
+        if (CardManager.Instance != null)
+        {
+            CardManager.Instance.RecalculateTotals();
+        }
 
         if (lastAllFed)
         {
