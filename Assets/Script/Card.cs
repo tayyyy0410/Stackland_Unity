@@ -25,6 +25,19 @@ public class Card : MonoBehaviour
 
     [Header("UI Display")]
     private InfoBarIndep infoBar;
+    
+    [Header("Battle Runtime")]
+    [Tooltip("当前 HP")]
+    public int currentHP;
+
+    [Tooltip("是否已经初始化过 HP")]
+    public bool hasInitHP = false;
+
+    [HideInInspector] public BattleManager.BattleInstance currentBattle;
+    
+    public bool IsInBattle => currentBattle != null;
+    
+
 
     private void Awake()
     {
@@ -248,6 +261,18 @@ public class Card : MonoBehaviour
                 oldRootCard.LayoutStack();
             }
         }*/
+    }
+    
+    /// <summary>
+    /// 确保 currentHP 按 data 初始化一次
+    /// </summary>
+    public void EnsureBattleInit()
+    {
+        if (hasInitHP) return;
+
+        // 这里的 baseHP 改成你 CardData 里真实的字段名
+        currentHP = data != null ? data.baseHP : 0;
+        hasInitHP = true;
     }
 
 }
