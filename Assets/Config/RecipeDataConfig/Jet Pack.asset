@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: Jet Pack
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 602c82aae161148458a0e00734436410, type: 2}
+  - cardData: {fileID: 11400000, guid: 92000df5386a96946b0d3e9f86a3de55, type: 2}
     amount: 2
-  - cardData: {fileID: 11400000, guid: 602c82aae161148458a0e00734436410, type: 2}
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 7ad741f6ea4f0cb4587100ba1a1db8f2, type: 2}
     amount: 2
-  - cardData: {fileID: 11400000, guid: 602c82aae161148458a0e00734436410, type: 2}
+    consume: 1
+  - cardData: {fileID: 11400000, guid: 66941e8494094a34bb19a443dea88c36, type: 2}
     amount: 2
+    consume: 1
   output: {fileID: 11400000, guid: 62daf0c5ac1590640b1579c1edfaab0a, type: 2}
-  hasMultiple: 0
-  ammount: 0
+  useOutputPack: 0
+  outputPack: {fileID: 0}
   craftTime: 30
