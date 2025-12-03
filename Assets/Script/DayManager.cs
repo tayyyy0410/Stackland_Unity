@@ -402,6 +402,8 @@ public class DayManager : MonoBehaviour
         {
             gameSpeed = 1f;
             monoSpeedIcon.SetActive(true);
+            pauseIcon.SetActive(false);
+            pauseBack.SetActive(false);
             dayPaused = false;
         }
         else
@@ -448,6 +450,28 @@ public class DayManager : MonoBehaviour
                 monoSpeedIcon.SetActive(false);
                 doubleSpeedIcon.SetActive(true);
             }
+        }
+    }
+
+    public void ButtonControlSpeed()
+    {
+        if(dayPaused)
+        {
+            gameSpeed = 1f;
+            monoSpeedIcon.SetActive(true);
+            pauseIcon.SetActive(false);
+            pauseBack.SetActive(false);
+            dayPaused = false;
+        }
+        else if (gameSpeed == 1f)
+        {
+            gameSpeed = 2f;
+            monoSpeedIcon.SetActive(false);
+            doubleSpeedIcon.SetActive(true);
+        }
+        else if (gameSpeed == 2f)
+        {
+            HandlePause();
         }
     }
 }
