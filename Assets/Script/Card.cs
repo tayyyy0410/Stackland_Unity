@@ -26,7 +26,7 @@ public class Card : MonoBehaviour
     [Header("UI Display")]
     private InfoBarIndep infoBar;
 
-    private bool hasRegisteredToManager = false;
+    public bool HasRegisteredToManager { get; set; } = false;
 
 
     private void Awake()
@@ -248,7 +248,7 @@ public class Card : MonoBehaviour
 
     private void OnDisable()
     {
-        if (CardManager.Instance != null && hasRegisteredToManager)
+        if (CardManager.Instance != null && HasRegisteredToManager)
         {
             CardManager.Instance.UnregisterCard(this);
         }
@@ -268,12 +268,11 @@ public class Card : MonoBehaviour
 
     private void TryRegisterToManager()
     {
-        if (hasRegisteredToManager) return;
+        if (HasRegisteredToManager) return;
         if (CardManager.Instance == null) return;
         if (data == null) return;   // 没 data 先别注册
 
         CardManager.Instance.RegisterCard(this);
-        hasRegisteredToManager = true;
     }
 
 }

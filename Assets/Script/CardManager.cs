@@ -16,14 +16,16 @@ public class CardManager : MonoBehaviour
 
     // UI实时计数统计
     [Header("Runtime Stats (Debug)")]
-    [Tooltip("实时更新的卡牌数据")]
+    [Tooltip("实时更新的卡牌数据 (debug only)")]
     [SerializeField] private int coinCount; 
     [SerializeField] private int totalSaturation;   
     [SerializeField] private int totalHunger;   
 
-    public int CoinCount => coinCount;  // UI：现有coin
+    // UI: 其他 Class 调用的数据
+    public int CoinCount => coinCount;  // UI：现有coin数量
     public int TotalSaturation => totalSaturation;  // UI：现有饱腹值
     public int TotalHunger => totalHunger;  // UI：需要的饱腹值
+
     public int NonCoinCount => AllCards.Count - CoinCount;  // UI：现有除了coin的卡牌数量
 
 
@@ -39,15 +41,22 @@ public class CardManager : MonoBehaviour
 
     }
 
+    private void Start()
+    {
+        Card[] cards = FindObjectsByType<Card>(FindObjectsSortMode.None);
+
+        foreach (Card card in cards)
+        {
+            if (card)
+            RegisterCard(card);
+        }
+    }
+
 
     // 生成卡牌时注册
     public void RegisterCard(Card card)
     {
         if (card == null) return;
-        if (!AllCards.Contains(card))
-        {
-            AllCards.Add(card);
-        }
 
         var data = card.data;
         if (data == null)
@@ -73,10 +82,19 @@ public class CardManager : MonoBehaviour
                 break;
 
             case CardClass.Coin:
-                coinCount++;
+                if (!card.HasRegisteredToManager)
+                {
+                    coinCount++;
+                }
                 break;
 
             default: break;
+        }
+
+        if (!AllCards.Contains(card))
+        {
+            AllCards.Add(card);
+            card.HasRegisteredToManager = true;
         }
 
         RecalculateTotals();
@@ -136,7 +154,7 @@ public class CardManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"[CardManager]AllCards={AllCards.Count}, Coin={CoinCount}, NonCoin={NonCoinCount}");
+        Debug.Log($"[CardManager]AllCards={AllCards.Count}, Villager={VillagerCards.Count}, Coin={CoinCount}, NonCoin={NonCoinCount}");
     }
 
 }
