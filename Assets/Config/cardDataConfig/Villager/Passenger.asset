@@ -16,23 +16,27 @@ MonoBehaviour:
   displayName: Passenger
   description: Fellow survivor trying to escape from New York
   value: 0
-  hasHP: 1
-  maxHP: 15
-  hasAttack: 1
-  attack: 2
-  hasHitChance: 1
-  HitChance: 70
   hasSaturation: 0
   saturation: 0
   hasHunger: 1
   hunger: 2
+  hasHP: 1
+  baseHP: 10
+  hasAttack: 1
+  attack: 2
+  hasHitChance: 1
+  hitChance: 50
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
   IncreasedHP: 0
   hasHealing: 0
   healing: 0
-  cardClass: 6
+  cardClass: 7
   backgroundSprite: {fileID: -1330291129118527448, guid: 396152b047219424e8d1caa5bf388745, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1

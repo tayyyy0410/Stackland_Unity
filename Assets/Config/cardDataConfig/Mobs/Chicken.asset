@@ -16,16 +16,25 @@ MonoBehaviour:
   displayName: Chicken
   description: Alleged descendent of dinosaurs. I don't see it
   value: 0
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
   hasHP: 1
-  maxHP: 5
+  baseHP: 10
   hasAttack: 1
-  attack: 2
+  attack: 1
   hasHitChance: 1
   HitChance: 0.6
   hasSaturation: 0
   saturation: 0
   hasHunger: 0
   hunger: 0
+  hitChance: 50
+  hasDeathLoot: 1
+  deathLootPack: {fileID: 11400000, guid: 4ba0bc6f6642ce74193c7ae59db1aa61, type: 2}
+  minDeathLoot: 1
+  maxDeathLoot: 1
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
@@ -34,6 +43,8 @@ MonoBehaviour:
   healing: 0
   cardClass: 5
   backgroundSprite: {fileID: 5336855417275088078, guid: 381de0573190ee14e97b8fdc614c5a82, type: 3}
+  cardClass: 6
+  backgroundSprite: {fileID: 5336855417275088078, guid: 0a6518a70daebb149bb022b7014081ea, type: 3}
   maxStackSize: 1
   canStackWithSameClass: 0
   isHarvestable: 0
