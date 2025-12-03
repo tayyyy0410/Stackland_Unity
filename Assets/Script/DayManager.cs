@@ -108,12 +108,10 @@ public class DayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             HandleFastForawrd();
-            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             HandlePause();
-            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
 
 
@@ -389,10 +387,12 @@ public class DayManager : MonoBehaviour
         {
             gameSpeed = gameSpeed == 1 ? 2f : 1f;
         }
+        Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
     }
 
     private void HandlePause()
     {
         dayPaused = dayPaused ? false : true;
+        Debug.Log($"[DayManager]DayPaused: {dayPaused}");
     }
 }
