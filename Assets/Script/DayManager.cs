@@ -104,6 +104,12 @@ public class DayManager : MonoBehaviour
 
         if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
 
+        if (CardManager.Instance == null) return;
+        if (CardManager.Instance.VillagerCards.Count <= 0)
+        {
+            Invoke(nameof(EnterGameOver), 1f);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -351,7 +357,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 视觉上villager饿死时，调用函数
+    /// 视觉上villager死掉时调用函数
     /// 变成尸体或者destroy
     /// </summary>
     public void KillVillager(Card villager)
