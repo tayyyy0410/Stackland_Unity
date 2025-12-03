@@ -37,6 +37,6 @@ MonoBehaviour:
   maxStackSize: 2
   canStackWithSameClass: 1
   isHarvestable: 1
-  maxHarvestUses: 1
-  harvestLootPack: {fileID: 0}
+  maxHarvestUses: 999
+  harvestLootPack: {fileID: 11400000, guid: b48d8073cfc46694bbc9bd6dee1df4c7, type: 2}
   depletedCardData: {fileID: 0}
