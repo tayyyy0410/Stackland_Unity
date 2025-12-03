@@ -142,26 +142,36 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private IEnumerator RunBattle(BattleInstance battle)
+   private IEnumerator RunBattle(BattleInstance battle)
     {
         AlignBattlePositions(battle);
 
         // 战斗开始前的延迟
         if (battleStartDelay > 0f)
         {
-            yield return new WaitForSeconds(battleStartDelay);
+            // 这里也可以用 WaitBattleInterval，让暂停/快进生效
+            yield return WaitBattleInterval(battleStartDelay);
         }
 
         while (battle.isRunning && battle.enemy != null && battle.villagers.Count > 0)
         {
-            // 清理已被 Destroy 或 HP<=0 的村民
+            // ====== 新增：如果暂停了，就在这里卡住 ======
+            if (IsGamePausedForBattle())
+            {
+                yield return WaitWhilePaused();
+
+                // 恢复之后保险检查一次
+                if (!battle.isRunning || battle.enemy == null || battle.villagers.Count == 0)
+                    break;
+            }
+
+            // 清理已被 Destroy 或 HP<=0 的村民（保险一次）
             battle.villagers.RemoveAll(v => v == null || v.currentHP <= 0);
 
             if (battle.villagers.Count == 0 || battle.enemy == null || battle.enemy.currentHP <= 0)
                 break;
 
             // --- 1. 村民方回合：从左到右依次攻击敌人 ---
-            // 按 X 坐标排序
             battle.villagers.Sort((a, b) =>
             {
                 float ax = (a.stackRoot != null ? a.stackRoot.position.x : a.transform.position.x);
@@ -169,7 +179,6 @@ public class BattleManager : MonoBehaviour
                 return ax.CompareTo(bx);
             });
 
-            
             for (int i = 0; i < battle.villagers.Count; i++)
             {
                 if (!battle.isRunning) break;
@@ -178,10 +187,12 @@ public class BattleManager : MonoBehaviour
                 if (v == null || v.currentHP <= 0) continue;
                 if (battle.enemy == null || battle.enemy.currentHP <= 0) break;
 
+                // 这里是打一刀的地方
                 yield return AttackOnce(battle, v, battle.enemy);
                 if (!battle.isRunning) break;
 
-                yield return new WaitForSeconds(attackInterval);
+                // ====== 原来是 WaitForSeconds(attackInterval)，改成： ======
+                yield return WaitBattleInterval(attackInterval);
             }
 
             if (!battle.isRunning || battle.enemy == null || battle.enemy.currentHP <= 0 || battle.villagers.Count == 0)
@@ -191,18 +202,18 @@ public class BattleManager : MonoBehaviour
             battle.villagers.RemoveAll(v => v == null || v.currentHP <= 0);
             if (battle.villagers.Count == 0) break;
 
-            // 这里用随机目标
             Card targetVillager = battle.villagers[Random.Range(0, battle.villagers.Count)];
 
             yield return AttackOnce(battle, battle.enemy, targetVillager);
             if (!battle.isRunning) break;
 
-            // 村民被打死的话，AttackOnce 里不会再直接改 list，由这里统一清理
-            yield return new WaitForSeconds(attackInterval);
+            // 同样换成自定义的等待
+            yield return WaitBattleInterval(attackInterval);
         }
 
         EndBattle(battle);
     }
+
 
     /// <summary>
     /// 结束一场战斗，清理所有状态
@@ -497,5 +508,48 @@ public class BattleManager : MonoBehaviour
                 renderers[i].color = originalColors[i];
             }
         }
+        
     }
+    
+    //战斗暂停相关
+    // 游戏是否对战斗来说是暂停
+    private bool IsGamePausedForBattle()
+    {
+        if (DayManager.Instance == null) return false;
+        // 如果只想跟随 dayPaused，就用它；
+        // 如果你也想在不是 Running 的状态下强制暂停战斗，可以加上 && CurrentState == Running
+        return DayManager.Instance.dayPaused;
+    }
+
+   // 一直等到不暂停
+    private IEnumerator WaitWhilePaused()
+    {
+        while (IsGamePausedForBattle())
+        {
+            yield return null;
+        }
+    }
+
+  // 替代 WaitForSeconds，支持暂停和快进
+    private IEnumerator WaitBattleInterval(float baseSeconds)
+    {
+        float elapsed = 0f;
+        while (elapsed < baseSeconds)
+        {
+            if (!IsGamePausedForBattle())
+            {
+                float speed = 1f;
+                if (DayManager.Instance != null)
+                {
+                    speed = DayManager.Instance.gameSpeed;  // Tab 快进也会影响战斗节奏
+                }
+
+                elapsed += Time.deltaTime * speed;
+            }
+
+            yield return null;
+        }
+    }
+
+
 }

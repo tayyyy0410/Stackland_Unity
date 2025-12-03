@@ -21,11 +21,11 @@ MonoBehaviour:
   hasHunger: 0
   hunger: 0
   hasHP: 1
-  baseHP: 0
+  baseHP: 5
   hasAttack: 1
   attack: 2
   hasHitChance: 1
-  hitChance: 0
+  hitChance: 50
   hasDeathLoot: 1
   deathLootPack: {fileID: 11400000, guid: 8fa668d30b20d43468f64f78b28b4eab, type: 2}
   minDeathLoot: 1
@@ -36,7 +36,7 @@ MonoBehaviour:
   IncreasedHP: 0
   hasHealing: 0
   healing: 0
-  cardClass: 5
+  cardClass: 6
   backgroundSprite: {fileID: 5110612511535974256, guid: ba2418fedfcb30c4dae9b11ca9f3cbdb, type: 3}
   maxStackSize: 1
   canStackWithSameClass: 0
