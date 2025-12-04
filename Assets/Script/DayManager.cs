@@ -22,7 +22,9 @@ public class DayManager : MonoBehaviour
         FeedingResultAllFull,       // 动画结束，本轮所有人都吃饱的结算 UI
         FeedingResultHungry,        // 动画结束，有人没吃饱的结算 UI（显示“啊哦”）
         StarvingAnimation,      // 点击“啊哦”后，没吃饱的人一个个变尸体的动画
-        WaitingNextDay,     // 还有活人，等待点击“开始下一天”
+        WaitingSell,        // 等待点击 “出售卡牌”
+        Selling,        // 售卖多出的卡牌
+        WaitingNextDay,     // 还有活人，等待点击 “开始下一天”
         WaitingEndGame,     // 死亡动画播完，死光了，等待点击“结束游戏”
         GameOver        // 真正的GameOver结算页面
     }
@@ -40,6 +42,9 @@ public class DayManager : MonoBehaviour
 
     [Tooltip("显示当前 Moon 文本，比如 `Moon 1`")]
     public TMP_Text moonText;
+
+    [Tooltip("“所有人都吃饱了”页面展示时长")]
+    public float allFedResultDuration;
 
     [Header("Villager & Food")]
     [Tooltip("Villager 饿死之后变成的尸体卡（可以为空，为空则直接 Destroy）")]
@@ -102,15 +107,28 @@ public class DayManager : MonoBehaviour
 
         gameSpeed = 1f;
         dayPaused = false;
+        allFedResultDuration = 2f;
         SetState(DayState.Running);
 
-        UpdateUI();
+        UpdateProgressUI();
     }
 
 
     private void Update()
     {
-        if (CurrentState != DayState.Running) return;
+        if (CurrentState == DayState.Running)
+        {
+            UpdateRunning();
+        }
+        else if (CurrentState == DayState.Selling)
+        {
+            UpdateSelling();
+        }
+    }
+
+
+    private void UpdateRunning()
+    {
         if (moonLength <= 0f) return;
 
         if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
@@ -135,19 +153,28 @@ public class DayManager : MonoBehaviour
         if (timer >= moonLength)    // 一天倒计时结束
         {
             timer = moonLength;
-            UpdateUI();
+            UpdateProgressUI();
             EndCurrentMoon();
         }
         else
         {
-            UpdateUI();
+            UpdateProgressUI();
         }
+    }
+
+
+    private void UpdateSelling()
+    {
+        if (CardManager.Instance == null) return;
+        if (CardManager.Instance.NonCoinCount > CardManager.Instance.MaxCardCapacity) return;
+
+        SetState(DayState.WaitingNextDay);
     }
 
     /// <summary>
     /// 更新day progress和天数UI
     /// </summary>
-    private void UpdateUI()
+    private void UpdateProgressUI()
     {
         if (moonProgressFill != null)
         {
@@ -275,6 +302,7 @@ public class DayManager : MonoBehaviour
         if (lastAllFed)
         {
             SetState(DayState.FeedingResultAllFull);
+            Invoke(nameof(ConfirmAllFedResult), allFedResultDuration);
         }
         else
         {
@@ -288,7 +316,16 @@ public class DayManager : MonoBehaviour
     public void ConfirmAllFedResult()
     {
         if (CurrentState != DayState.FeedingResultAllFull) return;
-        SetState(DayState.WaitingNextDay);
+        if (CardManager.Instance == null) return;
+
+        if (CardManager.Instance.NonCoinCount > CardManager.Instance.MaxCardCapacity)
+        {
+            SetState(DayState.WaitingSell);
+        }
+        else
+        {
+            SetState(DayState.WaitingNextDay);
+        }
     }
 
     /// <summary>
@@ -311,17 +348,33 @@ public class DayManager : MonoBehaviour
     {
         if (CurrentState != DayState.StarvingAnimation) return;
         if (CardManager.Instance == null) return;
-        var cm = CardManager.Instance;
-        Debug.Log($"[CardManager]Villager={cm.VillagerCards.Count}");
 
-        if (cm.VillagerCards.Count > 0)
+        Debug.Log($"[CardManager]Villager={CardManager.Instance.VillagerCards.Count}");
+
+        if (CardManager.Instance.VillagerCards.Count > 0)
         {
-            SetState(DayState.WaitingNextDay);
+            if (CardManager.Instance.NonCoinCount > CardManager.Instance.MaxCardCapacity)
+            {
+                SetState(DayState.WaitingSell);
+            }
+            else
+            {
+                SetState(DayState.WaitingNextDay);
+            }
         }
         else
         {
             SetState(DayState.WaitingEndGame);
         }
+    }
+
+    /// <summary>
+    /// 在 WaitingSellPanel 按 “出售卡牌”
+    /// </summary>
+    public void RequestSell()
+    {
+        if (CurrentState != DayState.WaitingSell) return;
+        SetState(DayState.Selling);
     }
 
     /// <summary>
@@ -338,7 +391,7 @@ public class DayManager : MonoBehaviour
         gameSpeed = 1f;
 
         SetState(DayState.Running);
-        UpdateUI();
+        UpdateProgressUI();
     }
 
     /// <summary>
@@ -374,7 +427,7 @@ public class DayManager : MonoBehaviour
     public void KillVillager(Card villager)
     {
         if (villager == null) return;
-        villager.TakeOutOfStack();
+        villager.TakeRootOutOfStack();
 
         if (corpseCardData != null)
         {

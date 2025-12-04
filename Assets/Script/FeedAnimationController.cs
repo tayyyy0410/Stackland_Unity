@@ -158,7 +158,7 @@ public class FeedAnimationController : MonoBehaviour
 
                 // 这一口能吃多少饱腹值
                 int eatAmount = Mathf.Min(villager.currentHunger, food.currentSaturation);
-                food.TakeOutOfStack();
+                food.TakeRootOutOfStack();
 
                 // 播放一口吃饭的动画，并在动画中扣 currentSaturation 和 currentHunger
                 yield return AnimateFoodBite(food, villager, eatAmount);

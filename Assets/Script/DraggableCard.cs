@@ -280,7 +280,7 @@ public class DraggableCard : MonoBehaviour
         }
     }
 
-    // 在结算阶段锁死卡牌拖拽
+    // 在除了 running 和 selling 阶段锁死卡牌拖拽
     private bool CanInteract()
     {
         if (DayManager.Instance == null)
@@ -289,7 +289,8 @@ public class DraggableCard : MonoBehaviour
         }
         else
         {
-            return DayManager.Instance.CurrentState == DayManager.DayState.Running;
+            return DayManager.Instance.CurrentState == DayManager.DayState.Running ||
+                   DayManager.Instance.CurrentState == DayManager.DayState.Selling;
         }
     }
 
