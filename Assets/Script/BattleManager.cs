@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// 管理所有战斗逻辑
@@ -31,6 +34,16 @@ public class BattleManager : MonoBehaviour
     public Vector2 lootOffset = new Vector2(0.7f, 0f);
 
     private readonly List<BattleInstance> activeBattles = new List<BattleInstance>();
+    
+    [Header("战斗 Hit / Miss UI")]
+    public Canvas battleUICanvas;        // 场景里的那个 Canvas（World Space）
+    public RectTransform hitRoot;        // Hit 这个物体
+    public TMP_Text hitDamageText;       // Hit 下面的文字
+    public RectTransform missRoot;       // Miss 这个物体
+    
+  
+   
+
 
     private void Awake()
     {
@@ -52,6 +65,7 @@ public class BattleManager : MonoBehaviour
         public Card enemy;
         public bool isRunning;
     }
+    
 
     /// <summary>
     /// 外部调用draggable card.cs 开始一场战斗
@@ -100,6 +114,9 @@ public class BattleManager : MonoBehaviour
         string firstVName = villager.data != null ? villager.data.name : villager.name;
         string enemyName = enemy.data != null ? enemy.data.name : enemy.name;
         Debug.Log($"[Battle] Start: {firstVName} HP={villager.currentHP}  vs  {enemyName} HP={enemy.currentHP}");
+        
+        if (battleUICanvas != null)
+            battleUICanvas.gameObject.SetActive(true);
 
         // 开始协程
         StartCoroutine(RunBattle(battle));
@@ -241,7 +258,12 @@ public class BattleManager : MonoBehaviour
         }
 
         activeBattles.Remove(battle);
+        
+        if (battleUICanvas != null)
+            battleUICanvas.gameObject.SetActive(false);
     }
+
+    
     /// <summary>
     /// 让两个阵营 X 对齐：敌人在上，多个村民在下排成一排
     /// </summary>
@@ -316,6 +338,14 @@ public class BattleManager : MonoBehaviour
         {
             defender.currentHP -= attack;
             if (defender.currentHP < 0) defender.currentHP = 0;
+
+            // 显示 Hit + 伤害数字
+            ShowHitOrMissUI(defender, true, attack);
+        }
+        else
+        {
+            // 显示 Miss
+            ShowHitOrMissUI(defender, false);
         }
 
         // 检查死亡
@@ -552,4 +582,93 @@ public class BattleManager : MonoBehaviour
     }
 
 
+    // ====== Hit / Miss UI 显示 ======
+    private void ShowHitOrMissUI(Card defender, bool hit, int damage = 0)
+    {
+        if (defender == null) return;
+        if (battleUICanvas == null) return;
+        
+        if (!battleUICanvas.gameObject.activeSelf)
+        {
+            battleUICanvas.gameObject.SetActive(true);
+        }
+
+        Transform defRoot = defender.stackRoot != null ? defender.stackRoot : defender.transform;
+        Vector3 worldPos = defRoot.position + new Vector3(-0.2f, -0.2f, 0f); //改ui位置
+
+        Vector3 uiWorldPos = worldPos;
+
+        if (hit)
+        {
+            if (hitRoot == null || hitDamageText == null) return;
+
+            hitRoot.DOKill();
+            var cg = hitRoot.GetComponent<CanvasGroup>();
+            if (cg != null) cg.DOKill();
+
+            hitDamageText.text = damage.ToString();
+
+            hitRoot.gameObject.SetActive(true);
+            hitRoot.position = uiWorldPos;
+            hitRoot.localScale = Vector3.one;
+
+            if (cg == null) cg = hitRoot.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(cg.DOFade(1f, 0.05f));
+            seq.Join(hitRoot.DOScale(1.2f, 0.1f));
+
+            seq.Append(hitRoot.DOMoveY(hitRoot.position.y + 0.2f, 0.2f));
+            seq.Join(hitRoot.DOShakePosition(
+                0.2f,
+                strength: new Vector3(0.08f, 0.08f, 0f),
+                vibrato: 15,
+                randomness: 90,
+                snapping: false,
+                fadeOut: true
+            ));
+
+            seq.Append(cg.DOFade(0f, 0.2f));
+            seq.OnComplete(() =>
+            {
+                hitRoot.gameObject.SetActive(false);
+            });
+        }
+        else
+        {
+            if (missRoot == null) return;
+
+            missRoot.DOKill();
+            var cg = missRoot.GetComponent<CanvasGroup>();
+            if (cg != null) cg.DOKill();
+
+            missRoot.gameObject.SetActive(true);
+            missRoot.position = uiWorldPos;
+            missRoot.localScale = Vector3.one;
+
+            if (cg == null) cg = missRoot.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(cg.DOFade(1f, 0.05f));
+            seq.Join(missRoot.DOScale(1.1f, 0.1f));
+
+            seq.Append(missRoot.DOMoveY(missRoot.position.y + 0.2f, 0.2f));
+            seq.Join(missRoot.DOShakePosition(
+                0.2f,
+                strength: new Vector3(0.06f, 0.06f, 0f),
+                vibrato: 15,
+                randomness: 90,
+                snapping: false,
+                fadeOut: true
+            ));
+
+            seq.Append(cg.DOFade(0f, 0.2f));
+            seq.OnComplete(() =>
+            {
+                missRoot.gameObject.SetActive(false);
+            });
+        }
+    }
 }

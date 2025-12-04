@@ -86,7 +86,7 @@ public class CardData : ScriptableObject
     [Tooltip("每次死亡最多掉几张卡")]
     public int maxDeathLoot = 1;
 
-    //
+    
     [Header("weapons")]
     [Tooltip("是否增加伤害")]
     public bool hasDamage;
@@ -100,6 +100,12 @@ public class CardData : ScriptableObject
     [Tooltip("增加的HP")]
     public int IncreasedHP;
     
+    [Header("Stats UI")]
+    public bool showHP;        // 这张卡要不要显示 HP 数值
+    public bool showHunger;    // 要不要显示饱腹
+    public bool showValue;     // 要不要显示金币数值
+
+    public bool useDarkText = true; // true = 用深色字；false = 用白字
 
 
     [Header("Med kits")]
