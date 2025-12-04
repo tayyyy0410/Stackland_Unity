@@ -263,13 +263,14 @@ public class Card : MonoBehaviour
     }
 
     /// <summary>
-    /// 从 stack 中抽出一张卡牌
+    /// 从 stack 中抽出 stackRoot
     /// </summary>
-    public void TakeOutOfStack()
+    public void TakeRootOutOfStack()
     {
         Transform root = stackRoot != null ? stackRoot : transform;
 
         // 自己是 stackRoot
+        // !!不考虑其他情况!! 调用这个函数的地方不该取出 stack 中间的卡牌
         if (transform == root && root.childCount > 0)
         {
             Transform newRoot = null;

@@ -17,16 +17,21 @@ public class CardManager : MonoBehaviour
     // UI实时计数统计
     [Header("Runtime Stats (Debug)")]
     [Tooltip("实时更新的卡牌数据 (debug only)")]
-    [SerializeField] private int coinCount; 
-    [SerializeField] private int totalSaturation;   
-    [SerializeField] private int totalHunger;   
+    [SerializeField] private int coinCount;
+    [SerializeField] private int totalSaturation;
+    [SerializeField] private int totalHunger;
+    [SerializeField] private int maxCardCapacity;
+    private int fixedMaxCapcity = 20;
 
     // UI: 其他 Class 调用的数据
+    public int MaxCardCapacity => maxCardCapacity;  // UI: 卡牌容量上限
     public int CoinCount => coinCount;  // UI：现有coin数量
     public int TotalSaturation => totalSaturation;  // UI：现有饱腹值
     public int TotalHunger => totalHunger;  // UI：需要的饱腹值
 
     public int NonCoinCount => AllCards.Count - CoinCount;  // UI：现有除了coin的卡牌数量
+
+    // UI: 还需售卖卡牌数量：NonCoinCount - MaxCardCapacity
 
 
     private void Awake()
@@ -43,12 +48,17 @@ public class CardManager : MonoBehaviour
 
     private void Start()
     {
+        coinCount = 0;
+        totalSaturation = 0;
+        totalHunger = 0;
+        maxCardCapacity = fixedMaxCapcity;
+
         Card[] cards = FindObjectsByType<Card>(FindObjectsSortMode.None);
 
         foreach (Card card in cards)
         {
             if (card)
-            RegisterCard(card);
+                RegisterCard(card);
         }
     }
 
@@ -61,7 +71,7 @@ public class CardManager : MonoBehaviour
         var data = card.data;
         if (data == null)
         {
-            Debug.LogWarning($"[Register] {card.name} 没有 data，暂时只加入 AllCards，不做分类统计");
+            Debug.LogWarning($"[Register] {card.name} 没有 data");
             return;
         }
 
@@ -87,6 +97,13 @@ public class CardManager : MonoBehaviour
                 if (!card.HasRegisteredToManager)
                 {
                     coinCount++;
+                }
+                break;
+
+            case CardClass.Structure:
+                if (!card.HasRegisteredToManager && card.data.hasCapacity)
+                {
+                    maxCardCapacity += card.data.capacity;
                 }
                 break;
 
@@ -117,6 +134,11 @@ public class CardManager : MonoBehaviour
         if (data != null && data.cardClass == CardClass.Coin)
         {
             coinCount = Mathf.Max(0, CoinCount - 1);
+        }
+
+        if (data != null && data.hasCapacity)
+        {
+            maxCardCapacity = Mathf.Max(0, MaxCardCapacity - data.capacity);
         }
 
         RecalculateTotals();

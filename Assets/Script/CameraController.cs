@@ -41,10 +41,12 @@ public class CameraControllers : MonoBehaviour
 
     private void Update()
     {
-        if (DayManager.Instance != null &&
-        DayManager.Instance.CurrentState != DayManager.DayState.Running)
+        if (DayManager.Instance == null) return;
+        if (DayManager.Instance.CurrentState != DayManager.DayState.Running &&
+            DayManager.Instance.CurrentState != DayManager.DayState.Selling)
+
         {
-            // 非 Running 状态（等待喂养 / 动画 / 结算）镜头操作被冻结，相机交给 DayAnimationController 控制
+            // 非 Running / Selling 状态（等待喂养 / 动画 / 结算）镜头操作被冻结，相机交给 DayAnimationController 控制
             return;
         }
 
