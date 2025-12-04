@@ -4,10 +4,10 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 管理天数，每天的倒计时条，每天结束之后的feed结算
-/// CardData 里的 saturation 和 hunger 分别对应食物的默认饱腹值，和村民的每天需要的饱腹值（饥饿值）
-/// Card 新增 currentSaturation 和 currentHunger 为当前饱腹值和饥饿值，用于结算
-/// 配合 PanelManager 食用（），UI都归PanelManager管，这里只管一个每天的读条倒计时
+/// 绠＄悊澶╂暟锛屾瘡澶╃殑鍊掕鏃舵潯锛屾瘡澶╃粨鏉熶箣鍚庣殑feed缁撶畻
+/// CardData 閲岀殑 saturation 鍜� hunger 鍒嗗埆瀵瑰簲椋熺墿鐨勯粯璁らケ鑵瑰�硷紝鍜屾潙姘戠殑姣忓ぉ闇�瑕佺殑楗辫吂鍊硷紙楗ラタ鍊硷級
+/// Card 鏂板 currentSaturation 鍜� currentHunger 涓哄綋鍓嶉ケ鑵瑰�煎拰楗ラタ鍊硷紝鐢ㄤ簬缁撶畻
+/// 閰嶅悎 PanelManager 椋熺敤锛堬級锛孶I閮藉綊PanelManager绠★紝杩欓噷鍙涓�涓瘡澶╃殑璇绘潯鍊掕鏃�
 /// </summary>
 
 public class DayManager : MonoBehaviour
@@ -16,59 +16,59 @@ public class DayManager : MonoBehaviour
 
     public enum DayState
     {
-        Running,        // 正常玩
-        WaitingFeed,        // 一天结束，等待玩家按 Feed（全局冻结）
-        FeedingAnimation,       // 进食动画播放中（摄像机依次聚焦村民 + 食物卡飞来飞去）
-        FeedingResultAllFull,       // 动画结束，本轮所有人都吃饱的结算 UI
-        FeedingResultHungry,        // 动画结束，有人没吃饱的结算 UI（显示“啊哦”）
-        StarvingAnimation,      // 点击“啊哦”后，没吃饱的人一个个变尸体的动画
-        WaitingNextDay,     // 还有活人，等待点击“开始下一天”
-        WaitingEndGame,     // 死亡动画播完，死光了，等待点击“结束游戏”
-        GameOver        // 真正的GameOver结算页面
+        Running,        // 姝ｅ父鐜�
+        WaitingFeed,        // 涓�澶╃粨鏉燂紝绛夊緟鐜╁鎸� Feed锛堝叏灞�鍐荤粨锛�
+        FeedingAnimation,       // 杩涢鍔ㄧ敾鎾斁涓紙鎽勫儚鏈轰緷娆¤仛鐒︽潙姘� + 椋熺墿鍗￠鏉ラ鍘伙級
+        FeedingResultAllFull,       // 鍔ㄧ敾缁撴潫锛屾湰杞墍鏈変汉閮藉悆楗辩殑缁撶畻 UI
+        FeedingResultHungry,        // 鍔ㄧ敾缁撴潫锛屾湁浜烘病鍚冮ケ鐨勭粨绠� UI锛堟樉绀衡�滃晩鍝︹�濓級
+        StarvingAnimation,      // 鐐瑰嚮鈥滃晩鍝︹�濆悗锛屾病鍚冮ケ鐨勪汉涓�涓釜鍙樺案浣撶殑鍔ㄧ敾
+        WaitingNextDay,     // 杩樻湁娲讳汉锛岀瓑寰呯偣鍑烩�滃紑濮嬩笅涓�澶┾��
+        WaitingEndGame,     // 姝讳骸鍔ㄧ敾鎾畬锛屾鍏変簡锛岀瓑寰呯偣鍑烩�滅粨鏉熸父鎴忊��
+        GameOver        // 鐪熸鐨凣ameOver缁撶畻椤甸潰
     }
 
     [Header("Moon Settings")]
-    [Tooltip("每个 Moon 的长度（秒）")]
+    [Tooltip("姣忎釜 Moon 鐨勯暱搴︼紙绉掞級")]
     public float moonLength = 120f;
 
-    [Tooltip("开始时是第几个 Moon（一般是 1）")]
+    [Tooltip("寮�濮嬫椂鏄鍑犱釜 Moon锛堜竴鑸槸 1锛�")]
     public int startMoon = 1;
 
-    [Header("Day Progress UI")]     // day progress的读条
-    [Tooltip("显示 Moon 进度的 Image，Type 要改成 Filled, Horizontal")]
+    [Header("Day Progress UI")]     // day progress鐨勮鏉�
+    [Tooltip("鏄剧ず Moon 杩涘害鐨� Image锛孴ype 瑕佹敼鎴� Filled, Horizontal")]
     public Image moonProgressFill;
 
-    [Tooltip("显示当前 Moon 文本，比如 `Moon 1`")]
+    [Tooltip("鏄剧ず褰撳墠 Moon 鏂囨湰锛屾瘮濡� `Moon 1`")]
     public TMP_Text moonText;
 
     [Header("Villager & Food")]
-    [Tooltip("Villager 饿死之后变成的尸体卡（可以为空，为空则直接 Destroy）")]
+    [Tooltip("Villager 楗挎涔嬪悗鍙樻垚鐨勫案浣撳崱锛堝彲浠ヤ负绌猴紝涓虹┖鍒欑洿鎺� Destroy锛�")]
     public CardData corpseCardData;
 
     [Header("Time Scale")]
     public float gameSpeed = 1f;
     public bool dayPaused = false;
-    // 这里需要一个ui，就是读条上面显示的标识
-    // 正常速度 (gameSpeed == 1) 的时候是一个小三角，快进 (gameSpeed == 2) 是一个快进标识
-    // 暂停 (dayPaused）有一个灰色蒙版
-    // !但是暂停的时候不要切换 Panel 或者 DayState，代码还是写在 DayState.Running 下的
+    // 杩欓噷闇�瑕佷竴涓猽i锛屽氨鏄鏉′笂闈㈡樉绀虹殑鏍囪瘑
+    // 姝ｅ父閫熷害 (gameSpeed == 1) 鐨勬椂鍊欐槸涓�涓皬涓夎锛屽揩杩� (gameSpeed == 2) 鏄竴涓揩杩涙爣璇�
+    // 鏆傚仠 (dayPaused锛夋湁涓�涓伆鑹茶挋鐗�
+    // !浣嗘槸鏆傚仠鐨勬椂鍊欎笉瑕佸垏鎹� Panel 鎴栬�� DayState锛屼唬鐮佽繕鏄啓鍦� DayState.Running 涓嬬殑
 
     public DayState CurrentState { get; private set; } = DayState.Running;
     public System.Action<DayState> OnStateChanged;
 
     private int currentMoon;
-    private float timer;    // 每天的时间
+    private float timer;    // 姣忓ぉ鐨勬椂闂�
 
     public int CurrentMoon => currentMoon;
     public float NormalizedTime => Mathf.Clamp01(timer / Mathf.Max(0.01f, moonLength));
 
-    // 结算 food 和 villager
+    // 缁撶畻 food 鍜� villager
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
     private bool lastAllFed = false;
 
     public IReadOnlyList<Card> LastVillagers => lastVillagers;
-    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: 调用多少个村民挨饿 LastHungryVillager.Count
+    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: 璋冪敤澶氬皯涓潙姘戞尐楗� LastHungryVillager.Count
 
 
     private void Awake()
@@ -121,7 +121,7 @@ public class DayManager : MonoBehaviour
         }
 
 
-        if (timer >= moonLength)    // 一天倒计时结束
+        if (timer >= moonLength)    // 涓�澶╁�掕鏃剁粨鏉�
         {
             timer = moonLength;
             UpdateUI();
@@ -134,7 +134,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新day progress和天数UI
+    /// 鏇存柊day progress鍜屽ぉ鏁癠I
     /// </summary>
     private void UpdateUI()
     {
@@ -149,7 +149,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新DayState并广播newState，由PanelManager接收后调出对应Panel
+    /// 鏇存柊DayState骞跺箍鎾璶ewState锛岀敱PanelManager鎺ユ敹鍚庤皟鍑哄搴擯anel
     /// </summary>
     private void SetState(DayState newState)
     {
@@ -159,35 +159,35 @@ public class DayManager : MonoBehaviour
     }
 
 
-    // =================== 流程控制 ======================
+    // =================== 娴佺▼鎺у埗 ======================
 
     /// <summary>
-    /// 一天结束，进入WaitingFeed
+    /// 涓�澶╃粨鏉燂紝杩涘叆WaitingFeed
     /// </summary>
     private void EndCurrentMoon()
     {
         if (CurrentState != DayState.Running) return;
 
-        dayPaused = true;       // 一天结束之后卡牌coroutine被冻结
+        dayPaused = true;       // 涓�澶╃粨鏉熶箣鍚庡崱鐗宑oroutine琚喕缁�
         SetState(DayState.WaitingFeed);
     }
 
     /// <summary>
-    /// UI调用：在WaitingFeed state下，玩家点击喂养村民按钮
+    /// UI璋冪敤锛氬湪WaitingFeed state涓嬶紝鐜╁鐐瑰嚮鍠傚吇鏉戞皯鎸夐挳
     /// </summary>
     public void RequestFeed()
     {
         if (CurrentState != DayState.WaitingFeed) return;
         InitializeFeedingRuntimeValues();
         SetState(DayState.FeedingAnimation);
-        // 此时 FeedingSequenceController 控制食物飞来飞去的动画
-        // 动画结束后调用 DayManager.Instance.OnFeedingAnimationFinished()
+        // 姝ゆ椂 FeedingSequenceController 鎺у埗椋熺墿椋炴潵椋炲幓鐨勫姩鐢�
+        // 鍔ㄧ敾缁撴潫鍚庤皟鐢� DayManager.Instance.OnFeedingAnimationFinished()
     }
 
 
     /// <summary>
-    /// 本轮结算的初始值设定：
-    /// 不做任何扣减，扣减完全交给动画阶段进行。
+    /// 鏈疆缁撶畻鐨勫垵濮嬪�艰瀹氾細
+    /// 涓嶅仛浠讳綍鎵ｅ噺锛屾墸鍑忓畬鍏ㄤ氦缁欏姩鐢婚樁娈佃繘琛屻��
     /// </summary>
     private void InitializeFeedingRuntimeValues()
     {
@@ -200,7 +200,7 @@ public class DayManager : MonoBehaviour
 
             if (c.data.cardClass == CardClass.Villager)
             {
-                // Villager：本轮要吃多少就看 CardData.hunger
+                // Villager锛氭湰杞鍚冨灏戝氨鐪� CardData.hunger
                 int baseHunger = Mathf.Max(0, c.data.hunger);
                 c.currentHunger = baseHunger;
             }
@@ -208,7 +208,7 @@ public class DayManager : MonoBehaviour
                      c.data.hasSaturation &&
                      c.data.saturation > 0)
             {
-                // Food：如果当前没有合理的剩余值，就按模板 saturation 重新设定
+                // Food锛氬鏋滃綋鍓嶆病鏈夊悎鐞嗙殑鍓╀綑鍊硷紝灏辨寜妯℃澘 saturation 閲嶆柊璁惧畾
                 if (c.currentSaturation <= 0 || c.currentSaturation > c.data.saturation)
                 {
                     c.currentSaturation = c.data.saturation;
@@ -218,8 +218,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 由 FeedingSequenceController 结束喂食动画后调用
-    /// 结算有没有人活着，进入对应 UI Panel
+    /// 鐢� FeedingSequenceController 缁撴潫鍠傞鍔ㄧ敾鍚庤皟鐢�
+    /// 缁撶畻鏈夋病鏈変汉娲荤潃锛岃繘鍏ュ搴� UI Panel
     /// </summary>
     public void OnFeedingAnimationFinished()
     {
@@ -272,7 +272,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultAllFullPanel 上按 “所有人都吃饱了”
+    /// UI锛氬湪 FeedingResultAllFullPanel 涓婃寜 鈥滄墍鏈変汉閮藉悆楗变簡鈥�
     /// </summary>
     public void ConfirmAllFedResult()
     {
@@ -281,20 +281,20 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 FeedingResultHungryPanel 上按 “啊哦”
+    /// UI锛氬湪 FeedingResultHungryPanel 涓婃寜 鈥滃晩鍝︹��
     /// </summary>
     public void ConfirmHungryResult()
     {
         if (CurrentState != DayState.FeedingResultHungry) return;
         SetState(DayState.StarvingAnimation);
-        // 此时 FeedAnimationController 可以根据 LastHungryVillagers 播“变尸体”动画。
-        // 每个要死的人在动画合适的时机调用 DayManager.KillVillager(v)
-        // 动画全部播完之后调用 DayManager.Instance.OnStarvingAnimationFinished()
+        // 姝ゆ椂 FeedAnimationController 鍙互鏍规嵁 LastHungryVillagers 鎾�滃彉灏镐綋鈥濆姩鐢汇��
+        // 姣忎釜瑕佹鐨勪汉鍦ㄥ姩鐢诲悎閫傜殑鏃舵満璋冪敤 DayManager.KillVillager(v)
+        // 鍔ㄧ敾鍏ㄩ儴鎾畬涔嬪悗璋冪敤 DayManager.Instance.OnStarvingAnimationFinished()
     }
 
     /// <summary>
-    /// 由 FeedAnimationController 在播完变尸体动画后调用
-    /// 结算还有没有人活着。进入对应Panel
+    /// 鐢� FeedAnimationController 鍦ㄦ挱瀹屽彉灏镐綋鍔ㄧ敾鍚庤皟鐢�
+    /// 缁撶畻杩樻湁娌℃湁浜烘椿鐫�銆傝繘鍏ュ搴擯anel
     /// </summary>
     public void OnStarvingAnimationFinished()
     {
@@ -314,7 +314,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 在WaitingNextDayPanel 按 “开始下一天“
+    /// 鍦╓aitingNextDayPanel 鎸� 鈥滃紑濮嬩笅涓�澶┾��
     /// </summary>
     public void RequestNextDay()
     {
@@ -323,7 +323,7 @@ public class DayManager : MonoBehaviour
         currentMoon++;
         timer = 0f;
 
-        dayPaused = false;    // 恢复时间流逝，coroutine恢复
+        dayPaused = false;    // 鎭㈠鏃堕棿娴侀�濓紝coroutine鎭㈠
         gameSpeed = 1f;
 
         SetState(DayState.Running);
@@ -331,7 +331,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI：在 WaitingEndGame 面板按 “结束游戏”
+    /// UI锛氬湪 WaitingEndGame 闈㈡澘鎸� 鈥滅粨鏉熸父鎴忊��
     /// </summary>
     public void RequestEndGame()
     {
@@ -348,7 +348,7 @@ public class DayManager : MonoBehaviour
 
     // ============================ Animation Helpers ========================
     /// <summary>
-    /// 视觉上要把食物“吃掉”时，调用函数destroy
+    /// 瑙嗚涓婅鎶婇鐗┾�滃悆鎺夆�濇椂锛岃皟鐢ㄥ嚱鏁癲estroy
     /// </summary>
     public void ConsumeFoodCompletely(Card food)
     {
@@ -357,8 +357,8 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 视觉上villager死掉时调用函数
-    /// 变成尸体或者destroy
+    /// 瑙嗚涓妚illager姝绘帀鏃惰皟鐢ㄥ嚱鏁�
+    /// 鍙樻垚灏镐綋鎴栬�卍estroy
     /// </summary>
     public void KillVillager(Card villager)
     {
@@ -371,7 +371,7 @@ public class DayManager : MonoBehaviour
             villager.currentHunger = 0;
             villager.currentSaturation = 0;
 
-            // 让 Card 用新的 data 重刷外观
+            // 璁� Card 鐢ㄦ柊鐨� data 閲嶅埛澶栬
             villager.ApplyData();
         }
         else

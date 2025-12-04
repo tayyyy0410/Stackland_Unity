@@ -21,7 +21,7 @@ MonoBehaviour:
   hasHunger: 1
   hunger: 2
   hasHP: 1
-  baseHP: 5
+  baseHP: 10
   hasAttack: 1
   attack: 5
   hasHitChance: 1
@@ -34,10 +34,6 @@ MonoBehaviour:
   damage: 0
   hasIncreaseHP: 0
   IncreasedHP: 0
-  showHP: 1
-  showHunger: 0
-  showValue: 0
-  useDarkText: 0
   hasHealing: 0
   healing: 0
   cardClass: 7
