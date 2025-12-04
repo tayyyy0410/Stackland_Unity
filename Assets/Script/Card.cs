@@ -42,6 +42,9 @@ public class Card : MonoBehaviour
     
 
 
+    public bool HasRegisteredToManager { get; set; } = false;
+
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
