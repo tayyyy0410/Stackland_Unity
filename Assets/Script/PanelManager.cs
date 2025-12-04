@@ -16,6 +16,8 @@ public class PanelManager : MonoBehaviour
     public GameObject feedingResultAllFullPanel;        // 所有人都吃饱了结算画面
     public GameObject feedingResultHungryPanel;     // 有人没吃饱结算画面
     public GameObject starvingAnimationPanel;       // 有人被饿死的动画
+    public GameObject waitingSellPanel;     // 卡牌超出数量，等待点击 “出售卡牌”
+    public GameObject sellingPanel;     // 售卖卡牌
     public GameObject waitingNextDayPanel;      // 有人还活着，等待下一天的button
     public GameObject waitingEndGamePanel;      // 死光了，等待“结束游戏”button
     public GameObject gameOverPanel;        // GameOver结算面板
@@ -24,6 +26,7 @@ public class PanelManager : MonoBehaviour
     public Button feedButton;   // waitingFeedPanel的喂养村民
     public Button AllFedContinueButton;     // FeedingResultAllFullPanel 的 所有人都吃饱了
     public Button hungryContinueButton;     // FeedingResultHungryPanel 的 “啊哦”
+    public Button startSellingButton;       // waitingSellPanel 的 “出售卡牌”
     public Button startNextDayButton;   // WaitingNextDayPanel 的 “开始下一天”
     public Button endGameButton;        // WaitingEndGamePanel 的 “结束游戏”
 
@@ -52,6 +55,14 @@ public class PanelManager : MonoBehaviour
             hungryContinueButton.onClick.AddListener(() =>
             {
                 if (DayManager.Instance != null) { DayManager.Instance.ConfirmHungryResult(); }
+            });
+        }
+
+        if (startSellingButton != null)
+        {
+            startSellingButton.onClick.AddListener(() =>
+            {
+                if (DayManager.Instance != null) { DayManager.Instance.RequestSell(); }
             });
         }
 
@@ -105,6 +116,8 @@ public class PanelManager : MonoBehaviour
         SetPanelActive(feedingResultAllFullPanel, false);
         SetPanelActive(feedingResultHungryPanel, false);
         SetPanelActive(starvingAnimationPanel, false);
+        SetPanelActive(waitingSellPanel, false);
+        SetPanelActive(sellingPanel, false);
         SetPanelActive(waitingNextDayPanel, false);
         SetPanelActive(waitingEndGamePanel, false);
         SetPanelActive(gameOverPanel, false);
@@ -134,6 +147,14 @@ public class PanelManager : MonoBehaviour
 
             case DayManager.DayState.StarvingAnimation:
                 SetPanelActive(starvingAnimationPanel, true);
+                break;
+
+            case DayManager.DayState.WaitingSell:
+                SetPanelActive(waitingSellPanel, true);
+                break;
+
+            case DayManager.DayState.Selling:
+                SetPanelActive(sellingPanel, true);
                 break;
 
             case DayManager.DayState.WaitingNextDay:

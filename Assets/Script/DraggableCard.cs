@@ -289,7 +289,8 @@ public class DraggableCard : MonoBehaviour
         }
         else
         {
-            return DayManager.Instance.CurrentState == DayManager.DayState.Running;
+            return DayManager.Instance.CurrentState == DayManager.DayState.Running ||
+                   DayManager.Instance.CurrentState == DayManager.DayState.Selling;
         }
     }
 

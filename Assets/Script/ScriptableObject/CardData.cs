@@ -49,6 +49,12 @@ public class CardData : ScriptableObject
 
     [Tooltip("饥饿值")]
     public int hunger;
+
+    [Tooltip("是否增加卡牌容量上限")]
+    public bool hasCapacity;
+
+    [Tooltip("增加卡牌容量")]
+    public int capacity;
     
    
     /// <summary>
