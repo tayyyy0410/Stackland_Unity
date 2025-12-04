@@ -2548,12 +2548,14 @@ MonoBehaviour:
   feedingResultAllFullPanel: {fileID: 604625115}
   feedingResultHungryPanel: {fileID: 448870066}
   starvingAnimationPanel: {fileID: 798690104}
+  waitingSellPanel: {fileID: 0}
+  sellingPanel: {fileID: 0}
   waitingNextDayPanel: {fileID: 114343365}
   waitingEndGamePanel: {fileID: 1152338730}
   gameOverPanel: {fileID: 72754990}
   feedButton: {fileID: 1139192333}
-  AllFedContinueButton: {fileID: 70935977}
   hungryContinueButton: {fileID: 344191326}
+  startSellingButton: {fileID: 0}
   startNextDayButton: {fileID: 528756554}
   endGameButton: {fileID: 2104167739}
 --- !u!1 &796570575
@@ -3025,9 +3027,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 904393325}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 408fe70dd2fef204d93da8f7fc6d1745, type: 3}
+  m_Script: {fileID: 11500000, guid: fa3f4922e84d0e84c96277edd8300527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackInterval: 0.6
+  battleStartDelay: 0.5
+  verticalOffset: 0.7
+  horizontalSpacing: 0.6
+  cardPrefab: {fileID: 4506365281572697528, guid: 37cb4e84b58269d40a721431f60109b4, type: 3}
+  lootOffset: {x: 0.7, y: 0}
+  battleUICanvas: {fileID: 6310021188576465129}
+  hitRoot: {fileID: 6310021188576465131}
+  hitDamageText: {fileID: 6310021188576465132}
+  missRoot: {fileID: 6310021188576465130}
 --- !u!1 &957521866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3367,6 +3379,7 @@ MonoBehaviour:
   coinCount: 0
   totalSaturation: 0
   totalHunger: 0
+  maxCardCapacity: 0
 --- !u!1 &1139192331
 GameObject:
   m_ObjectHideFlags: 0
@@ -5304,6 +5317,7 @@ MonoBehaviour:
   startMoon: 1
   moonProgressFill: {fileID: 1294081819}
   moonText: {fileID: 242040662}
+  allFedResultDuration: 0
   corpseCardData: {fileID: 0}
   gameSpeed: 1
   dayPaused: 0
@@ -6460,6 +6474,32 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1b8430881c108145a8088afec5134ac, type: 3}
+--- !u!223 &6310021188576465129 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 1266978631595582590, guid: e1b8430881c108145a8088afec5134ac, type: 3}
+  m_PrefabInstance: {fileID: 6310021188576465128}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6310021188576465130 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 9152943855295823432, guid: e1b8430881c108145a8088afec5134ac, type: 3}
+  m_PrefabInstance: {fileID: 6310021188576465128}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6310021188576465131 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1008496053021326459, guid: e1b8430881c108145a8088afec5134ac, type: 3}
+  m_PrefabInstance: {fileID: 6310021188576465128}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6310021188576465132 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2807168199781736995, guid: e1b8430881c108145a8088afec5134ac, type: 3}
+  m_PrefabInstance: {fileID: 6310021188576465128}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
