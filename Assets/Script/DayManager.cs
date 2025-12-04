@@ -48,6 +48,10 @@ public class DayManager : MonoBehaviour
     [Header("Time Scale")]
     public float gameSpeed = 1f;
     public bool dayPaused = false;
+    public GameObject pauseIcon;
+    public GameObject monoSpeedIcon;
+    public GameObject doubleSpeedIcon;
+    public GameObject pauseBack;
     // 这里需要一个ui，就是读条上面显示的标识
     // 正常速度 (gameSpeed == 1) 的时候是一个小三角，快进 (gameSpeed == 2) 是一个快进标识
     // 暂停 (dayPaused）有一个灰色蒙版
@@ -81,6 +85,13 @@ public class DayManager : MonoBehaviour
 
         Instance = this;
         InitDay();
+
+        monoSpeedIcon.SetActive(true);
+
+        pauseBack.SetActive(false);
+        pauseIcon.SetActive(false);
+        doubleSpeedIcon.SetActive(false);
+
     }
 
 
@@ -382,23 +393,108 @@ public class DayManager : MonoBehaviour
 
 
     // ========================= Time Scale Control ========================
-    private void HandleFastForawrd()
+//    private void HandleFastForawrd()
+//    {
+//        if (dayPaused)
+//        {
+//            gameSpeed = 1f;
+//            dayPaused = false;
+//        }
+//        else
+//        {
+//            gameSpeed = gameSpeed == 1 ? 2f : 1f;
+//        }
+//        Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
+//    }
+
+//    private void HandlePause()
+//    {
+//        dayPaused = dayPaused ? false : true;
+//        Debug.Log($"[DayManager]DayPaused: {dayPaused}");
+//    }
+
+
+private void HandleFastForawrd()
+{
+    if (dayPaused)
     {
-        if (dayPaused)
+        gameSpeed = 1f;
+        monoSpeedIcon.SetActive(true);
+        pauseIcon.SetActive(false);
+        pauseBack.SetActive(false);
+        dayPaused = false;
+    }
+    else
+    {
+        gameSpeed = gameSpeed == 1 ? 2f : 1f;
+
+        if (gameSpeed == 1f)
         {
-            gameSpeed = 1f;
-            dayPaused = false;
+            monoSpeedIcon.SetActive(true);
+            doubleSpeedIcon.SetActive(false);
         }
         else
         {
-            gameSpeed = gameSpeed == 1 ? 2f : 1f;
+            monoSpeedIcon.SetActive(false);
+            doubleSpeedIcon.SetActive(true);
         }
-        Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
-    }
-
-    private void HandlePause()
-    {
-        dayPaused = dayPaused ? false : true;
-        Debug.Log($"[DayManager]DayPaused: {dayPaused}");
     }
 }
+
+private void HandlePause()
+{
+    dayPaused = dayPaused ? false : true;
+
+    if (dayPaused)
+    {
+        pauseIcon.SetActive(true);
+        pauseBack.SetActive(true);
+        monoSpeedIcon.SetActive(false);
+        doubleSpeedIcon.SetActive(false);
+
+    }
+    else
+    {
+        pauseIcon.SetActive(false);
+        pauseBack.SetActive(false);
+
+        if (gameSpeed == 1f)
+        {
+            monoSpeedIcon.SetActive(true);
+            doubleSpeedIcon.SetActive(false);
+        }
+        else
+        {
+            monoSpeedIcon.SetActive(false);
+            doubleSpeedIcon.SetActive(true);
+        }
+    }
+}
+
+public void ButtonControlSpeed()
+{
+    if (dayPaused)
+    {
+        gameSpeed = 1f;
+        monoSpeedIcon.SetActive(true);
+        pauseIcon.SetActive(false);
+        pauseBack.SetActive(false);
+        dayPaused = false;
+    }
+    else if (gameSpeed == 1f)
+    {
+        gameSpeed = 2f;
+        monoSpeedIcon.SetActive(false);
+        doubleSpeedIcon.SetActive(true);
+    }
+    else if (gameSpeed == 2f)
+    {
+        HandlePause();
+    }
+}
+
+
+
+
+}
+

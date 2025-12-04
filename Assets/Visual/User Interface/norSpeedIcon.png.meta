@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: b541302cd64ae0d4888db6adc5ca46c2
+guid: 8821fda447923364283b4525c0d13d5b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8878088185706026076
-    second: pause_0
-  - first:
-      213: -175405258591694595
-    second: pause_1
+      213: -3712163174216816160
+    second: norSpeedIcon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pause_0
+      name: norSpeedIcon_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 96
-        height: 109
+        width: 27
+        height: 35
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4ab666e45d1bac480800000000000000
-      internalID: -8878088185706026076
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pause_1
-      rect:
-        serializedVersion: 2
-        x: 61
-        y: 0
-        width: 35
-        height: 109
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: df018edb8d5d09df0800000000000000
-      internalID: -175405258591694595
+      spriteID: 0e9258cc24fbb7cc0800000000000000
+      internalID: -3712163174216816160
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 78be110b3abc2c74d958ccb65c8bf2c7
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pause_0: -8878088185706026076
-      pause_1: -175405258591694595
+      norSpeedIcon_0: -3712163174216816160
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
