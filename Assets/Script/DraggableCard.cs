@@ -179,29 +179,9 @@ public class DraggableCard : MonoBehaviour
             }
         }
 
-        // 检查是否在 Shop / Sell 区域 
+        // =检查是否在 Shop / Sell 区域 
         TryBuyPackIfOnShop();
-
-        // 🔥 关键补丁：最后再找一次“真正的最终 stackRoot”，统一排一下
-        Card finalRootCard = null;
-        if (card != null)
-        {
-            Transform finalRoot = card.stackRoot != null ? card.stackRoot : card.transform;
-            finalRootCard = finalRoot.GetComponent<Card>();
-        }
-        else if (dragRoot != null)
-        {
-            finalRootCard = dragRoot.GetComponent<Card>();
-        }
-
-        if (finalRootCard != null)
-        {
-            finalRootCard.LayoutStack();
-        }
-
-        
     }
-
     
     /// 松手时检查：当前这叠在不在某个 Shop 或 Sell 区域上
     private void TryBuyPackIfOnShop()
