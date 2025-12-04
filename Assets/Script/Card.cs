@@ -32,6 +32,9 @@ public class Card : MonoBehaviour
 
     [Tooltip("是否已经初始化过 HP")]
     public bool hasInitHP = false;
+    
+    private CardStatsUI statsUI;
+    [HideInInspector] public bool isTopVisual = true;
 
     [HideInInspector] public BattleManager.BattleInstance currentBattle;
     
@@ -62,6 +65,8 @@ public class Card : MonoBehaviour
 
         GameObject infoBarObj = GameObject.FindWithTag("UI-Infobar");
         infoBar = infoBarObj.GetComponent<InfoBarIndep>();
+        
+        statsUI = GetComponent<CardStatsUI>();
     }
     
     public void EnsureHarvestInit()
@@ -109,7 +114,11 @@ public class Card : MonoBehaviour
         EnsureHarvestInit();
         FoodInit();
         HungerInit();
-        TryRegisterToManager();
+        
+        if (statsUI != null)
+        {
+            statsUI.ForceRefreshOnDataChanged();
+        }
     }
     
 
@@ -117,35 +126,39 @@ public class Card : MonoBehaviour
     public void JoinStackOf(Card target)
     {
         if (target == null) return;
-        
-        // stack的root
+    
         Transform sourceRoot = stackRoot != null ? stackRoot : transform;
-        // 目标stack的root
         Transform targetRoot = target.stackRoot != null ? target.stackRoot : target.transform;
 
-        // 自己已经在对方这个stack里了不用处理
         if (sourceRoot == targetRoot) return;
 
+        // 收集这一叠里所有 Card（包括 root 自己）
+        List<Card> cardsToMove = new List<Card>();
 
-        System.Collections.Generic.List<Transform> cardsToMove = new System.Collections.Generic.List<Transform>();
-        cardsToMove.Add(sourceRoot);
-        for (int i = 0; i < sourceRoot.childCount; i++)
+        Card rootCard = sourceRoot.GetComponent<Card>();
+        if (rootCard != null)
         {
-            cardsToMove.Add(sourceRoot.GetChild(i));
+            cardsToMove.Add(rootCard);
         }
 
-        // 把整叠所有卡都挂到 targetRoot 下，形成一个大stack
-        foreach (Transform t in cardsToMove)
+        for (int i = 0; i < sourceRoot.childCount; i++)
         {
-            t.SetParent(targetRoot);               
-            Card c = t.GetComponent<Card>();
-            if (c != null)
+            Transform child = sourceRoot.GetChild(i);
+            Card childCard = child.GetComponent<Card>();
+            if (childCard != null)
             {
-                c.stackRoot = targetRoot;          // 更新每张卡的 stackRoot 
+                cardsToMove.Add(childCard);
             }
         }
 
-        // 合并之后对新的 target stack 排
+        // 只移动 Card，对应的 StatsRoot 会跟着自己的 Card 一起走（因为是子物体）
+        foreach (Card c in cardsToMove)
+        {
+            Transform t = c.transform;
+            t.SetParent(targetRoot);
+            c.stackRoot = targetRoot;
+        }
+
         Card targetRootCard = targetRoot.GetComponent<Card>();
         if (targetRootCard != null)
         {
@@ -155,21 +168,54 @@ public class Card : MonoBehaviour
 
 
 
+
     /// stack的layout
     public void LayoutStack()
     {
         if (stackRoot == null) return;
 
-        yOffset = -0.5f; 
+        // 1. 先把这个 stack 里的所有 Card 的 isTopVisual 清零
+        foreach (Transform t in stackRoot)
+        {
+            Card c = t.GetComponent<Card>();
+            if (c != null)
+            {
+                c.isTopVisual = false;
+            }
+        }
 
         int i = 0;
+        Card lastCard = null;
+
+        // 2. 只移动真正的 Card 子物体
         foreach (Transform child in stackRoot)
         {
-            i++;
+            Card childCard = child.GetComponent<Card>();
+            if (childCard == null) continue;   // ⬅ UI、StatsRoot 都会被跳过
 
+            i++;
             child.localPosition = new Vector3(0f, i * yOffset, 0f);
+
+            lastCard = childCard;
+        }
+
+        // 3. 标记最上面那张卡
+        if (lastCard != null)
+        {
+            lastCard.isTopVisual = true;
+        }
+        else
+        {
+            // 没有子卡，只剩 root 自己一张
+            Card rootCard = stackRoot.GetComponent<Card>();
+            if (rootCard != null)
+            {
+                rootCard.isTopVisual = true;
+            }
         }
     }
+
+
 
 
 
@@ -203,29 +249,45 @@ public class Card : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// 从 stack 中抽出一张卡牌
-    /// </summary>
     public void TakeOutOfStack()
     {
         Transform root = stackRoot != null ? stackRoot : transform;
 
-        // 自己是stackRoot
+        // 自己是 stackRoot
         if (transform == root && root.childCount > 0)
         {
-            Transform newRoot = root.GetChild(0);
+            Transform newRoot = null;
             List<Transform> toMove = new List<Transform>();
 
-            for (int i = 1; i < root.childCount; i++)
+            // 在 child 里找 Card 组件：第一个 Card 当 newRoot，其余是 toMove
+            foreach (Transform child in root)
             {
-                toMove.Add(root.GetChild(i));
+                Card childCard = child.GetComponent<Card>();
+                if (childCard == null) continue;  // 跳过 StatsRoot 等 UI
+
+                if (newRoot == null)
+                {
+                    newRoot = child;
+                }
+                else
+                {
+                    toMove.Add(child);
+                }
             }
 
+            // 根本没有别的卡，那就不需要拆 stack
+            if (newRoot == null)
+            {
+                return;
+            }
+
+            // 把其它卡挂到 newRoot 下面
             foreach (Transform child in toMove)
             {
                 child.SetParent(newRoot);
             }
 
+            // newRoot 自己变成一个新的 stackRoot
             newRoot.SetParent(null);
             Card newRootCard = newRoot.GetComponent<Card>();
 
@@ -236,7 +298,6 @@ public class Card : MonoBehaviour
                 foreach (Transform t in newRoot)
                 {
                     Card c = t.GetComponent<Card>();
-
                     if (c != null)
                     {
                         c.stackRoot = newRoot;
@@ -246,47 +307,12 @@ public class Card : MonoBehaviour
                 newRootCard.LayoutStack();
             }
 
+            // 原来的 root 只剩自己（+自己的 UI），自己单独一张牌
             stackRoot = transform;
             transform.SetParent(null);
-            
         }
     }
 
-    // =========================== Card Manager Helpers ==========================
-
-    private void OnEnable()
-    {
-        TryRegisterToManager();
-    }
-
-    private void OnDisable()
-    {
-        if (CardManager.Instance != null && HasRegisteredToManager)
-        {
-            CardManager.Instance.UnregisterCard(this);
-        }
-    }
-
-    public void ChangeSaturation(int eaten)
-    {
-        int old = currentSaturation;
-        int now = old - eaten;
-        currentSaturation = now;
-
-        if (CardManager.Instance != null && data != null && data.cardClass == CardClass.Food)
-        {
-            CardManager.Instance.ReduceSaturation(eaten);
-        }
-    }
-
-    private void TryRegisterToManager()
-    {
-        if (HasRegisteredToManager) return;
-        if (CardManager.Instance == null) return;
-        if (data == null) return;   // 没 data 先别注册
-
-        CardManager.Instance.RegisterCard(this);
-    }
     
     /// <summary>
     /// 确保 currentHP 按 data 初始化一次

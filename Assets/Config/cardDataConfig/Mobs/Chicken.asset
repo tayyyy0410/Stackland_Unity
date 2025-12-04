@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Chicken_id
   displayName: Chicken
   description: Alleged descendent of dinosaurs. I don't see it
-  value: 0
+  value: 1
   hasSaturation: 0
   saturation: 0
   hasHunger: 0
@@ -34,6 +34,10 @@ MonoBehaviour:
   damage: 0
   hasIncreaseHP: 0
   IncreasedHP: 0
+  showHP: 1
+  showHunger: 0
+  showValue: 0
+  useDarkText: 1
   hasHealing: 0
   healing: 0
   cardClass: 6
