@@ -65,6 +65,8 @@ public class CardManager : MonoBehaviour
             return;
         }
 
+        if (card.data.cardClass == CardClass.Prefab) return;
+
         switch (data.cardClass)
         {
             case CardClass.Food:

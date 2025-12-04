@@ -104,16 +104,20 @@ public class DayManager : MonoBehaviour
 
         if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
 
+        if (CardManager.Instance == null) return;
+        if (CardManager.Instance.VillagerCards.Count <= 0)
+        {
+            Invoke(nameof(EnterGameOver), 1f);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             HandleFastForawrd();
-            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             HandlePause();
-            Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
         }
 
 
@@ -353,7 +357,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 视觉上villager饿死时，调用函数
+    /// 视觉上villager死掉时调用函数
     /// 变成尸体或者destroy
     /// </summary>
     public void KillVillager(Card villager)
@@ -389,10 +393,12 @@ public class DayManager : MonoBehaviour
         {
             gameSpeed = gameSpeed == 1 ? 2f : 1f;
         }
+        Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
     }
 
     private void HandlePause()
     {
         dayPaused = dayPaused ? false : true;
+        Debug.Log($"[DayManager]DayPaused: {dayPaused}");
     }
 }
