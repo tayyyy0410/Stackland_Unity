@@ -21,7 +21,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] private int totalSaturation;   
     [SerializeField] private int totalHunger;
     [SerializeField] private int maxCardCapacity;
-    private int fixedMaxCapcity = 3;
+    private int fixedMaxCapcity = 20;
 
     // UI: 其他 Class 调用的数据
     public int MaxCardCapacity => maxCardCapacity;  // UI: 卡牌容量上限
@@ -30,6 +30,8 @@ public class CardManager : MonoBehaviour
     public int TotalHunger => totalHunger;  // UI：需要的饱腹值
 
     public int NonCoinCount => AllCards.Count - CoinCount;  // UI：现有除了coin的卡牌数量
+    
+    // UI: 还需售卖卡牌数量：NonCoinCount - MaxCardCapacity
 
 
     private void Awake()
