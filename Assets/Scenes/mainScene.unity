@@ -2993,7 +2993,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 64463f85a089e5e4089cc15c89241197, type: 2}
   - {fileID: 11400000, guid: 3872fd5caa6ea934c81ee1435ff42231, type: 2}
   - {fileID: 11400000, guid: 1466d6309eb992e40a4a029b2e8c816a, type: 2}
-  cardPrefab: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  cardPrefab: {fileID: 4506365281572697528, guid: 37cb4e84b58269d40a721431f60109b4, type: 3}
   spawnOffset: {x: 1, y: 0}
   craftBarPrefab: {fileID: -6752873534920461831, guid: fda6b48d4455cfb47804b2350e92deef, type: 3}
 --- !u!4 &904393327
@@ -3027,7 +3027,7 @@ MonoBehaviour:
   battleStartDelay: 0.5
   verticalOffset: 1.15
   horizontalSpacing: 1.1
-  cardPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
+  cardPrefab: {fileID: 4506365281572697528, guid: 37cb4e84b58269d40a721431f60109b4, type: 3}
   lootOffset: {x: 0.7, y: 0}
   battleUICanvas: {fileID: 1598034075}
   hitRoot: {fileID: 1068792983}
@@ -3250,6 +3250,53 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1116719536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1116719538}
+  - component: {fileID: 1116719537}
+  m_Layer: 0
+  m_Name: CardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1116719537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1116719536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a7ba02d913e1f4ab9f9b3a4ebf29d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinCount: 0
+  totalSaturation: 0
+  totalHunger: 0
+--- !u!4 &1116719538
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1116719536}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.87949723, y: -0.8783064, z: 0.06828581}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5952,3 +5999,4 @@ SceneRoots:
   - {fileID: 50679031}
   - {fileID: 1113590716}
   - {fileID: 6310021188576465128}
+  - {fileID: 1116719538}

@@ -4,43 +4,41 @@ using UnityEngine;
 using System.Collections.Generic;
 
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
-
 public class Card : MonoBehaviour
 {
     [Header("Config")]
     public CardData data;        // 这张场上instance引用哪张 CardData
     private SpriteRenderer sr;
 
-    [Header("Stacking")] 
-    public Transform stackRoot; //一个stack的root
+    [Header("Stacking")]
+    public Transform stackRoot;  // 一个stack的root
     public float yOffset = -0.5f; // 往下偏移
-    
+
     [Header("Harvest Runtime")]
     [HideInInspector] public int harvestUsesLeft = -1;
 
     [Header("Feeding Runtime")]
-    public int currentSaturation = -1;  //food剩余的饱腹值，卡牌ui显示这个
-    public int currentHunger = 0;   //villager的饥饿值
-    public bool HasMovedDuringFeed { get; set; } = false;    //food是否在feeding过程中被抓取过
+    public int currentSaturation = -1;  // food 剩余的饱腹值，卡牌ui显示这个
+    public int currentHunger = 0;       // villager 的饥饿值
+    public bool HasMovedDuringFeed { get; set; } = false;    // food 是否在 feeding 过程中被抓取过
 
     [Header("UI Display")]
     private InfoBarIndep infoBar;
-    
+    private CardStatsUI statsUI;
+    [HideInInspector] public bool isTopVisual = true;
+
     [Header("Battle Runtime")]
     [Tooltip("当前 HP")]
     public int currentHP;
 
     [Tooltip("是否已经初始化过 HP")]
     public bool hasInitHP = false;
-    
-    private CardStatsUI statsUI;
-    [HideInInspector] public bool isTopVisual = true;
 
     [HideInInspector] public BattleManager.BattleInstance currentBattle;
-    
     public bool IsInBattle => currentBattle != null;
-    
 
+    // CardManager 相关
+    public bool HasRegisteredToManager { get; set; } = false;
 
     private void Awake()
     {
@@ -54,18 +52,34 @@ public class Card : MonoBehaviour
         {
             Debug.LogWarning($"{name} 没有设置 CardData！");
         }
-        
+
         if (stackRoot == null)
         {
             stackRoot = transform;
         }
 
         GameObject infoBarObj = GameObject.FindWithTag("UI-Infobar");
-        infoBar = infoBarObj.GetComponent<InfoBarIndep>();
-        
+        if (infoBarObj != null)
+        {
+            infoBar = infoBarObj.GetComponent<InfoBarIndep>();
+        }
+
         statsUI = GetComponent<CardStatsUI>();
     }
-    
+
+    private void OnEnable()
+    {
+        TryRegisterToManager();
+    }
+
+    private void OnDisable()
+    {
+        if (CardManager.Instance != null && HasRegisteredToManager)
+        {
+            CardManager.Instance.UnregisterCard(this);
+        }
+    }
+
     public void EnsureHarvestInit()
     {
         if (data == null) return;
@@ -83,47 +97,54 @@ public class Card : MonoBehaviour
         {
             currentSaturation = data.saturation;
         }
-        else currentSaturation = -1;    //不是食物没有饱腹值
+        else
+        {
+            currentSaturation = -1;    // 不是食物没有饱腹值
+        }
     }
 
     public void HungerInit()
     {
         if (data.cardClass == CardClass.Villager)
         {
-            sr= GetComponent<SpriteRenderer>();
+            sr = GetComponent<SpriteRenderer>();
             sr.sortingOrder = -100;
             currentHunger = data.hunger;
         }
-        else currentHunger = -1;    //不是villager没有饥饿值
+        else
+        {
+            currentHunger = -1;    // 不是 villager 没有饥饿值
+        }
     }
-
 
     public void ApplyData()
     {
-        // 替换Sprite
-        if (data.backgroundSprite != null)
+        // 替换 Sprite
+        if (data != null && data.backgroundSprite != null)
         {
             sr.sprite = data.backgroundSprite;
         }
-        
+
         harvestUsesLeft = -1;
         HasMovedDuringFeed = false;
         EnsureHarvestInit();
         FoodInit();
         HungerInit();
-        
+
         if (statsUI != null)
         {
             statsUI.ForceRefreshOnDataChanged();
         }
+
+        // 确保有 data 的牌会被 CardManager 统计
+        TryRegisterToManager();
     }
-    
 
     /// 把自己这一叠叠到 target 的那一叠上
     public void JoinStackOf(Card target)
     {
         if (target == null) return;
-    
+
         Transform sourceRoot = stackRoot != null ? stackRoot : transform;
         Transform targetRoot = target.stackRoot != null ? target.stackRoot : target.transform;
 
@@ -163,10 +184,7 @@ public class Card : MonoBehaviour
         }
     }
 
-
-
-
-    /// stack的layout
+    /// stack 的 layout
     public void LayoutStack()
     {
         if (stackRoot == null) return;
@@ -184,15 +202,14 @@ public class Card : MonoBehaviour
         int i = 0;
         Card lastCard = null;
 
-        // 2. 只移动真正的 Card 子物体
+        // 2. 只移动真正的 Card 子物体（跳过 StatsRoot 等 UI）
         foreach (Transform child in stackRoot)
         {
             Card childCard = child.GetComponent<Card>();
-            if (childCard == null) continue;   // ⬅ UI、StatsRoot 都会被跳过
+            if (childCard == null) continue;
 
             i++;
             child.localPosition = new Vector3(0f, i * yOffset, 0f);
-
             lastCard = childCard;
         }
 
@@ -203,7 +220,6 @@ public class Card : MonoBehaviour
         }
         else
         {
-            // 没有子卡，只剩 root 自己一张
             Card rootCard = stackRoot.GetComponent<Card>();
             if (rootCard != null)
             {
@@ -212,20 +228,21 @@ public class Card : MonoBehaviour
         }
     }
 
-
-
-
-
     private void OnMouseEnter()
     {
-        infoBar.ShowInfoBar(data);
+        if (infoBar != null && data != null)
+        {
+            infoBar.ShowInfoBar(data);
+        }
     }
 
     private void OnMouseExit()
     {
-        infoBar.HideInfoBar();
+        if (infoBar != null)
+        {
+            infoBar.HideInfoBar();
+        }
     }
-
 
     // ====================== Feeding Helpers =====================
     public bool IsTopOfStack()
@@ -241,11 +258,13 @@ public class Card : MonoBehaviour
             return false;
         }
 
-        return transform.parent == parentRoot && 
+        return transform.parent == parentRoot &&
                transform.GetSiblingIndex() == parentRoot.childCount - 1;
     }
 
-
+    /// <summary>
+    /// 从 stack 中抽出一张卡牌
+    /// </summary>
     public void TakeOutOfStack()
     {
         Transform root = stackRoot != null ? stackRoot : transform;
@@ -310,7 +329,28 @@ public class Card : MonoBehaviour
         }
     }
 
-    
+    // =========================== Card Manager Helpers ==========================
+    public void ChangeSaturation(int eaten)
+    {
+        int old = currentSaturation;
+        int now = old - eaten;
+        currentSaturation = now;
+
+        if (CardManager.Instance != null && data != null && data.cardClass == CardClass.Food)
+        {
+            CardManager.Instance.ReduceSaturation(eaten);
+        }
+    }
+
+    private void TryRegisterToManager()
+    {
+        if (HasRegisteredToManager) return;
+        if (CardManager.Instance == null) return;
+        if (data == null) return;   // 没 data 先别注册
+
+        CardManager.Instance.RegisterCard(this);
+    }
+
     /// <summary>
     /// 确保 currentHP 按 data 初始化一次
     /// </summary>
@@ -322,5 +362,4 @@ public class Card : MonoBehaviour
         currentHP = data != null ? data.baseHP : 0;
         hasInitHP = true;
     }
-
 }

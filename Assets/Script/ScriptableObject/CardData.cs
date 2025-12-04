@@ -16,6 +16,7 @@ public enum CardClass
     Idea,
     Equipment,
     Healing,
+    Prefab,
 }
 
 //卡牌的可配置数据
