@@ -3,30 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ¸ºÔğÔÚ DayManager µÄ FeedingAnimation / StarvingAnimation ×´Ì¬ÏÂ²¥·Å¾µÍ· + ¿¨ÅÆ¶¯»­£¬
-/// ²¢ÊµÊ±ĞŞ¸Ä Card.currentHunger / currentSaturation
-/// ²¥·ÅÍêºó»áµ÷ÓÃ DayManager.OnFeedingAnimationFinished / OnStarvingAnimationFinished
-/// Ê¹ÓÃ unscaled time£¬ÕâÑù¼´Ê¹ timeScale = 0 ¶¯»­Ò²»áÕı³£²¥·Å
+/// è´Ÿè´£åœ¨ DayManager çš„ FeedingAnimation / StarvingAnimation çŠ¶æ€ä¸‹æ’­æ”¾é•œå¤´ + å¡ç‰ŒåŠ¨ç”»ï¼Œ
+/// å¹¶å®æ—¶ä¿®æ”¹ Card.currentHunger / currentSaturation
+/// æ’­æ”¾å®Œåä¼šè°ƒç”¨ DayManager.OnFeedingAnimationFinished / OnStarvingAnimationFinished
+/// ä½¿ç”¨ unscaled timeï¼Œè¿™æ ·å³ä½¿ timeScale = 0 åŠ¨ç”»ä¹Ÿä¼šæ­£å¸¸æ’­æ”¾
 /// </summary>
 
 public class FeedAnimationController : MonoBehaviour
 {
     [Header("Camera")]
     public Camera targetCamera;                 
-    public float zoomInSize = 3f;       // ¾µÍ·¾Û½¹´åÃñÊ±µÄ orthographic size
-    public float zoomOutSize = 6f;      // ¶¯»­½áÊøºó»Ö¸´µÄ orthographic size
-    public float cameraMoveDuration = 0.5f;     // ¾µÍ·ÒÆ¶¯ + Ëõ·ÅÊ±³¤
+    public float zoomInSize = 3f;       // é•œå¤´èšç„¦æ‘æ°‘æ—¶çš„ orthographic size
+    public float zoomOutSize = 6f;      // åŠ¨ç”»ç»“æŸåæ¢å¤çš„ orthographic size
+    public float cameraMoveDuration = 0.5f;     // é•œå¤´ç§»åŠ¨ + ç¼©æ”¾æ—¶é•¿
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f);
 
     [Header("Feeding Animation")]
-    public float delayBeforeFeeding = 0.3f;     // ½øÈë FeedingAnimation ºóÉÔµÈ
-    public float delayBetweenVillagers = 0.4f;      // Ã¿¸ö villager Ö®¼ä¼ä¸ô
-    public float foodMoveDuration = 0.35f;      // Ê³Îï·Éµ½ villager ÉíÉÏµÄÊ±¼ä
-    public float foodHoldDuration = 0.3f;       // Ê³ÎïÍ£ÔÚ villager ÉíÉÏµÄÊ±¼ä
+    public float delayBeforeFeeding = 0.3f;     // è¿›å…¥ FeedingAnimation åç¨ç­‰
+    public float delayBetweenVillagers = 0.4f;      // æ¯ä¸ª villager ä¹‹é—´é—´éš”
+    public float foodMoveDuration = 0.35f;      // é£Ÿç‰©é£åˆ° villager èº«ä¸Šçš„æ—¶é—´
+    public float foodHoldDuration = 0.3f;       // é£Ÿç‰©åœåœ¨ villager èº«ä¸Šçš„æ—¶é—´
 
     [Header("Starving Animation")]
-    public float delayBeforeStarving = 0.3f;        // ½øÈë StarvingAnimation ºóÉÔµÈ
-    public float starvingPerVillagerDelay = 0.6f;       // Ã¿¸öÒªËÀµôµÄ´åÃñµÄÕ¹Ê¾Ê±¼ä
+    public float delayBeforeStarving = 0.3f;        // è¿›å…¥ StarvingAnimation åç¨ç­‰
+    public float starvingPerVillagerDelay = 0.6f;       // æ¯ä¸ªè¦æ­»æ‰çš„æ‘æ°‘çš„å±•ç¤ºæ—¶é—´
 
     private bool isPlaying = false;
     private Vector3 originalCameraPos;
@@ -48,7 +48,7 @@ public class FeedAnimationController : MonoBehaviour
         if (DayManager.Instance != null)
         {
             DayManager.Instance.OnStateChanged += HandleDayStateChanged;
-            // ¶©ÔÄ DayManager µÄ State ±ä»¯
+            // è®¢é˜… DayManager çš„ State å˜åŒ–
         }
     }
 
@@ -61,7 +61,7 @@ public class FeedAnimationController : MonoBehaviour
     }
 
 
-    // ½ÓÊÕ DayManager µÄ State ±ä»¯£¬Èç¹ûÊÇ AnimationState ¾Í¿ªÊ¼¾µÍ·¶¯»­
+    // æ¥æ”¶ DayManager çš„ State å˜åŒ–ï¼Œå¦‚æœæ˜¯ AnimationState å°±å¼€å§‹é•œå¤´åŠ¨ç”»
     private void HandleDayStateChanged(DayManager.DayState state)
     {
         if (state == DayManager.DayState.FeedingAnimation)
@@ -84,8 +84,8 @@ public class FeedAnimationController : MonoBehaviour
     // ================== Feeding Animation ==================
 
     /// <summary>
-    /// ²¥·ÅÎ¹Ê³¶¯»­£ºÒÀ´Î¾µÍ·¶Ô×¼Ã¿¸ö villager
-    /// ³Ô·¹Í¬Ê±update currentHunger / currentSaturation
+    /// æ’­æ”¾å–‚é£ŸåŠ¨ç”»ï¼šä¾æ¬¡é•œå¤´å¯¹å‡†æ¯ä¸ª villager
+    /// åƒé¥­åŒæ—¶update currentHunger / currentSaturation
     /// </summary>
     private IEnumerator PlayFeedingSequence()
     {
@@ -97,130 +97,92 @@ public class FeedAnimationController : MonoBehaviour
         isPlaying = true;
         var dm = DayManager.Instance;
 
-        // ´Ó³¡¾°ÀïÖØĞÂÉ¨Ò»±éµ±Ç°µÄ villager / food
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
-        List<Card> villagers = new List<Card>();
-        List<Card> foods = new List<Card>();
+        // ä»åœºæ™¯é‡Œé‡æ–°æ‰«ä¸€éå½“å‰çš„ villager / food
 
-        foreach (var c in allCards)
+        if (CardManager.Instance == null)
         {
-            if (c == null || c.data == null) continue;
-
-            if (c.data.cardClass == CardClass.Villager)
-            {
-                villagers.Add(c);
-            }
-            else if (c.data.cardClass == CardClass.Food &&
-                     c.data.hasSaturation &&
-                     c.data.saturation > 0 &&
-                     c.currentSaturation > 0)
-            {
-                foods.Add(c);
-            }
+            yield break;
         }
+        var cm = CardManager.Instance;
 
-        if (foods.Count > 0)
+        if (cm.VillagerCards.Count == 0)
         {
-            sortFoodQueue(foods);
-        }
-
-        if (villagers.Count == 0)
-        {
-            // Ã»ÓĞ´åÃñ£¬Ö±½Ó½áÊø
+            // æ²¡æœ‰æ‘æ°‘ï¼Œç›´æ¥ç»“æŸ
             dm.OnFeedingAnimationFinished();
             isPlaying = false;
             yield break;
         }
 
-        // ±¸·İÏà»ú×´Ì¬
+        // å¤‡ä»½ç›¸æœºçŠ¶æ€
         originalCameraPos = targetCamera.transform.position;
         if (targetCamera.orthographic)
         {
             originalCameraSize = targetCamera.orthographicSize;
         }
 
-        // µÈÒ»µãÊ±¼ä£¬ÈÃ UI ÇĞ»»ºÃ
+        // ç­‰ä¸€ç‚¹æ—¶é—´ï¼Œè®© UI åˆ‡æ¢å¥½
         yield return new WaitForSecondsRealtime(delayBeforeFeeding);
 
-        // ¶ÔÃ¿¸ö villager ÒÀ´Î¾Û½¹ + Ê³Îï·É¹ıÈ¥
-        foreach (Card villager in villagers)
+        // å¯¹æ¯ä¸ª villager ä¾æ¬¡èšç„¦ + é£Ÿç‰©é£è¿‡å»
+        foreach (Card villager in cm.VillagerCards)
         {
-            if (foods.Count == 0) break;
+            if (cm.FoodCards.Count == 0) break;
             if (villager == null) continue;
 
             if (villager.currentHunger <= 0)
                 continue;
 
-            // ¾µÍ·¶Ô×¼Õâ¸ö villager
+            // é•œå¤´å¯¹å‡†è¿™ä¸ª villager
             yield return MoveCameraToTarget(villager.transform.position);
             
 
-            // Ö»ÒªÕâ¸öÈË»¹Ã»³Ô±¥ÇÒ»¹ÓĞ¿ÉÓÃÊ³Îï£¬¾ÍÒ»¿ÚÒ»¿Ú³Ô
+            // åªè¦è¿™ä¸ªäººè¿˜æ²¡åƒé¥±ä¸”è¿˜æœ‰å¯ç”¨é£Ÿç‰©ï¼Œå°±ä¸€å£ä¸€å£åƒ
             while (villager.currentHunger > 0)
             {
-                // ÕÒµÚÒ»¸ö»¹ÓĞ±¥¸¹ÖµµÄÊ³Îï
+                // æ‰¾ç¬¬ä¸€ä¸ªè¿˜æœ‰é¥±è…¹å€¼çš„é£Ÿç‰©
                 Card food = null;
-                for (int i = 0; i < foods.Count; i++)
+                for (int i = 0; i < cm.FoodCards.Count; i++)
                 {
-                    if (foods[i] != null && foods[i].currentSaturation > 0)
+                    if (cm.FoodCards[i] != null && cm.FoodCards[i].currentSaturation > 0)
                     {
-                        food = foods[i];
+                        food = cm.FoodCards[i];
                         break;
                     }
                 }
 
                 if (food == null)
                 {
-                    // Ã»ÓĞ¿ÉÓÃÊ³ÎïÁË£¬Õâ¸ö villager ºóÃæÒ²³Ô²»µ½ÁË
+                    // æ²¡æœ‰å¯ç”¨é£Ÿç‰©äº†ï¼Œè¿™ä¸ª villager åé¢ä¹Ÿåƒä¸åˆ°äº†
                     break;
                 }
 
-                // ÕâÒ»¿ÚÄÜ³Ô¶àÉÙ±¥¸¹Öµ
+                // è¿™ä¸€å£èƒ½åƒå¤šå°‘é¥±è…¹å€¼
                 int eatAmount = Mathf.Min(villager.currentHunger, food.currentSaturation);
                 food.TakeOutOfStack();
 
-                // ²¥·ÅÒ»¿Ú³Ô·¹µÄ¶¯»­£¬²¢ÔÚ¶¯»­ÖĞ¿Û currentSaturation ºÍ currentHunger
+                // æ’­æ”¾ä¸€å£åƒé¥­çš„åŠ¨ç”»ï¼Œå¹¶åœ¨åŠ¨ç”»ä¸­æ‰£ currentSaturation å’Œ currentHunger
                 yield return AnimateFoodBite(food, villager, eatAmount);
 
-                // Èç¹ûÕâ¸öÊ³Îï±»³Ô¹âÁË£¬´ÓÁĞ±íÖĞÒÆ³ı
-                if (food == null || food.currentSaturation <= 0 || food.gameObject == null)
-                {
-                    foods.Remove(food);
-                }
-
-                // ¼ì²éÊÇ·ñ»¹ÓĞÈÎºÎÊ³Îï
-                bool anyFoodLeft = false;
-                for (int i = 0; i < foods.Count; i++)
-                {
-                    if (foods[i] != null && foods[i].currentSaturation > 0)
-                    {
-                        anyFoodLeft = true;
-                        sortFoodQueue(foods);
-                        break;
-                    }
-                }
-                if (!anyFoodLeft)
+                // æ£€æŸ¥æ˜¯å¦è¿˜æœ‰ä»»ä½•é£Ÿç‰©
+                if (cm.FoodCards.Count == 0 || cm.TotalSaturation == 0)
                 {
                     break;
                 }
 
-                // Ã¿Á½¿ÚÖ®¼äÉÔÎ¢Í£Ò»ÏÂ
+                // æ¯ä¸¤å£ä¹‹é—´ç¨å¾®åœä¸€ä¸‹
                 yield return new WaitForSecondsRealtime(0.1f);
             }
 
-            // Ã¿¸ö villager Ö®¼äÁôÒ»µãÊ±¼ä
+            // æ¯ä¸ª villager ä¹‹é—´ç•™ä¸€ç‚¹æ—¶é—´
             yield return new WaitForSecondsRealtime(delayBetweenVillagers);
         }
 
-        // ¾µÍ·À­»Ø
+        // é•œå¤´æ‹‰å›
         yield return MoveCameraTo(originalCameraPos,
             (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
-        foods.Clear();
-
-        // ÖØĞÂlayout³¡¾°ÖĞËùÓĞ¿¨ÅÆ
-        Card[] all = FindObjectsByType<Card>(FindObjectsSortMode.None);
-        foreach (Card c in all)
+        // é‡æ–°layoutåœºæ™¯ä¸­æ‰€æœ‰å¡ç‰Œ
+        foreach (Card c in cm.AllCards)
         {
             if (c.transform == c.stackRoot)
             {
@@ -234,8 +196,8 @@ public class FeedAnimationController : MonoBehaviour
             }
         }
 
-        // ´ËÊ± currentHunger / currentSaturation ÒÑ¾­¸üĞÂÍê³É£¬µÈ´ı½áËã±¾ÂÖ
-        // Í¨Öª DayManager ¶¯»­Íê³É£¬ÇĞ»» State
+        // æ­¤æ—¶ currentHunger / currentSaturation å·²ç»æ›´æ–°å®Œæˆï¼Œç­‰å¾…ç»“ç®—æœ¬è½®
+        // é€šçŸ¥ DayManager åŠ¨ç”»å®Œæˆï¼Œåˆ‡æ¢ State
         dm.OnFeedingAnimationFinished();
 
         isPlaying = false;
@@ -243,25 +205,7 @@ public class FeedAnimationController : MonoBehaviour
 
 
     /// <summary>
-    /// ÅÅÁĞÊ³Îï£¬°ÑÃ»ÓĞ child stack µÄÊ³ÎïÅÅµ½×îÇ°
-    /// ·ÀÖ¹ stackRoot ´ø×ÅÒ»Õû¸ö stack ·ÉÁË£¬£¬
-    /// </summary>
-    private void sortFoodQueue(List<Card> foods)
-    {
-        for (int i = 0; i < foods.Count; i++)
-        {
-            if (foods[i].IsTopOfStack())
-            {
-                var temp = foods[i];
-                foods.RemoveAt(i);
-                foods.Insert(0, temp);
-            }
-        }
-    }
-
-
-    /// <summary>
-    /// Ò»¿Ú³Ô·¹£ºÊ³Îï·Éµ½ villager Éí±ß£¬¿ÛÊıÖµ£¬hoverÍ£ÁôÒ»ÏÂ£¬³Ô¹â¾Í Destroy£¬·ñÔò·É»ØÔ­Î»
+    /// ä¸€å£åƒé¥­ï¼šé£Ÿç‰©é£åˆ° villager èº«è¾¹ï¼Œæ‰£æ•°å€¼ï¼Œhoveråœç•™ä¸€ä¸‹ï¼Œåƒå…‰å°± Destroyï¼Œå¦åˆ™é£å›åŸä½
     /// </summary>
     private IEnumerator AnimateFoodBite(Card food, Card villager, int eatAmount)
     {
@@ -273,7 +217,7 @@ public class FeedAnimationController : MonoBehaviour
 
         float t = 0f;
 
-        // È·±£Ê³ÎïÊ¼ÖÕÔÚvillagerÉÏ²ãÏÔÊ¾
+        // ç¡®ä¿é£Ÿç‰©å§‹ç»ˆåœ¨villagerä¸Šå±‚æ˜¾ç¤º
         var villagerSR = villager.GetComponent<SpriteRenderer>();
         var foodSR = food.GetComponent<SpriteRenderer>();
         int villagerSO = villagerSR.sortingOrder;
@@ -283,7 +227,7 @@ public class FeedAnimationController : MonoBehaviour
 
         food.HasMovedDuringFeed = true;
 
-        // ·É¹ıÈ¥
+        // é£è¿‡å»
         while (t < foodMoveDuration)
         {
             t += Time.unscaledDeltaTime;
@@ -300,23 +244,23 @@ public class FeedAnimationController : MonoBehaviour
             foodTf.position = targetPos;
         }
 
-        // ·Éµ½villagerÁ³ÉÏºó¸Ä±ä foodµÄ±¥¸¹Öµ ºÍ villagerµÄ¼¢¶öÖµ
+        // é£åˆ°villagerè„¸ä¸Šåæ”¹å˜ foodçš„é¥±è…¹å€¼ å’Œ villagerçš„é¥¥é¥¿å€¼
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
-        food.currentSaturation = Mathf.Max(0, food.currentSaturation - eatAmount);
+        food.ChangeSaturation(eatAmount);
 
-        // Í£ÁôÒ»ÏÂ
+        // åœç•™ä¸€ä¸‹
         yield return new WaitForSecondsRealtime(foodHoldDuration);
 
         bool isDepleted = food.currentSaturation <= 0;
 
         if (isDepleted)
         {
-            // Ê³Îï³Ô¹â£¬Ïú»Ù¿¨ÅÆ
+            // é£Ÿç‰©åƒå…‰ï¼Œé”€æ¯å¡ç‰Œ
             DayManager.Instance.ConsumeFoodCompletely(food);
         }
         else
         {
-            // Ê³Îï»¹ÓĞ±¥¸¹Öµ£¬·É»ØÔ­Î»
+            // é£Ÿç‰©è¿˜æœ‰é¥±è…¹å€¼ï¼Œé£å›åŸä½
             t = 0f;
             while (t < foodMoveDuration)
             {
@@ -351,41 +295,41 @@ public class FeedAnimationController : MonoBehaviour
         isPlaying = true;
         var dm = DayManager.Instance;
 
-        // ´Ó DayManager ÄÃµ½±¾ÂÖÒª¶öËÀµÄ´åÃñÁĞ±í
+        // ä» DayManager æ‹¿åˆ°æœ¬è½®è¦é¥¿æ­»çš„æ‘æ°‘åˆ—è¡¨
         List<Card> hungryVillagers = new List<Card>(dm.LastHungryVillagers);
 
-        // ±¸·İÏà»ú
+        // å¤‡ä»½ç›¸æœº
         originalCameraPos = targetCamera.transform.position;
         if (targetCamera.orthographic)
         {
             originalCameraSize = targetCamera.orthographicSize;
         }
 
-        // µÈÒ»µãÊ±¼äÈÃ UI ÇĞ»»ºÃ
+        // ç­‰ä¸€ç‚¹æ—¶é—´è®© UI åˆ‡æ¢å¥½
         yield return new WaitForSecondsRealtime(delayBeforeStarving);
 
         foreach (Card villager in hungryVillagers)
         {
             if (villager == null) continue;
 
-            // ¾µÍ·¶Ô×¼Õâ¸ö villager
+            // é•œå¤´å¯¹å‡†è¿™ä¸ª villager
             yield return MoveCameraToTarget(villager.transform.position);
 
-            // Í£¶ÙÒ»ÏÂ
+            // åœé¡¿ä¸€ä¸‹
             yield return new WaitForSecondsRealtime(starvingPerVillagerDelay * 0.5f);
 
-            // µ÷ÓÃ DayManager£¬°ÑÕâ¸ö villager ±äÊ¬Ìå / Destroy
+            // è°ƒç”¨ DayManagerï¼ŒæŠŠè¿™ä¸ª villager å˜å°¸ä½“ / Destroy
             DayManager.Instance.KillVillager(villager);
 
-            // ÔÙµÈÒ»»á¶ùÔÙÈ¥ÏÂÒ»¸ö villager
+            // å†ç­‰ä¸€ä¼šå„¿å†å»ä¸‹ä¸€ä¸ª villager
             yield return new WaitForSecondsRealtime(starvingPerVillagerDelay * 0.5f);
         }
 
-        // ¾µÍ·À­»Ø
+        // é•œå¤´æ‹‰å›
         yield return MoveCameraTo(originalCameraPos,
             (originalCameraSize > 0 && targetCamera.orthographic) ? originalCameraSize : zoomOutSize);
 
-        // Í¨Öª DayManager ¶¯»­Íê³É£¬ÇĞ»» State
+        // é€šçŸ¥ DayManager åŠ¨ç”»å®Œæˆï¼Œåˆ‡æ¢ State
         DayManager.Instance.OnStarvingAnimationFinished();
 
         isPlaying = false;

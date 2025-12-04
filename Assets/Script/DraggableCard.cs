@@ -28,6 +28,16 @@ public class DraggableCard : MonoBehaviour
     {
         if (!CanInteract()) return;
 
+        // 战斗：如果这是正在战斗中的村民 ，拖动时先中断战斗 
+        if (cam == null) cam = Camera.main;
+        if (card != null && card.data != null && card.data.cardClass == CardClass.Villager)
+        {
+            if (card.IsInBattle && BattleManager.Instance != null)
+            {
+                BattleManager.Instance.StopBattleFor(card);
+            }
+        }
+
         if (card == null)
         {
             dragRoot = transform;
@@ -141,23 +151,57 @@ public class DraggableCard : MonoBehaviour
         if (!isDragging) return;
         isDragging = false;
 
-        // 尝试和附近的 stack 合并
-        TryStackOnOtherCard();
+        if (dragRoot == null) return;
 
-        // stack 结束后，尝试触发 recipe
-        if (RecipeManager.Instance != null)
+        Card rootCard = dragRoot.GetComponent<Card>();
+
+        // 优先尝试开始战斗
+        if (rootCard != null)
         {
-            Transform rootTransform = dragRoot != null ? dragRoot : transform;
-            Card rootCard = rootTransform.GetComponent<Card>();
-            if (rootCard != null)
+            if (TryStartBattle(rootCard))
             {
-                RecipeManager.Instance.TryCraftFromStack(rootCard);
+                // 开战以后不进行堆叠/合成/买卖
+                return;
             }
         }
 
-        // 松手时检查是否在 Shop / Sell 区域
+        //  尝试和附近的 stack 合并
+        TryStackOnOtherCard();
+
+        //  触发 recipe
+        if (RecipeManager.Instance != null)
+        {
+            Transform rootTransform = dragRoot != null ? dragRoot : transform;
+            Card rootCard2 = rootTransform.GetComponent<Card>();
+            if (rootCard2 != null)
+            {
+                RecipeManager.Instance.TryCraftFromStack(rootCard2);
+            }
+        }
+
+        // 检查是否在 Shop / Sell 区域 
         TryBuyPackIfOnShop();
+
+        // 🔥 关键补丁：最后再找一次“真正的最终 stackRoot”，统一排一下
+        Card finalRootCard = null;
+        if (card != null)
+        {
+            Transform finalRoot = card.stackRoot != null ? card.stackRoot : card.transform;
+            finalRootCard = finalRoot.GetComponent<Card>();
+        }
+        else if (dragRoot != null)
+        {
+            finalRootCard = dragRoot.GetComponent<Card>();
+        }
+
+        if (finalRootCard != null)
+        {
+            finalRootCard.LayoutStack();
+        }
+
+        
     }
+
     
     /// 松手时检查：当前这叠在不在某个 Shop 或 Sell 区域上
     private void TryBuyPackIfOnShop()
@@ -205,8 +249,6 @@ public class DraggableCard : MonoBehaviour
                 return;
             }
         }
-
-        
     }
 
     /// 检测周围有没有其他牌，用来自动堆叠
@@ -238,7 +280,6 @@ public class DraggableCard : MonoBehaviour
         }
     }
 
-
     // 在结算阶段锁死卡牌拖拽
     private bool CanInteract()
     {
@@ -250,5 +291,41 @@ public class DraggableCard : MonoBehaviour
         {
             return DayManager.Instance.CurrentState == DayManager.DayState.Running;
         }
+    }
+
+    // 战斗触发检测
+    private bool TryStartBattle(Card rootCard)
+    {
+        if (rootCard == null || rootCard.data == null) return false;
+        if (BattleManager.Instance == null) return false;
+
+        // 只有村民主动开战
+        if (rootCard.data.cardClass != CardClass.Villager) return false;
+
+        float r = 0.3f;
+        Vector3 center = rootCard.stackRoot != null ? rootCard.stackRoot.position : rootCard.transform.position;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(center, r);
+        foreach (var hit in hits)
+        {
+            if (hit == null) continue;
+
+            // 忽略自己和自己的 stack
+            if (hit.transform == rootCard.transform ||
+                (rootCard.stackRoot != null && hit.transform.IsChildOf(rootCard.stackRoot)))
+                continue;
+
+            Card otherCard = hit.GetComponent<Card>();
+            if (otherCard == null || otherCard.data == null) continue;
+
+            if (otherCard.data.cardClass == CardClass.Enemy ||
+                otherCard.data.cardClass == CardClass.Animals)
+            {
+                BattleManager.Instance.StartBattle(rootCard, otherCard);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

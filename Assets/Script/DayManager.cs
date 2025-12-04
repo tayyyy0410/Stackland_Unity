@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// ¹ÜÀíÌìÊı£¬Ã¿ÌìµÄµ¹¼ÆÊ±Ìõ£¬Ã¿Ìì½áÊøÖ®ºóµÄfeed½áËã
-/// CardData ÀïµÄ saturation ºÍ hunger ·Ö±ğ¶ÔÓ¦Ê³ÎïµÄÄ¬ÈÏ±¥¸¹Öµ£¬ºÍ´åÃñµÄÃ¿ÌìĞèÒªµÄ±¥¸¹Öµ£¨¼¢¶öÖµ£©
-/// Card ĞÂÔö currentSaturation ºÍ currentHunger Îªµ±Ç°±¥¸¹ÖµºÍ¼¢¶öÖµ£¬ÓÃÓÚ½áËã
-/// ÅäºÏ PanelManager Ê³ÓÃ£¨£©£¬UI¶¼¹éPanelManager¹Ü£¬ÕâÀïÖ»¹ÜÒ»¸öÃ¿ÌìµÄ¶ÁÌõµ¹¼ÆÊ±
+/// ç®¡ç†å¤©æ•°ï¼Œæ¯å¤©çš„å€’è®¡æ—¶æ¡ï¼Œæ¯å¤©ç»“æŸä¹‹åçš„feedç»“ç®—
+/// CardData é‡Œçš„ saturation å’Œ hunger åˆ†åˆ«å¯¹åº”é£Ÿç‰©çš„é»˜è®¤é¥±è…¹å€¼ï¼Œå’Œæ‘æ°‘çš„æ¯å¤©éœ€è¦çš„é¥±è…¹å€¼ï¼ˆé¥¥é¥¿å€¼ï¼‰
+/// Card æ–°å¢ currentSaturation å’Œ currentHunger ä¸ºå½“å‰é¥±è…¹å€¼å’Œé¥¥é¥¿å€¼ï¼Œç”¨äºç»“ç®—
+/// é…åˆ PanelManager é£Ÿç”¨ï¼ˆï¼‰ï¼ŒUIéƒ½å½’PanelManagerç®¡ï¼Œè¿™é‡Œåªç®¡ä¸€ä¸ªæ¯å¤©çš„è¯»æ¡å€’è®¡æ—¶
 /// </summary>
 
 public class DayManager : MonoBehaviour
@@ -17,65 +16,59 @@ public class DayManager : MonoBehaviour
 
     public enum DayState
     {
-        Running,        // Õı³£Íæ
-        WaitingFeed,        // Ò»Ìì½áÊø£¬µÈ´ıÍæ¼Ò°´ Feed£¨È«¾Ö¶³½á£©
-        FeedingAnimation,       // ½øÊ³¶¯»­²¥·ÅÖĞ£¨ÉãÏñ»úÒÀ´Î¾Û½¹´åÃñ + Ê³Îï¿¨·ÉÀ´·ÉÈ¥£©
-        FeedingResultAllFull,       // ¶¯»­½áÊø£¬±¾ÂÖËùÓĞÈË¶¼³Ô±¥µÄ½áËã UI
-        FeedingResultHungry,        // ¶¯»­½áÊø£¬ÓĞÈËÃ»³Ô±¥µÄ½áËã UI£¨ÏÔÊ¾¡°°¡Å¶¡±£©
-        StarvingAnimation,      // µã»÷¡°°¡Å¶¡±ºó£¬Ã»³Ô±¥µÄÈËÒ»¸ö¸ö±äÊ¬ÌåµÄ¶¯»­
-        WaitingNextDay,     // »¹ÓĞ»îÈË£¬µÈ´ıµã»÷¡°¿ªÊ¼ÏÂÒ»Ìì¡±
-        WaitingEndGame,     // ËÀÍö¶¯»­²¥Íê£¬ËÀ¹âÁË£¬µÈ´ıµã»÷¡°½áÊøÓÎÏ·¡±
-        GameOver        // ÕæÕıµÄGameOver½áËãÒ³Ãæ
+        Running,        // æ­£å¸¸ç©
+        WaitingFeed,        // ä¸€å¤©ç»“æŸï¼Œç­‰å¾…ç©å®¶æŒ‰ Feedï¼ˆå…¨å±€å†»ç»“ï¼‰
+        FeedingAnimation,       // è¿›é£ŸåŠ¨ç”»æ’­æ”¾ä¸­ï¼ˆæ‘„åƒæœºä¾æ¬¡èšç„¦æ‘æ°‘ + é£Ÿç‰©å¡é£æ¥é£å»ï¼‰
+        FeedingResultAllFull,       // åŠ¨ç”»ç»“æŸï¼Œæœ¬è½®æ‰€æœ‰äººéƒ½åƒé¥±çš„ç»“ç®— UI
+        FeedingResultHungry,        // åŠ¨ç”»ç»“æŸï¼Œæœ‰äººæ²¡åƒé¥±çš„ç»“ç®— UIï¼ˆæ˜¾ç¤ºâ€œå•Šå“¦â€ï¼‰
+        StarvingAnimation,      // ç‚¹å‡»â€œå•Šå“¦â€åï¼Œæ²¡åƒé¥±çš„äººä¸€ä¸ªä¸ªå˜å°¸ä½“çš„åŠ¨ç”»
+        WaitingNextDay,     // è¿˜æœ‰æ´»äººï¼Œç­‰å¾…ç‚¹å‡»â€œå¼€å§‹ä¸‹ä¸€å¤©â€
+        WaitingEndGame,     // æ­»äº¡åŠ¨ç”»æ’­å®Œï¼Œæ­»å…‰äº†ï¼Œç­‰å¾…ç‚¹å‡»â€œç»“æŸæ¸¸æˆâ€
+        GameOver        // çœŸæ­£çš„GameOverç»“ç®—é¡µé¢
     }
 
     [Header("Moon Settings")]
-    [Tooltip("Ã¿¸ö Moon µÄ³¤¶È£¨Ãë£©")]
+    [Tooltip("æ¯ä¸ª Moon çš„é•¿åº¦ï¼ˆç§’ï¼‰")]
     public float moonLength = 120f;
 
-    [Tooltip("¿ªÊ¼Ê±ÊÇµÚ¼¸¸ö Moon£¨Ò»°ãÊÇ 1£©")]
+    [Tooltip("å¼€å§‹æ—¶æ˜¯ç¬¬å‡ ä¸ª Moonï¼ˆä¸€èˆ¬æ˜¯ 1ï¼‰")]
     public int startMoon = 1;
 
-    [Header("Day Progress UI")]     // day progressµÄ¶ÁÌõ
-    [Tooltip("ÏÔÊ¾ Moon ½ø¶ÈµÄ Image£¬Type Òª¸Ä³É Filled, Horizontal")]
+    [Header("Day Progress UI")]     // day progressçš„è¯»æ¡
+    [Tooltip("æ˜¾ç¤º Moon è¿›åº¦çš„ Imageï¼ŒType è¦æ”¹æˆ Filled, Horizontal")]
     public Image moonProgressFill;
 
-    [Tooltip("ÏÔÊ¾µ±Ç° Moon ÎÄ±¾£¬±ÈÈç `Moon 1`")]
+    [Tooltip("æ˜¾ç¤ºå½“å‰ Moon æ–‡æœ¬ï¼Œæ¯”å¦‚ `Moon 1`")]
     public TMP_Text moonText;
 
     [Header("Villager & Food")]
-    [Tooltip("Villager ¶öËÀÖ®ºó±ä³ÉµÄÊ¬Ìå¿¨£¨¿ÉÒÔÎª¿Õ£¬Îª¿ÕÔòÖ±½Ó Destroy£©")]
+    [Tooltip("Villager é¥¿æ­»ä¹‹åå˜æˆçš„å°¸ä½“å¡ï¼ˆå¯ä»¥ä¸ºç©ºï¼Œä¸ºç©ºåˆ™ç›´æ¥ Destroyï¼‰")]
     public CardData corpseCardData;
 
     [Header("Time Scale")]
     public float gameSpeed = 1f;
     public bool dayPaused = false;
-    public GameObject pauseIcon;
-    public GameObject monoSpeedIcon;
-    public GameObject doubleSpeedIcon;
-    public GameObject pauseBack;
-    // ÕâÀïĞèÒªÒ»¸öui£¬¾ÍÊÇ¶ÁÌõÉÏÃæÏÔÊ¾µÄ±êÊ¶
-    // Õı³£ËÙ¶È (gameSpeed == 1) µÄÊ±ºòÊÇÒ»¸öĞ¡Èı½Ç£¬¿ì½ø (gameSpeed == 2) ÊÇÒ»¸ö¿ì½ø±êÊ¶
-    // ÔİÍ£ (dayPaused£©ÓĞÒ»¸ö»ÒÉ«ÃÉ°æ
-    // !µ«ÊÇÔİÍ£µÄÊ±ºò²»ÒªÇĞ»» Panel »òÕß DayState£¬´úÂë»¹ÊÇĞ´ÔÚ DayState.Running ÏÂµÄ
+    // è¿™é‡Œéœ€è¦ä¸€ä¸ªuiï¼Œå°±æ˜¯è¯»æ¡ä¸Šé¢æ˜¾ç¤ºçš„æ ‡è¯†
+    // æ­£å¸¸é€Ÿåº¦ (gameSpeed == 1) çš„æ—¶å€™æ˜¯ä¸€ä¸ªå°ä¸‰è§’ï¼Œå¿«è¿› (gameSpeed == 2) æ˜¯ä¸€ä¸ªå¿«è¿›æ ‡è¯†
+    // æš‚åœ (dayPausedï¼‰æœ‰ä¸€ä¸ªç°è‰²è’™ç‰ˆ
+    // !ä½†æ˜¯æš‚åœçš„æ—¶å€™ä¸è¦åˆ‡æ¢ Panel æˆ–è€… DayStateï¼Œä»£ç è¿˜æ˜¯å†™åœ¨ DayState.Running ä¸‹çš„
 
     public DayState CurrentState { get; private set; } = DayState.Running;
     public System.Action<DayState> OnStateChanged;
 
     private int currentMoon;
-    private float timer;    // Ã¿ÌìµÄÊ±¼ä
+    private float timer;    // æ¯å¤©çš„æ—¶é—´
 
     public int CurrentMoon => currentMoon;
     public float NormalizedTime => Mathf.Clamp01(timer / Mathf.Max(0.01f, moonLength));
 
-    // ½áËã food ºÍ villager
+    // ç»“ç®— food å’Œ villager
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
-    private readonly List<Card> lastFoodCards = new List<Card>();
     private bool lastAllFed = false;
 
     public IReadOnlyList<Card> LastVillagers => lastVillagers;
-    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;
-    public IReadOnlyList<Card> LastFoodCards => lastFoodCards;
+    public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: è°ƒç”¨å¤šå°‘ä¸ªæ‘æ°‘æŒ¨é¥¿ LastHungryVillager.Count
 
 
     private void Awake()
@@ -88,12 +81,6 @@ public class DayManager : MonoBehaviour
 
         Instance = this;
         InitDay();
-
-        monoSpeedIcon.SetActive(true);
-
-        pauseBack.SetActive(false);
-        pauseIcon.SetActive(false);
-        doubleSpeedIcon.SetActive(false);
     }
 
 
@@ -117,20 +104,24 @@ public class DayManager : MonoBehaviour
 
         if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
 
+        if (CardManager.Instance == null) return;
+        if (CardManager.Instance.VillagerCards.Count <= 0)
+        {
+            Invoke(nameof(EnterGameOver), 1f);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             HandleFastForawrd();
-            Debug.Log("Game Speed: " + gameSpeed + "x");
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             HandlePause();
-            Debug.Log("Game Speed: " + gameSpeed + "x");
         }
 
 
-        if (timer >= moonLength)    // Ò»Ììµ¹¼ÆÊ±½áÊø
+        if (timer >= moonLength)    // ä¸€å¤©å€’è®¡æ—¶ç»“æŸ
         {
             timer = moonLength;
             UpdateUI();
@@ -143,7 +134,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸üĞÂday progressºÍÌìÊıUI
+    /// æ›´æ–°day progresså’Œå¤©æ•°UI
     /// </summary>
     private void UpdateUI()
     {
@@ -158,7 +149,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸üĞÂDayState²¢¹ã²¥newState£¬ÓÉPanelManager½ÓÊÕºóµ÷³ö¶ÔÓ¦Panel
+    /// æ›´æ–°DayStateå¹¶å¹¿æ’­newStateï¼Œç”±PanelManageræ¥æ”¶åè°ƒå‡ºå¯¹åº”Panel
     /// </summary>
     private void SetState(DayState newState)
     {
@@ -168,47 +159,48 @@ public class DayManager : MonoBehaviour
     }
 
 
-    // =================== Á÷³Ì¿ØÖÆ ======================
+    // =================== æµç¨‹æ§åˆ¶ ======================
 
     /// <summary>
-    /// Ò»Ìì½áÊø£¬½øÈëWaitingFeed
+    /// ä¸€å¤©ç»“æŸï¼Œè¿›å…¥WaitingFeed
     /// </summary>
     private void EndCurrentMoon()
     {
         if (CurrentState != DayState.Running) return;
 
-        dayPaused = true;       // Ò»Ìì½áÊøÖ®ºó¿¨ÅÆcoroutine±»¶³½á
+        dayPaused = true;       // ä¸€å¤©ç»“æŸä¹‹åå¡ç‰Œcoroutineè¢«å†»ç»“
         SetState(DayState.WaitingFeed);
     }
 
     /// <summary>
-    /// UIµ÷ÓÃ£ºÔÚWaitingFeed stateÏÂ£¬Íæ¼Òµã»÷Î¹Ñø´åÃñ°´Å¥
+    /// UIè°ƒç”¨ï¼šåœ¨WaitingFeed stateä¸‹ï¼Œç©å®¶ç‚¹å‡»å–‚å…»æ‘æ°‘æŒ‰é’®
     /// </summary>
     public void RequestFeed()
     {
         if (CurrentState != DayState.WaitingFeed) return;
         InitializeFeedingRuntimeValues();
         SetState(DayState.FeedingAnimation);
-        // ´ËÊ± FeedingSequenceController ¿ØÖÆÊ³Îï·ÉÀ´·ÉÈ¥µÄ¶¯»­
-        // ¶¯»­½áÊøºóµ÷ÓÃ DayManager.Instance.OnFeedingAnimationFinished()
+        // æ­¤æ—¶ FeedingSequenceController æ§åˆ¶é£Ÿç‰©é£æ¥é£å»çš„åŠ¨ç”»
+        // åŠ¨ç”»ç»“æŸåè°ƒç”¨ DayManager.Instance.OnFeedingAnimationFinished()
     }
 
 
     /// <summary>
-    /// ±¾ÂÖ½áËãµÄ³õÊ¼ÖµÉè¶¨£º
-    /// ²»×öÈÎºÎ¿Û¼õ£¬¿Û¼õÍêÈ«½»¸ø¶¯»­½×¶Î½øĞĞ¡£
+    /// æœ¬è½®ç»“ç®—çš„åˆå§‹å€¼è®¾å®šï¼š
+    /// ä¸åšä»»ä½•æ‰£å‡ï¼Œæ‰£å‡å®Œå…¨äº¤ç»™åŠ¨ç”»é˜¶æ®µè¿›è¡Œã€‚
     /// </summary>
     private void InitializeFeedingRuntimeValues()
     {
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
 
-        foreach (var c in allCards)
+        foreach (var c in cm.AllCards)
         {
             if (c == null || c.data == null) continue;
 
             if (c.data.cardClass == CardClass.Villager)
             {
-                // Villager£º±¾ÂÖÒª³Ô¶àÉÙ¾Í¿´ CardData.hunger
+                // Villagerï¼šæœ¬è½®è¦åƒå¤šå°‘å°±çœ‹ CardData.hunger
                 int baseHunger = Mathf.Max(0, c.data.hunger);
                 c.currentHunger = baseHunger;
             }
@@ -216,7 +208,7 @@ public class DayManager : MonoBehaviour
                      c.data.hasSaturation &&
                      c.data.saturation > 0)
             {
-                // Food£ºÈç¹ûµ±Ç°Ã»ÓĞºÏÀíµÄÊ£ÓàÖµ£¬¾Í°´Ä£°å saturation ÖØĞÂÉè¶¨
+                // Foodï¼šå¦‚æœå½“å‰æ²¡æœ‰åˆç†çš„å‰©ä½™å€¼ï¼Œå°±æŒ‰æ¨¡æ¿ saturation é‡æ–°è®¾å®š
                 if (c.currentSaturation <= 0 || c.currentSaturation > c.data.saturation)
                 {
                     c.currentSaturation = c.data.saturation;
@@ -226,21 +218,20 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÓÉ FeedingSequenceController ½áÊøÎ¹Ê³¶¯»­ºóµ÷ÓÃ
-    /// ½áËãÓĞÃ»ÓĞÈË»î×Å£¬½øÈë¶ÔÓ¦ UI Panel
+    /// ç”± FeedingSequenceController ç»“æŸå–‚é£ŸåŠ¨ç”»åè°ƒç”¨
+    /// ç»“ç®—æœ‰æ²¡æœ‰äººæ´»ç€ï¼Œè¿›å…¥å¯¹åº” UI Panel
     /// </summary>
     public void OnFeedingAnimationFinished()
     {
         if (CurrentState != DayState.FeedingAnimation) return;
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
 
         lastVillagers.Clear();
         lastHungryVillagers.Clear();
-        lastFoodCards.Clear();
         lastAllFed = false;
 
-        Card[] allCards = FindObjectsByType<Card>(FindObjectsSortMode.None);
-
-        foreach (var c in allCards)
+        foreach (var c in cm.AllCards)
         {
             if (c == null || c.data == null) continue;
 
@@ -252,13 +243,6 @@ public class DayManager : MonoBehaviour
                     lastHungryVillagers.Add(c);
                 }
             }
-            else if (c.data.cardClass == CardClass.Food &&
-                c.data.hasSaturation &&
-                c.data.saturation > 0 &&
-                c.currentSaturation > 0)
-            {
-                lastFoodCards.Add(c);
-            }
         }
 
         if (lastVillagers.Count == 0)
@@ -268,6 +252,14 @@ public class DayManager : MonoBehaviour
         }
 
         lastAllFed = lastHungryVillagers.Count == 0;
+
+        foreach (var v in lastVillagers)
+        {
+            v.currentHunger = v.data.hunger;
+        }
+
+        cm.RecalculateTotals();
+        Debug.Log($"[Daymanager]HungryVillagers={lastHungryVillagers.Count}");
 
         if (lastAllFed)
         {
@@ -280,7 +272,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI£ºÔÚ FeedingResultAllFullPanel ÉÏ°´ ¡°ËùÓĞÈË¶¼³Ô±¥ÁË¡±
+    /// UIï¼šåœ¨ FeedingResultAllFullPanel ä¸ŠæŒ‰ â€œæ‰€æœ‰äººéƒ½åƒé¥±äº†â€
     /// </summary>
     public void ConfirmAllFedResult()
     {
@@ -289,36 +281,29 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI£ºÔÚ FeedingResultHungryPanel ÉÏ°´ ¡°°¡Å¶¡±
+    /// UIï¼šåœ¨ FeedingResultHungryPanel ä¸ŠæŒ‰ â€œå•Šå“¦â€
     /// </summary>
     public void ConfirmHungryResult()
     {
         if (CurrentState != DayState.FeedingResultHungry) return;
         SetState(DayState.StarvingAnimation);
-        // ´ËÊ± FeedAnimationController ¿ÉÒÔ¸ù¾İ LastHungryVillagers ²¥¡°±äÊ¬Ìå¡±¶¯»­¡£
-        // Ã¿¸öÒªËÀµÄÈËÔÚ¶¯»­ºÏÊÊµÄÊ±»úµ÷ÓÃ DayManager.KillVillager(v)
-        // ¶¯»­È«²¿²¥ÍêÖ®ºóµ÷ÓÃ DayManager.Instance.OnStarvingAnimationFinished()
+        // æ­¤æ—¶ FeedAnimationController å¯ä»¥æ ¹æ® LastHungryVillagers æ’­â€œå˜å°¸ä½“â€åŠ¨ç”»ã€‚
+        // æ¯ä¸ªè¦æ­»çš„äººåœ¨åŠ¨ç”»åˆé€‚çš„æ—¶æœºè°ƒç”¨ DayManager.KillVillager(v)
+        // åŠ¨ç”»å…¨éƒ¨æ’­å®Œä¹‹åè°ƒç”¨ DayManager.Instance.OnStarvingAnimationFinished()
     }
 
     /// <summary>
-    /// ÓÉ FeedAnimationController ÔÚ²¥Íê±äÊ¬Ìå¶¯»­ºóµ÷ÓÃ
-    /// ½áËã»¹ÓĞÃ»ÓĞÈË»î×Å¡£½øÈë¶ÔÓ¦Panel
+    /// ç”± FeedAnimationController åœ¨æ’­å®Œå˜å°¸ä½“åŠ¨ç”»åè°ƒç”¨
+    /// ç»“ç®—è¿˜æœ‰æ²¡æœ‰äººæ´»ç€ã€‚è¿›å…¥å¯¹åº”Panel
     /// </summary>
     public void OnStarvingAnimationFinished()
     {
         if (CurrentState != DayState.StarvingAnimation) return;
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
+        Debug.Log($"[CardManager]Villager={cm.VillagerCards.Count}");
 
-        bool anyLiving = false;
-        foreach (var c in FindObjectsByType<Card>(FindObjectsSortMode.None))
-        {
-            if (c != null && c.data != null && c.data.cardClass == CardClass.Villager)
-            {
-                anyLiving = true;
-                break;
-            }
-        }
-
-        if (anyLiving)
+        if (cm.VillagerCards.Count > 0)
         {
             SetState(DayState.WaitingNextDay);
         }
@@ -329,7 +314,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÔÚWaitingNextDayPanel °´ ¡°¿ªÊ¼ÏÂÒ»Ìì¡°
+    /// åœ¨WaitingNextDayPanel æŒ‰ â€œå¼€å§‹ä¸‹ä¸€å¤©â€œ
     /// </summary>
     public void RequestNextDay()
     {
@@ -338,7 +323,7 @@ public class DayManager : MonoBehaviour
         currentMoon++;
         timer = 0f;
 
-        dayPaused = false;    // »Ö¸´Ê±¼äÁ÷ÊÅ£¬coroutine»Ö¸´
+        dayPaused = false;    // æ¢å¤æ—¶é—´æµé€ï¼Œcoroutineæ¢å¤
         gameSpeed = 1f;
 
         SetState(DayState.Running);
@@ -346,7 +331,7 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI£ºÔÚ WaitingEndGame Ãæ°å°´ ¡°½áÊøÓÎÏ·¡±
+    /// UIï¼šåœ¨ WaitingEndGame é¢æ¿æŒ‰ â€œç»“æŸæ¸¸æˆâ€
     /// </summary>
     public void RequestEndGame()
     {
@@ -363,7 +348,7 @@ public class DayManager : MonoBehaviour
 
     // ============================ Animation Helpers ========================
     /// <summary>
-    /// ÊÓ¾õÉÏÒª°ÑÊ³Îï¡°³Ôµô¡±Ê±£¬µ÷ÓÃº¯Êıdestroy
+    /// è§†è§‰ä¸Šè¦æŠŠé£Ÿç‰©â€œåƒæ‰â€æ—¶ï¼Œè°ƒç”¨å‡½æ•°destroy
     /// </summary>
     public void ConsumeFoodCompletely(Card food)
     {
@@ -372,12 +357,13 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÊÓ¾õÉÏvillager¶öËÀÊ±£¬µ÷ÓÃº¯Êı
-    /// ±ä³ÉÊ¬Ìå»òÕßdestroy
+    /// è§†è§‰ä¸Švillageræ­»æ‰æ—¶è°ƒç”¨å‡½æ•°
+    /// å˜æˆå°¸ä½“æˆ–è€…destroy
     /// </summary>
     public void KillVillager(Card villager)
     {
         if (villager == null) return;
+        villager.TakeOutOfStack();
 
         if (corpseCardData != null)
         {
@@ -385,7 +371,7 @@ public class DayManager : MonoBehaviour
             villager.currentHunger = 0;
             villager.currentSaturation = 0;
 
-            // ÈÃ Card ÓÃĞÂµÄ data ÖØË¢Íâ¹Û
+            // è®© Card ç”¨æ–°çš„ data é‡åˆ·å¤–è§‚
             villager.ApplyData();
         }
         else
@@ -401,77 +387,18 @@ public class DayManager : MonoBehaviour
         if (dayPaused)
         {
             gameSpeed = 1f;
-            monoSpeedIcon.SetActive(true);
-            pauseIcon.SetActive(false);
-            pauseBack.SetActive(false);
             dayPaused = false;
         }
         else
         {
-            gameSpeed = gameSpeed == 1 ? 2f : 1f ;
-
-            if(gameSpeed == 1f)
-            {
-                monoSpeedIcon.SetActive(true);
-                doubleSpeedIcon.SetActive(false);
-            }
-            else
-            {
-                monoSpeedIcon.SetActive(false);
-                doubleSpeedIcon.SetActive(true);
-            }
+            gameSpeed = gameSpeed == 1 ? 2f : 1f;
         }
+        Debug.Log($"[DayManager]Game Speed: {gameSpeed}x");
     }
 
     private void HandlePause()
     {
         dayPaused = dayPaused ? false : true;
-
-        if (dayPaused)
-        {
-            pauseIcon.SetActive(true);
-            pauseBack.SetActive(true);
-            monoSpeedIcon.SetActive(false);
-            doubleSpeedIcon.SetActive(false);
-
-        }
-        else
-        {
-            pauseIcon.SetActive(false);
-            pauseBack.SetActive(false);
-
-            if (gameSpeed == 1f)
-            {
-                monoSpeedIcon.SetActive(true);
-                doubleSpeedIcon.SetActive(false);
-            }
-            else
-            {
-                monoSpeedIcon.SetActive(false);
-                doubleSpeedIcon.SetActive(true);
-            }
-        }
-    }
-
-    public void ButtonControlSpeed()
-    {
-        if(dayPaused)
-        {
-            gameSpeed = 1f;
-            monoSpeedIcon.SetActive(true);
-            pauseIcon.SetActive(false);
-            pauseBack.SetActive(false);
-            dayPaused = false;
-        }
-        else if (gameSpeed == 1f)
-        {
-            gameSpeed = 2f;
-            monoSpeedIcon.SetActive(false);
-            doubleSpeedIcon.SetActive(true);
-        }
-        else if (gameSpeed == 2f)
-        {
-            HandlePause();
-        }
+        Debug.Log($"[DayManager]DayPaused: {dayPaused}");
     }
 }

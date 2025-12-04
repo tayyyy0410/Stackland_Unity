@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5cbe605dd1009cb42948b171cb6f8501
+guid: 863705807a2f01e47b688daa6262d387
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7233901533815291653
-    second: 2xSpeedIcon_0
+      213: -59066101396820148
+    second: hit_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 2xSpeedIcon_0
+      name: hit_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 1
-        width: 42
-        height: 30
+        x: 0
+        y: 0
+        width: 174
+        height: 174
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bf049c0c1e40c9b90800000000000000
-      internalID: -7233901533815291653
+      spriteID: c4fa9f791b72e2ff0800000000000000
+      internalID: -59066101396820148
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      2xSpeedIcon_0: -7233901533815291653
+      hit_0: -59066101396820148
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

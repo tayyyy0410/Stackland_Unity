@@ -37,10 +37,16 @@ public class CraftBar : MonoBehaviour
     private void UpdateFill()
     {
         if (fill == null) return;
+
         float curWidth = maxWidth * progress;
 
+        
         fill.localScale = new Vector3(curWidth, fill.localScale.y, fill.localScale.z);
-        float centerX = -maxWidth / 2f + curWidth / 2f;
-        fill.localPosition = new Vector3(centerX, 0, 0);
+
+        // 让右侧固定
+        float rightToLeftX = (maxWidth - curWidth) / 2f;
+
+        fill.localPosition = new Vector3(rightToLeftX, 0, 0);
     }
+
 }
