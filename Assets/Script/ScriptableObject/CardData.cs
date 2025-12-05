@@ -151,5 +151,9 @@ public class CardData : ScriptableObject
 
     [Tooltip("留空就直接消失")]
     public CardData depletedCardData;
-        
+
+    [Header("Card SFX")]
+    public AudioClip pickSfx;   // 捡起
+    public AudioClip dropSfx;   // 放下
+
 }

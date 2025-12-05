@@ -197,6 +197,12 @@ public class CardPack : MonoBehaviour
             return;
         }
 
+        //播放开包音效
+        if (AudioManager.I != null && AudioManager.I.packOpenSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.packOpenSfx);
+        }
+
         // 打开一次，生成一张卡
         SpawnOneCard();
         remainingOpens--;

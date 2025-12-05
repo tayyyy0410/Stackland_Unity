@@ -591,7 +591,13 @@
                 newCard.LayoutStack();
             }
 
-            Debug.Log($"配方合成完成：生成 {resultData.displayName}");
+        //播放产出音效
+        if (AudioManager.I != null && AudioManager.I.spawnSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.spawnSfx);
+        }
+
+        Debug.Log($"配方合成完成：生成 {resultData.displayName}");
         }
         
         

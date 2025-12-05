@@ -20,12 +20,14 @@ MonoBehaviour:
   saturation: 0
   hasHunger: 1
   hunger: 2
+  hasCapacity: 0
+  capacity: 0
   hasHP: 1
-  baseHP: 5
+  baseHP: 15
   hasAttack: 1
-  attack: 5
+  attack: 3
   hasHitChance: 1
-  hitChance: 100
+  hitChance: 70
   hasDeathLoot: 0
   deathLootPack: {fileID: 0}
   minDeathLoot: 1
@@ -48,3 +50,5 @@ MonoBehaviour:
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
+  pickSfx: {fileID: 8300000, guid: a64e61f1a38b12746933062663944b58, type: 3}
+  dropSfx: {fileID: 8300000, guid: a2924582aea55e24a84ec5ab46597c99, type: 3}

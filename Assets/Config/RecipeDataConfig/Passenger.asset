@@ -22,4 +22,4 @@ MonoBehaviour:
   output: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
   useOutputPack: 0
   outputPack: {fileID: 0}
-  craftTime: 0
+  craftTime: 3
