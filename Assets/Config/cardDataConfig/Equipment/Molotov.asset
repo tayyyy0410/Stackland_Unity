@@ -33,16 +33,16 @@ MonoBehaviour:
   minDeathLoot: 1
   maxDeathLoot: 1
   hasDamage: 1
-  damage: 2
+  damage: 3
   hasIncreaseHP: 0
   IncreasedHP: 0
   showHP: 0
   showHunger: 0
-  showValue: 0
+  showValue: 1
   useDarkText: 1
   hasHealing: 0
   healing: 0
-  cardClass: 8
+  cardClass: 9
   backgroundSprite: {fileID: 1464910256139603626, guid: a9229509acfa7ed4d82269976fb984bc, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
@@ -50,5 +50,3 @@ MonoBehaviour:
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
-  pickSfx: {fileID: 8300000, guid: 0f0dd687e7360054693faba094d0a93c, type: 3}
-  dropSfx: {fileID: 8300000, guid: 4af1fe3242da1d34381dee7ed160da4a, type: 3}

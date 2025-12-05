@@ -23,32 +23,30 @@ MonoBehaviour:
   hasCapacity: 0
   capacity: 0
   hasHP: 1
-  baseHP: 0
+  baseHP: 5
   hasAttack: 1
   attack: 2
   hasHitChance: 1
-  hitChance: 0
-  hasDeathLoot: 0
-  deathLootPack: {fileID: 0}
+  hitChance: 60
+  hasDeathLoot: 1
+  deathLootPack: {fileID: 11400000, guid: 1e4a7f901e870b84e8a9cc37ece48232, type: 2}
   minDeathLoot: 1
   maxDeathLoot: 1
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
   IncreasedHP: 0
-  showHP: 0
+  showHP: 1
   showHunger: 0
   showValue: 0
-  useDarkText: 1
+  useDarkText: 0
   hasHealing: 0
   healing: 0
   cardClass: 5
-  backgroundSprite: {fileID: -3578019587575532720, guid: 929289b1b0b73c64f984ef60effe5e1c, type: 3}
+  backgroundSprite: {fileID: -3578019587575532720, guid: 469323efb90151a4aae5bca453f5fdb7, type: 3}
   maxStackSize: 1
   canStackWithSameClass: 0
   isHarvestable: 0
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
-  pickSfx: {fileID: 8300000, guid: 0f0dd687e7360054693faba094d0a93c, type: 3}
-  dropSfx: {fileID: 8300000, guid: 4af1fe3242da1d34381dee7ed160da4a, type: 3}

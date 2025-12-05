@@ -17,7 +17,7 @@ MonoBehaviour:
   description: I can taste the grill marks
   value: 3
   hasSaturation: 1
-  saturation: 4
+  saturation: 3
   hasHunger: 0
   hunger: 0
   hasCapacity: 0
@@ -37,18 +37,16 @@ MonoBehaviour:
   hasIncreaseHP: 0
   IncreasedHP: 0
   showHP: 0
-  showHunger: 0
+  showHunger: 1
   showValue: 0
-  useDarkText: 1
+  useDarkText: 0
   hasHealing: 0
   healing: 0
   cardClass: 1
-  backgroundSprite: {fileID: -5238108228765609843, guid: f848a9142ff9b6d45b356ed11e9b65e4, type: 3}
+  backgroundSprite: {fileID: 423208846558900463, guid: 8b180d36703d48e44bd937f7335d28c0, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
   isHarvestable: 0
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
-  pickSfx: {fileID: 8300000, guid: 2554fb0110e85b6438e01c9da0f35e48, type: 3}
-  dropSfx: {fileID: 8300000, guid: a8aa63276a28d6a49be4727f1515b512, type: 3}

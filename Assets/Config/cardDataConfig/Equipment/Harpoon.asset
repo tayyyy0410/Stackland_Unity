@@ -33,7 +33,7 @@ MonoBehaviour:
   minDeathLoot: 1
   maxDeathLoot: 1
   hasDamage: 1
-  damage: 1
+  damage: 2
   hasIncreaseHP: 0
   IncreasedHP: 0
   showHP: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   useDarkText: 1
   hasHealing: 0
   healing: 0
-  cardClass: 8
+  cardClass: 9
   backgroundSprite: {fileID: 2382908340504850858, guid: 6afedf5cb08660747bed6261dbd69b74, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1

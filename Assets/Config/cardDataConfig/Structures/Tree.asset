@@ -39,7 +39,7 @@ MonoBehaviour:
   showHP: 0
   showHunger: 0
   showValue: 0
-  useDarkText: 1
+  useDarkText: 0
   hasHealing: 0
   healing: 0
   cardClass: 4
@@ -50,5 +50,3 @@ MonoBehaviour:
   maxHarvestUses: 3
   harvestLootPack: {fileID: 11400000, guid: b798499e8ad24154b96777bdca80d16b, type: 2}
   depletedCardData: {fileID: 0}
-  pickSfx: {fileID: 8300000, guid: 4c9ed354d991aaa4796c45a239a1f89f, type: 3}
-  dropSfx: {fileID: 8300000, guid: 424ab2335edf8f049a6b553cfd9a95b3, type: 3}
