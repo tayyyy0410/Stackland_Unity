@@ -42,6 +42,11 @@ public class DayManager : MonoBehaviour
 
     [Tooltip("显示当前 Moon 文本，比如 `Moon 1`")]
     public TMP_Text moonText;
+    public TMP_Text moonTextInRun;
+    public TMP_Text moonTextInFeeding;
+    public TMP_Text moonTextInFed;
+    public TMP_Text moonTextInHungary;
+    public TMP_Text moonTextInNext;
 
     [Tooltip("“所有人都吃饱了”页面展示时长")]
     public float allFedResultDuration;
@@ -57,10 +62,6 @@ public class DayManager : MonoBehaviour
     public GameObject monoSpeedIcon;
     public GameObject doubleSpeedIcon;
     public GameObject pauseBack;
-    // 这里需要一个ui，就是读条上面显示的标识
-    // 正常速度 (gameSpeed == 1) 的时候是一个小三角，快进 (gameSpeed == 2) 是一个快进标识
-    // 暂停 (dayPaused）有一个灰色蒙版
-    // !但是暂停的时候不要切换 Panel 或者 DayState，代码还是写在 DayState.Running 下的
 
     public DayState CurrentState { get; private set; } = DayState.Running;
     public System.Action<DayState> OnStateChanged;
@@ -75,6 +76,7 @@ public class DayManager : MonoBehaviour
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
     private bool lastAllFed = false;
+    public TMP_Text hungerNumText;
 
     public IReadOnlyList<Card> LastVillagers => lastVillagers;
     public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: 调用多少个村民挨饿 LastHungryVillager.Count
@@ -124,8 +126,41 @@ public class DayManager : MonoBehaviour
         {
             UpdateSelling();
         }
+        else if (CurrentState == DayState.FeedingAnimation || CurrentState == DayState.FeedingResultAllFull || CurrentState == DayState.FeedingResultHungry || CurrentState == DayState.WaitingNextDay)
+        {
+            UpdateBarDate();
+        }
+   
     }
 
+    private void UpdateBarDate()
+    {
+        if (CurrentState == DayState.FeedingAnimation)
+        {
+            moonTextInFeeding.text = currentMoon.ToString();
+        }
+        else if (CurrentState == DayState.FeedingResultAllFull)
+        {
+            moonTextInFed.text = currentMoon.ToString();
+        }
+        else if (CurrentState == DayState.FeedingResultHungry)
+        {
+            moonTextInHungary.text = currentMoon.ToString();
+            UpdateHungerStatus();
+        }
+        else if (CurrentState == DayState.WaitingNextDay)
+        {
+            moonTextInNext.text = (currentMoon+1).ToString();
+        }
+    }
+
+    private void UpdateHungerStatus()
+    {
+
+          hungerNumText.text = $"There is not enough food..{lastHungryVillagers.Count} Human will starve of Hunger";
+
+
+    }
 
     private void UpdateRunning()
     {
@@ -183,6 +218,7 @@ public class DayManager : MonoBehaviour
         if (moonText != null)
         {
             moonText.text = $"Moon {currentMoon}";
+            moonTextInRun.text = currentMoon.ToString();
         }
     }
 
