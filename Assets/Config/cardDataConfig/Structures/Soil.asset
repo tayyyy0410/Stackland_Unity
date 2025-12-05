@@ -16,21 +16,37 @@ MonoBehaviour:
   displayName: Soil
   description: A simple and slow way of growing Food
   value: 3
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
+  hasCapacity: 0
+  capacity: 0
   hasHP: 0
-  maxHP: 0
+  baseHP: 0
   hasAttack: 0
   attack: 0
   hasHitChance: 0
-  HitChance: 0
-  hasSaturation: 0
-  saturation: 0
-  canBeFarmed: 0
-  cardAmmount: 0
+  hitChance: 0
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
   hasDamage: 0
   damage: 0
-  hasDefence: 0
-  defense: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
+  showHP: 0
+  showHunger: 0
+  showValue: 0
+  useDarkText: 0
+  hasHealing: 0
+  healing: 0
   cardClass: 4
   backgroundSprite: {fileID: 6563066755110389082, guid: 7a8b52ade5669b14e84a785e45743420, type: 3}
   maxStackSize: 2
   canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}

@@ -20,12 +20,14 @@ MonoBehaviour:
   saturation: 0
   hasHunger: 1
   hunger: 2
+  hasCapacity: 0
+  capacity: 0
   hasHP: 1
-  baseHP: 5
+  baseHP: 15
   hasAttack: 1
-  attack: 5
+  attack: 3
   hasHitChance: 1
-  hitChance: 100
+  hitChance: 70
   hasDeathLoot: 0
   deathLootPack: {fileID: 0}
   minDeathLoot: 1

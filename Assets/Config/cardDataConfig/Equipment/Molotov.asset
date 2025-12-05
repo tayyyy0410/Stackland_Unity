@@ -16,23 +16,37 @@ MonoBehaviour:
   displayName: Molotov
   description: Best way to raise a fire
   value: 5
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
+  hasCapacity: 0
+  capacity: 0
   hasHP: 0
-  maxHP: 0
+  baseHP: 0
   hasAttack: 0
   attack: 0
   hasHitChance: 0
-  HitChance: 0
-  hasSaturation: 0
-  saturation: 0
-  canBeFarmed: 0
-  cardAmmount: 0
+  hitChance: 0
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
   hasDamage: 1
-  damage: 2
+  damage: 3
   hasIncreaseHP: 0
   IncreasedHP: 0
+  showHP: 0
+  showHunger: 0
+  showValue: 1
+  useDarkText: 1
   hasHealing: 0
   healing: 0
-  cardClass: 8
+  cardClass: 9
   backgroundSprite: {fileID: 1464910256139603626, guid: a9229509acfa7ed4d82269976fb984bc, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}

@@ -21,5 +21,5 @@ MonoBehaviour:
     consume: 0
   output: {fileID: 0}
   useOutputPack: 1
-  outputPack: {fileID: 11400000, guid: b48d8073cfc46694bbc9bd6dee1df4c7, type: 2}
-  craftTime: 6000
+  outputPack: {fileID: 11400000, guid: 255161ac8e5d7434e9a84a7f401a7e2a, type: 2}
+  craftTime: 40

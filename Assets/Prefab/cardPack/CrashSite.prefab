@@ -128,7 +128,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.208, y: 1.576}
+    oldSize: {x: 1.1185185, y: 1.4592593}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -151,10 +151,10 @@ MonoBehaviour:
   packData: {fileID: 11400000, guid: 4017dfebd1f3329448a7dc765c6543f2, type: 2}
   cardPrefab: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
   slotOffsets:
-  - {x: -0.7, y: 0.7}
-  - {x: -0.7, y: -0.7}
-  - {x: 0.7, y: 0.7}
-  - {x: 0.7, y: -0.7}
+  - {x: -1, y: 0.7}
+  - {x: -1, y: -0.7}
+  - {x: 1, y: 0.7}
+  - {x: 1, y: -0.7}
   clickThreshold: 10
   dragStartThreshold: 5
   dragSensitivity: 1
