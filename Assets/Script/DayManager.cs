@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
+using System.Threading;
 
 /// <summary>
 /// 管理天数，每天的倒计时条，每天结束之后的feed结算
@@ -40,6 +42,12 @@ public class DayManager : MonoBehaviour
     [Tooltip("显示 Moon 进度的 Image，Type 要改成 Filled, Horizontal")]
     public Image moonProgressFill;
 
+    [Tooltip("running状态下显示卡牌数据统计")]     // ItemBar
+    public TMP_Text foodCountText;
+    public TMP_Text coinCountText;
+    public TMP_Text cardCountText;
+    public float flashInterval;     // 字体闪烁间隔
+
     [Tooltip("显示当前 Moon 文本，比如 `Moon 1`")]
     public TMP_Text moonText;
     public TMP_Text moonTextInRun;
@@ -68,6 +76,7 @@ public class DayManager : MonoBehaviour
 
     private int currentMoon;
     private float timer;    // 每天的时间
+    private bool useRed = false;
 
     public int CurrentMoon => currentMoon;
     public float NormalizedTime => Mathf.Clamp01(timer / Mathf.Max(0.01f, moonLength));
@@ -99,6 +108,9 @@ public class DayManager : MonoBehaviour
         pauseIcon.SetActive(false);
         doubleSpeedIcon.SetActive(false);
 
+        foodCountText.alignment = TextAlignmentOptions.Right;
+        coinCountText.alignment = TextAlignmentOptions.Right;
+        cardCountText.alignment = TextAlignmentOptions.Right;
     }
 
 
@@ -108,6 +120,7 @@ public class DayManager : MonoBehaviour
         timer = 0f;
 
         gameSpeed = 1f;
+        flashInterval = 0.5f;
         dayPaused = false;
         allFedResultDuration = 2f;
         SetState(DayState.Running);
@@ -126,7 +139,10 @@ public class DayManager : MonoBehaviour
         {
             UpdateSelling();
         }
-        else if (CurrentState == DayState.FeedingAnimation || CurrentState == DayState.FeedingResultAllFull || CurrentState == DayState.FeedingResultHungry || CurrentState == DayState.WaitingNextDay)
+        else if (CurrentState == DayState.FeedingAnimation || 
+                 CurrentState == DayState.FeedingResultAllFull || 
+                 CurrentState == DayState.FeedingResultHungry || 
+                 CurrentState == DayState.WaitingNextDay)
         {
             UpdateBarDate();
         }
@@ -135,20 +151,20 @@ public class DayManager : MonoBehaviour
 
     private void UpdateBarDate()
     {
-        if (CurrentState == DayState.FeedingAnimation)
+        if (CurrentState == DayState.FeedingAnimation && moonTextInFeeding != null)
         {
             moonTextInFeeding.text = currentMoon.ToString();
         }
-        else if (CurrentState == DayState.FeedingResultAllFull)
+        else if (CurrentState == DayState.FeedingResultAllFull && moonTextInFed != null)
         {
             moonTextInFed.text = currentMoon.ToString();
         }
-        else if (CurrentState == DayState.FeedingResultHungry)
+        else if (CurrentState == DayState.FeedingResultHungry && moonTextInHungary != null)
         {
             moonTextInHungary.text = currentMoon.ToString();
             UpdateHungerStatus();
         }
-        else if (CurrentState == DayState.WaitingNextDay)
+        else if (CurrentState == DayState.WaitingNextDay && moonTextInNext != null)
         {
             moonTextInNext.text = (currentMoon+1).ToString();
         }
@@ -207,23 +223,61 @@ public class DayManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新day progress和天数UI
+    /// 更新 RUNNING STATE 下的 day progress 和 天数UI
     /// </summary>
     private void UpdateProgressUI()
     {
+        // 因为多个text闪烁的颜色是同步的，所以不单独写method，而是储存一个颜色，符合条件时调用
+        int phase = Mathf.FloorToInt(Time.time / flashInterval);
+        useRed = (phase % 2 == 0);
+        Debug.Log($"[DayManager]useRed={useRed}");
+        //useRed = (Mathf.FloorToInt((Time.time / flashInterval) % 2) == 0);
+
         if (moonProgressFill != null)
         {
             moonProgressFill.fillAmount = NormalizedTime;
         }
+
         if (moonText != null)
         {
             moonText.text = $"Moon {currentMoon}";
             moonTextInRun.text = currentMoon.ToString();
         }
+
+        if (CardManager.Instance == null) return;
+        var cm = CardManager.Instance;
+
+        if (foodCountText != null)
+        {
+            foodCountText.text = $"{cm.TotalSaturation}/{cm.TotalHunger}";
+
+            if (cm.TotalSaturation < cm.TotalHunger)
+            {
+                foodCountText.color = useRed ? Color.red : Color.black;
+            }
+            else { foodCountText.color = Color.black; }
+        }
+
+        if (coinCountText != null)
+        {
+            coinCountText.text = $"{cm.CoinCount}";
+        }
+
+        if (cardCountText != null)
+        {
+            cardCountText.text = $"{cm.NonCoinCount}/{cm.MaxCardCapacity}";
+
+            if (cm.NonCoinCount > cm.MaxCardCapacity)
+            {
+                cardCountText.color = useRed ? Color.red : Color.black;
+            }
+            else { cardCountText.color = Color.black; }
+        }
     }
 
+
     /// <summary>
-    /// 更新DayState并广播newState，由PanelManager接收后调出对应Panel
+    /// 更新 DayState 并广播 newState，由 PanelManager 接收后调出对应Panel
     /// </summary>
     private void SetState(DayState newState)
     {

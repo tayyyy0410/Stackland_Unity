@@ -31,7 +31,7 @@ public class CardManager : MonoBehaviour
 
     public int NonCoinCount => AllCards.Count - CoinCount;  // UI：现有除了coin的卡牌数量
 
-    // UI: 还需售卖卡牌数量：NonCoinCount - MaxCardCapacity
+    public int CardToSellCount => NonCoinCount - MaxCardCapacity;   // UI：还需售卖的卡牌数量
 
 
     private void Awake()
