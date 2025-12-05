@@ -50,3 +50,5 @@ MonoBehaviour:
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
+  pickSfx: {fileID: 8300000, guid: a64e61f1a38b12746933062663944b58, type: 3}
+  dropSfx: {fileID: 8300000, guid: a2924582aea55e24a84ec5ab46597c99, type: 3}
