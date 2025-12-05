@@ -20,6 +20,8 @@ MonoBehaviour:
   saturation: 0
   hasHunger: 0
   hunger: 0
+  hasCapacity: 0
+  capacity: 0
   hasHP: 0
   baseHP: 0
   hasAttack: 0
@@ -45,6 +47,6 @@ MonoBehaviour:
   maxStackSize: 2
   canStackWithSameClass: 1
   isHarvestable: 1
-  maxHarvestUses: 1
-  harvestLootPack: {fileID: 0}
+  maxHarvestUses: 999
+  harvestLootPack: {fileID: 11400000, guid: 255161ac8e5d7434e9a84a7f401a7e2a, type: 2}
   depletedCardData: {fileID: 0}
