@@ -76,6 +76,7 @@ public class DayManager : MonoBehaviour
     private readonly List<Card> lastVillagers = new List<Card>();
     private readonly List<Card> lastHungryVillagers = new List<Card>();
     private bool lastAllFed = false;
+    public TMP_Text hungerNumText;
 
     public IReadOnlyList<Card> LastVillagers => lastVillagers;
     public IReadOnlyList<Card> LastHungryVillagers => lastHungryVillagers;  // UI: 调用多少个村民挨饿 LastHungryVillager.Count
@@ -129,6 +130,7 @@ public class DayManager : MonoBehaviour
         {
             UpdateBarDate();
         }
+   
     }
 
     private void UpdateBarDate()
@@ -144,11 +146,20 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.FeedingResultHungry)
         {
             moonTextInHungary.text = currentMoon.ToString();
+            UpdateHungerStatus();
         }
         else if (CurrentState == DayState.WaitingNextDay)
         {
             moonTextInNext.text = (currentMoon+1).ToString();
         }
+    }
+
+    private void UpdateHungerStatus()
+    {
+
+          hungerNumText.text = $"There is not enough food..{lastHungryVillagers.Count} Human will starve of Hunger";
+
+
     }
 
     private void UpdateRunning()
