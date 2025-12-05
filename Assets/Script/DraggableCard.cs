@@ -131,6 +131,12 @@ public class DraggableCard : MonoBehaviour
                 }
             }
         }
+
+        //播放捡起音效
+        if (AudioManager.I != null && card != null && card.data != null && card.data.pickSfx != null)
+        {
+            AudioManager.I.PlaySFX(card.data.pickSfx);
+        }
     }
 
     private void OnMouseDrag()
@@ -155,6 +161,8 @@ public class DraggableCard : MonoBehaviour
 
         Card rootCard = dragRoot.GetComponent<Card>();
 
+        bool stacked = false;
+
         // 优先尝试开始战斗
         if (rootCard != null)
         {
@@ -166,7 +174,7 @@ public class DraggableCard : MonoBehaviour
         }
 
         //  尝试和附近的 stack 合并
-        TryStackOnOtherCard();
+        stacked = TryStackOnOtherCard();
 
         //  触发 recipe
         if (RecipeManager.Instance != null)
@@ -199,7 +207,7 @@ public class DraggableCard : MonoBehaviour
             finalRootCard.LayoutStack();
         }
 
-        
+        PlayDropOrStackSfx(stacked);
     }
 
     
@@ -252,16 +260,18 @@ public class DraggableCard : MonoBehaviour
     }
 
     /// 检测周围有没有其他牌，用来自动堆叠
-    public void TryStackOnOtherCard()
+    public bool TryStackOnOtherCard()
     {
-        if (card == null) return;
-        if (dragRoot == null) return;
+        if (card == null) return false;
+        if (dragRoot == null) return false;
 
         radius = 0.2f;
         var hits = Physics2D.OverlapCircleAll(dragRoot.position, radius);
 
         Card sourceRootCard = dragRoot.GetComponent<Card>();
-        if (sourceRootCard == null) return;
+        if (sourceRootCard == null) return false;
+
+        bool stacked = false; //触发什么audio的判定条件
 
         foreach (var hit in hits)
         {
@@ -276,8 +286,10 @@ public class DraggableCard : MonoBehaviour
 
             // 把这个子stack整叠的 root 叠到对方那一个stack上
             sourceRootCard.JoinStackOf(otherCard);
+            stacked = true;
             break;
         }
+        return stacked;
     }
 
     // 在除了 running 和 selling 阶段锁死卡牌拖拽
@@ -329,4 +341,25 @@ public class DraggableCard : MonoBehaviour
 
         return false;
     }
+
+    //根据状态选择audio
+    private void PlayDropOrStackSfx(bool stacked)
+    {
+        if (AudioManager.I == null || card == null || card.data == null)
+            return;
+
+        if (stacked && AudioManager.I.stackSfx != null)
+        {
+            // 叠到stack则用通用叠加声
+            AudioManager.I.PlaySFX(AudioManager.I.stackSfx);
+            
+        }
+        else if (card.data.dropSfx != null)
+        {
+            // 没叠上则用放下声
+            AudioManager.I.PlaySFX(card.data.dropSfx);
+            
+        }
+    }
+
 }

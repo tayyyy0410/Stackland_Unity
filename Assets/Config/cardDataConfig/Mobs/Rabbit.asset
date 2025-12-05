@@ -20,6 +20,8 @@ MonoBehaviour:
   saturation: 0
   hasHunger: 0
   hunger: 0
+  hasCapacity: 0
+  capacity: 0
   hasHP: 1
   baseHP: 5
   hasAttack: 1
@@ -34,6 +36,10 @@ MonoBehaviour:
   damage: 0
   hasIncreaseHP: 0
   IncreasedHP: 0
+  showHP: 0
+  showHunger: 0
+  showValue: 0
+  useDarkText: 1
   hasHealing: 0
   healing: 0
   cardClass: 6
@@ -44,3 +50,5 @@ MonoBehaviour:
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
+  pickSfx: {fileID: 8300000, guid: 0f0dd687e7360054693faba094d0a93c, type: 3}
+  dropSfx: {fileID: 8300000, guid: 4af1fe3242da1d34381dee7ed160da4a, type: 3}
