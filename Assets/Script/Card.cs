@@ -211,7 +211,17 @@ public class Card : MonoBehaviour
     /// stack 的 layout
     public void LayoutStack()
     {
+        Debug.Log("1");
         if (stackRoot == null) return;
+        Card card = stackRoot.GetComponent<Card>();
+
+        // 如果stack中有村民，关掉他的装备栏
+        if (EquipmentUIController.Instance != null &&
+            card != null &&
+            card.data != null)
+        {
+            EquipmentUIController.Instance.CloseBigPanel(card);
+        }
 
         // 1. 先把这个 stack 里的所有 Card 的 isTopVisual 清零
         foreach (Transform t in stackRoot)
@@ -220,6 +230,13 @@ public class Card : MonoBehaviour
             if (c != null)
             {
                 c.isTopVisual = false;
+                // 如果stack中有村民，关掉他的装备栏
+                if (EquipmentUIController.Instance != null &&
+                    c.data.cardClass == CardClass.Villager)
+                {
+                    EquipmentUIController.Instance.CloseBigPanel(c);
+                }
+
             }
         }
 
@@ -235,6 +252,7 @@ public class Card : MonoBehaviour
             i++;
             child.localPosition = new Vector3(0f, i * yOffset, 0f);
             lastCard = childCard;
+
         }
 
         // 3. 标记最上面那张卡
@@ -407,6 +425,17 @@ public class Card : MonoBehaviour
         {
             TryRegisterToManager();
         }
+    }
+
+    public void ResetToDefaultSize()
+    {
+        transform.localScale = defaultScale;
+    }
+
+    public void SetEquipVisual(bool inEquip)
+    {
+        // 可以调比例
+        transform.localScale = inEquip ? defaultScale * 0.7f : defaultScale;
     }
 
     // ========================== Battle ============================
