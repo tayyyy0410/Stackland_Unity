@@ -335,10 +335,10 @@ public class CardManager : MonoBehaviour
             //Debug.Log($"[EquipDrop]{sourceRootCard.name} 堆叠到装备 stack 上");
             //return true;
             // 1) 整叠都取消装备关系
-            ClearEquipRelation(sourceRootCard);
+            //ClearEquipRelation(sourceRootCard);
 
             // 2) 把整叠状态改成 OnBoard，恢复大小，并重新统计
-            var cs = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
+            /*var cs = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
             foreach (var c in cs)
             {
                 if (c == null) continue;
@@ -356,10 +356,11 @@ public class CardManager : MonoBehaviour
                 {
                     // setactive
                 }
-            }
+            }*/
 
             // 3) 把这叠当作普通 stack 叠在 topCard 那一叠上
             sourceRootCard.JoinStackOf(topCard);
+            Debug.Log($"[EquipDrop]{sourceRootCard.name} 所在的整叠 叠加到装备上");
 
             return true;
 
@@ -371,7 +372,7 @@ public class CardManager : MonoBehaviour
             bool equipped = TryEquipStackToVillager(sourceRootCard, topCard);
             if (equipped)
             {
-                Debug.Log($"[EquipDrop]{sourceRootCard.name} 所在的整叠 装备到 {topCard.name} 身上");
+                Debug.Log($"[EquipDrop]{sourceRootCard.name} 所在的整叠 装备到 村民{topCard.name} 身上");
             }
             return equipped;
         }
@@ -397,7 +398,7 @@ public class CardManager : MonoBehaviour
         ClearEquipRelation(sourceRootCard);
 
         // 把整叠状态改成 OnBoard，恢复大小，并重新统计
-        var cards = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
+        /*var cards = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
         foreach (var c in cards)
         {
             if (c == null) continue;
@@ -411,14 +412,13 @@ public class CardManager : MonoBehaviour
             {
                 c.transform.SetParent(null);
             }
-        }
+        }*/
         Debug.Log($"EquipDrop]{sourceRootCard.name} 不能装备/堆叠， 掉在 {targetCard.name} 下方");
         return true;
     }
 
     /// <summary>
     /// 尝试把一整叠装备卡挂到村民身上
-    /// 因为在 handle drop 里写了装备卡只能堆叠装备卡的逻辑，这里默认整个stack都是装备
     /// </summary>
     public bool TryEquipStackToVillager(Card anyCardInStack, Card villagerCard)
     {
@@ -433,10 +433,15 @@ public class CardManager : MonoBehaviour
 
         // 2) 收集整叠装备卡
         var equipCards = new List<Card>();
+        var otherCards = new List<Card>();
         Card rootCard = srcRoot.GetComponent<Card>();
         if (IsEquipment(rootCard))
         {
             equipCards.Add(rootCard);
+        }
+        else
+        {
+            otherCards.Add(rootCard);
         }
         foreach (Transform child in srcRoot)
         {
@@ -444,6 +449,10 @@ public class CardManager : MonoBehaviour
             if (IsEquipment(c))
             {
                 equipCards.Add(c);
+            }
+            else
+            {
+                otherCards.Add(rootCard);
             }
         }
 
@@ -639,8 +648,12 @@ public class CardManager : MonoBehaviour
         {
             if (VillagerHasAnyEquip(owner))
             {
-                EquipmentUIController.Instance.OpenBigPanel(owner);
+                if (EquipmentUIController.Instance.IsBigPanelOpenFor(owner))
+                    EquipmentUIController.Instance.RebuildBigPanelContent(owner);
+                else
+                    EquipmentUIController.Instance.EnsureSmallBar(owner);
             }
+
             else
             {
                 EquipmentUIController.Instance.CloseBigPanel(owner);
@@ -685,6 +698,25 @@ public class CardManager : MonoBehaviour
         equipCard.gameObject.SetActive(true);
 
         Debug.Log($"[Equip] UnequipToBoard: {equipCard.name} 已卸下，回到场上");
+    }
+
+
+    // 在开始拖拽时调用：把这件装备从 villager 身上卸下，变成手里的一张普通卡
+    public void UnequipFromVillagerImmediate(Card equipCard)
+    {
+        if (equipCard == null || equipCard.data == null) return;
+        if (equipCard.data.cardClass != CardClass.Equipment) return;
+
+        // 从装备数据里解绑
+        ClearEquipRelation(equipCard);
+
+        // 状态/视觉还原
+        equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
+        equipCard.ResetToDefaultSize();
+        equipCard.gameObject.SetActive(true);
+        equipCard.transform.SetParent(null);   // 不再挂在 UI panel 下面
+
+        Debug.Log($"[Equip] UnequipFromVillagerImmediate: {equipCard.name} 已卸下，当前视为普通 OnBoard 卡");
     }
 
 

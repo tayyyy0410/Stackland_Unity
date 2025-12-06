@@ -32,7 +32,14 @@ public class DraggableCard : MonoBehaviour
     {
         if (!CanInteract()) return;
         if (card == null ) return;
-        wasEquipAtDragStart = (card.RuntimeState == CardRuntimeState.InEquipmentUI);
+        //wasEquipAtDragStart = (card.RuntimeState == CardRuntimeState.InEquipmentUI);
+
+        // 如果点击了装备卡，立刻卸下，拿在手中
+        if (card.RuntimeState == CardRuntimeState.InEquipmentUI &&
+            CardManager.Instance != null)
+        {
+            CardManager.Instance.UnequipFromVillagerImmediate(card);
+        }
 
         // 拖动 villager 的时候会自动关掉大装备栏
         if (card != null &&
@@ -197,7 +204,7 @@ public class DraggableCard : MonoBehaviour
         // 针对“从装备栏拖出来”的特殊处理：
         // 如果一开始是在装备栏里，这次又没有被 TryStackOnOtherCard 处理，
         // 说明是拖出装备栏，扔在空地
-        if (wasEquipAtDragStart &&
+        /*if (wasEquipAtDragStart &&
             card != null &&
             card.data != null &&
             card.data.cardClass == CardClass.Equipment &&
@@ -207,7 +214,7 @@ public class DraggableCard : MonoBehaviour
             {
                 CardManager.Instance.UnequipToBoard(card);
             }
-        }
+        }*/
 
 
         //  触发 recipe
@@ -352,8 +359,6 @@ public class DraggableCard : MonoBehaviour
                 // 在装备栏中的卡牌不能作为target
                 if (otherCard == null || !otherCard.IsOnBoard) continue;
 
-                Debug.Log("是equipment且有hit");
-
                 // 如果有target，需要交给CardManager来处理装备堆叠
                 bool equipped = CardManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
                 if (equipped)
@@ -374,6 +379,11 @@ public class DraggableCard : MonoBehaviour
 
             var otherCard = hit.GetComponent<Card>();
             if (otherCard == null) continue;
+            if (otherCard.data.cardClass == CardClass.Equipment)
+            {
+                Debug.Log("不能和装备堆叠！");
+                continue;
+            }
 
             // TODO：之后这里可以加 class 规则 / maxStack 限制
 

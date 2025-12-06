@@ -65,10 +65,10 @@ public class EquipmentUIController : MonoBehaviour
             }
 
             // 点到大装备栏本身
-            if (hit.GetComponent<BigEquipPanelMarker>() != null)
+            /*if (hit.GetComponent<BigEquipPanelMarker>() != null)
             {
                 return;
-            }
+            }*/
 
             // 有别的 UI collider可以再加其他判断
         }
