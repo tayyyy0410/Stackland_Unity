@@ -99,6 +99,7 @@ public class EquipmentUIController : MonoBehaviour
     }
 
     // 小条被点击时调用：对这个 villager 切换“大装备栏”
+    // 再根据大装备栏应有的状态刷新小装备条状态
     public void ToggleBigPanelFor(Card villager)
     {
         if (villager == null) return;
@@ -113,6 +114,7 @@ public class EquipmentUIController : MonoBehaviour
         }
     }
 
+    // 打开大装备栏，收起小装备条
     public void OpenBigPanel(Card villager)
     {
         if (villager == null || bigEquipPanelPrefab == null) return;
@@ -130,7 +132,7 @@ public class EquipmentUIController : MonoBehaviour
         RebuildBigPanelContent(villager);
     }
 
-    // 大装备栏打开的时候刷新信息
+    // 大装备栏打开的时候，layout装备栏卡牌
     public void RebuildBigPanelContent(Card villager)
     {
         if (villager == null) return;
@@ -139,6 +141,7 @@ public class EquipmentUIController : MonoBehaviour
         // 没有大装备栏就不管
         if (!bigPanels.TryGetValue(villager, out var panel) || panel == null)
         {
+            Debug.Log("[RebuildBigPanel] 没有大装备栏！");
             return;
         }
 
@@ -146,7 +149,7 @@ public class EquipmentUIController : MonoBehaviour
         var state = CardManager.Instance.GetEquipState(villager);
         if (state == null)
         {
-            Debug.Log("没有装备状态!");
+            Debug.Log("[RebuildBigPanel] 没有装备状态!");
             return;
         }
         //Debug.Log($"[VillagerEquipState] hand: {state.hand.data.displayName}");
@@ -181,7 +184,9 @@ public class EquipmentUIController : MonoBehaviour
     }
 
     
-
+    /// <summary>
+    /// 关闭大装备栏并根据装备栏信息刷新小装备条状态
+    /// </summary>
     public void CloseBigPanel(Card villager)
     {
         if (villager == null) return;
@@ -198,7 +203,7 @@ public class EquipmentUIController : MonoBehaviour
         if (CardManager.Instance != null &&
             CardManager.Instance.VillagerHasAnyEquip(villager))
         {
-            EnsureSmallBar(villager);
+            OnTopDisplaySmallBar(villager);
         }
         else
         {
@@ -206,6 +211,7 @@ public class EquipmentUIController : MonoBehaviour
         }
     }
 
+    // 大装备栏关闭时保存卡牌信息到empty
     private void TransferCardsFromPanelToEquipRoot(Transform panelTf)
     {
         if (equippedCardsRoot == null) return;
@@ -230,21 +236,17 @@ public class EquipmentUIController : MonoBehaviour
         }
     }
 
-    public void EnsureSmallBar(Card villager)
+    /// <summary>
+    /// 强制重新创建小装备条 gameObject，并填进 dictionary
+    /// </summary>
+    private EquipBar ForceCreateSmallBar(Card villager)
     {
-        if (villager == null || smallEquipBarPrefab == null) return;
+        if (villager == null || smallEquipBarPrefab == null) return null;
 
-        // 已经有大装备栏：不要小条
-        if (IsBigPanelOpenFor(villager))
+        // 如果已经有一条旧的，先清理，防止 fake-null
+        if (smallBars.TryGetValue(villager, out var oldBar) && oldBar != null)
         {
-            CloseSmallBar(villager);
-            return;
-        }
-
-        // 已有小条：不重复创建
-        if (HasSmallBarFor(villager))
-        {
-            return;
+            Destroy(oldBar.gameObject);
         }
 
         GameObject go = Instantiate(smallEquipBarPrefab, villager.transform);
@@ -256,13 +258,88 @@ public class EquipmentUIController : MonoBehaviour
             bar.Init(villager);
         }
 
-        smallBars[villager] = bar;
-
         var villagerSR = villager.GetComponent<SpriteRenderer>();
         var barSR = go.GetComponent<SpriteRenderer>();
         if (villagerSR != null && barSR != null)
         {
             barSR.sortingOrder = villagerSR.sortingOrder + 1;
+        }
+
+        smallBars[villager] = bar;
+        return bar;
+    }
+
+    /// <summary>
+    /// 读取大装备栏信息，刷新小装备条状态
+    /// !!!不是无脑create，大装备栏状态是判定依据!!!
+    /// </summary>
+    public void EnsureSmallBar(Card villager)
+    {
+        if (villager == null || smallEquipBarPrefab == null) return;
+
+        // 已经有大装备栏：不要小条
+        if (IsBigPanelOpenFor(villager))
+        {
+            CloseSmallBar(villager);
+            return;
+        }
+
+        // 没有小条就创建，有就重新可见
+        if (!smallBars.TryGetValue(villager, out var bar) || 
+            bar == null || 
+            bar.gameObject == null)
+        {
+            bar = ForceCreateSmallBar(villager);
+            if (bar == null) return;
+        }
+
+        bar.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// 给layoutstack用的接口
+    /// 目前只给layoutstack用，根据topcard判定，隐藏/显示 EquipBar
+    /// ！！！没有判定，只根据input决定显不显示 EquipBar
+    /// </summary>
+    public void SetSmallBarVisible(Card villager, bool visible)
+    {
+        if (villager == null) return;
+
+        if (visible)
+        {
+            // 不判定大装备栏
+            if (!smallBars.TryGetValue(villager, out var bar) || bar == null || bar.gameObject == null)
+            {
+                bar = ForceCreateSmallBar(villager);
+                if (bar == null) return;
+            }
+
+            // 强制挂回 owner 身上
+            // 防止和 statsUI 打架
+            Transform tf = bar.transform;
+            if (tf.parent != villager.transform)
+            {
+                tf.SetParent(villager.transform, worldPositionStays: false);
+                tf.localPosition = new Vector3(0f, -1f, 0f);   // 小条在 villager 底边
+            }
+
+            bar.gameObject.SetActive(true);
+
+            var villagerSR = villager.GetComponent<SpriteRenderer>();
+            var barSR = bar.GetComponent<SpriteRenderer>();
+            if (villagerSR != null && barSR != null)
+            {
+                barSR.sortingOrder = villagerSR.sortingOrder + 1;
+            }
+        }
+        else
+        {
+            // 不想显示的时候，不 Destroy，只隐藏
+            // 只给layoutstack用，隐藏不是topcard的ui
+            if (smallBars.TryGetValue(villager, out var bar) && bar != null && bar.gameObject != null)
+            {
+                bar.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -292,6 +369,21 @@ public class EquipmentUIController : MonoBehaviour
         }
 
     }
+
+
+    /// <summary>
+    /// 判断villager是否是top card，只有top card才显示EquipBar
+    /// </summary>
+    public void OnTopDisplaySmallBar(Card villager)
+    {
+        if (villager == null) return;
+
+        // 只有在是顶牌的时候，才应该有小条
+        bool shouldShowSmallBar = villager.isTopVisual;
+
+        SetSmallBarVisible(villager, shouldShowSmallBar);
+    }
+
 
 
 

@@ -6,7 +6,7 @@ public class DraggableCard : MonoBehaviour
     private static int globalSortingOrder = 0;
 
     private Camera cam;
-    private bool isDragging = false;
+    public bool isDragging = false;
     private Vector3 offset;
 
     //本次拖拽开始时，这张卡是否在装备状态
@@ -38,16 +38,23 @@ public class DraggableCard : MonoBehaviour
         if (card.RuntimeState == CardRuntimeState.InEquipmentUI &&
             CardManager.Instance != null)
         {
+            // 立即把装备卡的状态刷新
             CardManager.Instance.UnequipFromVillagerImmediate(card);
         }
 
-        // 拖动 villager 的时候会自动关掉大装备栏
-        if (card != null &&
-            card.data != null &&
-            card.data.cardClass == CardClass.Villager &&
-            EquipmentUIController.Instance != null)
+        // 拖动 villager 的时候会自动关掉所有大装备栏
+        if (EquipmentUIController.Instance != null)
         {
-            EquipmentUIController.Instance.CloseBigPanel(card);
+            Transform rt = card.stackRoot != null ? card.stackRoot : card.transform;
+            Card[] cardsInStack = rt.GetComponentsInChildren<Card>();
+
+            foreach (var c in cardsInStack)
+            {
+                if (c == null || c.data == null) continue;
+                if (c.data.cardClass != CardClass.Villager) continue;
+
+                EquipmentUIController.Instance.CloseBigPanel(c);
+            }
         }
 
         // 战斗：如果这是正在战斗中的村民 ，拖动时先中断战斗 
@@ -195,27 +202,10 @@ public class DraggableCard : MonoBehaviour
             }
         }
 
-        //  尝试和附近的 stack 合并
-        //stacked = TryStackOnOtherCard();
-
+        // 处理是否装备
+        // 只要是装备卡就会被处理，之后不走常规stack逻辑
         bool equipmentDropHandled = TryStackOnOtherCard();
         if (equipmentDropHandled) return;
-
-        // 针对“从装备栏拖出来”的特殊处理：
-        // 如果一开始是在装备栏里，这次又没有被 TryStackOnOtherCard 处理，
-        // 说明是拖出装备栏，扔在空地
-        /*if (wasEquipAtDragStart &&
-            card != null &&
-            card.data != null &&
-            card.data.cardClass == CardClass.Equipment &&
-            CardManager.Instance != null)
-        {
-            if (!equipmentDropHandled && card.RuntimeState == CardRuntimeState.InEquipmentUI)
-            {
-                CardManager.Instance.UnequipToBoard(card);
-            }
-        }*/
-
 
         //  触发 recipe
         if (RecipeManager.Instance != null)
@@ -344,6 +334,7 @@ public class DraggableCard : MonoBehaviour
         Card sourceRootCard = dragRoot.GetComponent<Card>();
         if (sourceRootCard == null) return false;
 
+        // 如果 dragroot 是装备卡
         if (sourceRootCard.data != null &&
             sourceRootCard.data.cardClass == CardClass.Equipment &&
             CardManager.Instance != null)
@@ -356,9 +347,6 @@ public class DraggableCard : MonoBehaviour
 
                 var otherCard = hit.GetComponent<Card>();
 
-                // 在装备栏中的卡牌不能作为target
-                if (otherCard == null || !otherCard.IsOnBoard) continue;
-
                 // 如果有target，需要交给CardManager来处理装备堆叠
                 bool equipped = CardManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
                 if (equipped)
@@ -367,8 +355,8 @@ public class DraggableCard : MonoBehaviour
                 }
             }
 
-            return false;
-            // 周围没有target，相当于这次只是在map移动了装备的位置，后续需要检测sell/recipe
+            return true;
+            // 周围没有target，相当于这次只是在map移动了装备的位置，后续仍不检测sell/recipe
         }
 
         foreach (var hit in hits)
@@ -379,11 +367,20 @@ public class DraggableCard : MonoBehaviour
 
             var otherCard = hit.GetComponent<Card>();
             if (otherCard == null) continue;
-            if (otherCard.data.cardClass == CardClass.Equipment)
+
+            // 在装备栏中的卡牌不能作为target
+            // 放下的卡牌应显示在装备栏sr之下
+            if (!otherCard.IsOnBoard)
             {
-                Debug.Log("不能和装备堆叠！");
+                var otherSR = otherCard.GetComponent<SpriteRenderer>();
+                if (otherSR != null)
+                {
+                    sr.sortingOrder = otherSR.sortingOrder - this.transform.childCount;
+                }
+                Debug.Log($"[TryStackOnOtherCard] 装备栏中的卡牌不能作为 target！");
                 continue;
             }
+
 
             // TODO：之后这里可以加 class 规则 / maxStack 限制
 
