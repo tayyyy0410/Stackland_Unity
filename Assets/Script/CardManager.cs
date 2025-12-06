@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -264,22 +265,22 @@ public class CardManager : MonoBehaviour
     {
         if (sourceRootCard == null || sourceRootCard.data == null)
         {
-            Debug.Log("sourceRootCard == null || sourceRootCard.data == null");
+            Debug.Log("[TryHandleEquipmentDrop]被提前中止：sourceRootCard == null || sourceRootCard.data == null");
             return false;
         }
         if (!IsEquipment(sourceRootCard))
         {
-            Debug.Log("!IsEquipment(sourceRootCard)");
+            Debug.Log("[TryHandleEquipmentDrop]被提前中止： !IsEquipment(sourceRootCard)");
             return false;
         }
         if (targetCard == null || targetCard.data == null)
         {
-            Debug.Log("targetCard == null || targetCard.data == null");
+            Debug.Log("[TryHandleEquipmentDrop]被提前中止： targetCard == null || targetCard.data == null");
             return false;
         }
         if (targetCard == sourceRootCard)
         {
-            Debug.Log("targetCard == sourceRootCard");
+            Debug.Log("[TryHandleEquipmentDrop]被提前中止： targetCard == sourceRootCard");
             return false;
         }
 
@@ -288,93 +289,82 @@ public class CardManager : MonoBehaviour
         Transform targetRoot = targetCard.stackRoot != null ? targetCard.stackRoot : targetCard.transform;
 
         Card topCard = null;
+        Card[] allCards = targetRoot.GetComponentsInChildren<Card>();
 
         // 先找子物体
-        for (int i = targetRoot.childCount - 1; i >= 0; i--)
+        /*for (int i = targetRoot.childCount - 1; i >= 0; i--)
         {
             Transform child = targetRoot.GetChild(i);
             Card c = child.GetComponent<Card>();
             if (c != null)
             {
-                if (c.data.cardClass != CardClass.Equipment)
+                if (c.RuntimeState == CardRuntimeState.OnBoard)
                 {
                     topCard = c;
+                    Debug.Log($"{c.name}{c.RuntimeState}");
                     break;
                 }
             }
-        }
-        // 子物体没有再看root自己是不是卡
-        // root自己不用跳过 equipment
-        if (topCard == null)
-        {
-            topCard = targetRoot.GetComponent<Card>();
-        }
-
-
-       /* if (targetRoot.childCount > 0)
-        {
-            Transform topTf = targetRoot.GetChild(targetRoot.childCount - 1);
-            topCard = topTf.GetComponent<Card>();
-        }
-        else
-        {
-            topCard = targetRoot.GetComponent<Card>();
         }*/
 
+        foreach (var c in allCards)
+        {
+            if (c == null || c.data == null) continue;
+
+            if (c.isTopVisual)
+            {
+                topCard = c;
+                break;
+            }
+        }
+
         if (topCard == null)
         {
-            Debug.Log("topCard == null");
+            Debug.Log("[EquipDrop] topCard == null");
             return false;
         }
 
-        // 1) 装备跟装备可以stack，走普通stack逻辑
-        // 且目标装备不能在装备栏内
-        if (IsEquipment(topCard) && topCard.IsOnBoard)
+        Debug.Log($"[EquipDrop] 堆叠目标topCard：{topCard.name}");
+
+        // 子物体没有再看root自己是不是卡
+        // root自己不用跳过 equipment
+        /*if (topCard == null)
         {
-            //sourceRootCard.JoinStackOf(topCard);
-            //Debug.Log($"[EquipDrop]{sourceRootCard.name} 堆叠到装备 stack 上");
-            //return true;
-            // 1) 整叠都取消装备关系
-            //ClearEquipRelation(sourceRootCard);
-
-            // 2) 把整叠状态改成 OnBoard，恢复大小，并重新统计
-            /*var cs = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
-            foreach (var c in cs)
-            {
-                if (c == null) continue;
-
-                c.SetRuntimeState(CardRuntimeState.OnBoard);
-                c.transform.localScale = c.defaultScale;
-                c.gameObject.SetActive(true);
-                if (c.transform.parent != null &&
-                    c.transform.parent.GetComponent<EquipmentUIController>() != null)
-                {
-                    c.transform.SetParent(null);
-                }
-
-                if (!c.isActiveAndEnabled)
-                {
-                    // setactive
-                }
-            }*/
-
-            // 3) 把这叠当作普通 stack 叠在 topCard 那一叠上
-            sourceRootCard.JoinStackOf(topCard);
-            Debug.Log($"[EquipDrop]{sourceRootCard.name} 所在的整叠 叠加到装备上");
-
-            return true;
-
+            // BUG：会检测到装备栏里的卡
+            topCard = targetRoot.GetComponent<Card>();
         }
 
-        // 2) 如果最顶是 villager，尝试装备到村民身上
+        if (topCard == null)
+        {
+            Debug.Log("[EquipDrop] topCard == null");
+            return false;
+        }*/
+
+        Debug.Log($"[EquipDrop] 堆叠目标topCard：{topCard.name}");
+
+        // 1) 如果最顶是 villager，尝试装备到村民身上
         if (topCard.data.cardClass == CardClass.Villager)
         {
             bool equipped = TryEquipStackToVillager(sourceRootCard, topCard);
             if (equipped)
             {
-                Debug.Log($"[EquipDrop]{sourceRootCard.name} 所在的整叠 装备到 村民{topCard.name} 身上");
+                Debug.Log($"[EquipDrop] {sourceRootCard.name} 所在的整叠 装备到 村民{topCard.name} 身上");
             }
             return equipped;
+        }
+
+        // 2) 装备跟装备可以stack，走普通stack逻辑
+        // 且目标装备不能在装备栏内
+        // UI需要确保装备栏内任意卡牌的检测范围都在villager的检测范围之内（针对无法装备，试图stack装备栏中的装备卡情况）
+        if (IsEquipment(topCard) && topCard.IsOnBoard)
+        {
+
+            // 把这叠当作普通 stack 叠在 topCard 那一叠上
+            sourceRootCard.JoinStackOf(topCard);
+            Debug.Log($"[EquipDrop] {sourceRootCard.name} 所在的整叠 堆叠到 onboard 装备上");
+
+            return true;
+
         }
 
         // 3) 放不进装备stack，也装备不到villager身上 -> 返回到 target 下方
@@ -396,24 +386,7 @@ public class CardManager : MonoBehaviour
         sourceRootCard.LayoutStack();
 
         ClearEquipRelation(sourceRootCard);
-
-        // 把整叠状态改成 OnBoard，恢复大小，并重新统计
-        /*var cards = sourceRootCard.stackRoot.GetComponentsInChildren<Card>();
-        foreach (var c in cards)
-        {
-            if (c == null) continue;
-            if (c.IsOnBoard) continue;
-
-            c.SetRuntimeState(CardRuntimeState.OnBoard);
-            c.transform.localScale = c.defaultScale;
-            c.gameObject.SetActive(true);
-            if (c.transform.parent != null &&
-                c.transform.parent.GetComponent<EquipmentUIController>() != null)
-            {
-                c.transform.SetParent(null);
-            }
-        }*/
-        Debug.Log($"EquipDrop]{sourceRootCard.name} 不能装备/堆叠， 掉在 {targetCard.name} 下方");
+        Debug.Log($"EquipDrop] {sourceRootCard.name} 不能装备/堆叠， 掉在 {targetCard.name} 下方");
         return true;
     }
 
@@ -432,48 +405,101 @@ public class CardManager : MonoBehaviour
             : anyCardInStack.transform;
 
         // 2) 收集整叠装备卡
-        var equipCards = new List<Card>();
-        var otherCards = new List<Card>();
+        var allCards = new List<Card>();
         Card rootCard = srcRoot.GetComponent<Card>();
-        if (IsEquipment(rootCard))
+        
+        if (rootCard != null)
         {
-            equipCards.Add(rootCard);
-        }
-        else
-        {
-            otherCards.Add(rootCard);
+            allCards.Add(rootCard);
         }
         foreach (Transform child in srcRoot)
         {
             Card c = child.GetComponent<Card>();
+            if (c != null)
+            {
+                allCards.Add(c);
+            }
+        }
+
+        if (allCards.Count == 0)
+        {
+            Debug.Log("[TryEquipStack] 这叠里面没有 Card！");
+            return false;
+        }
+
+        // 3) 拆分装备和非装备
+        var equipCards = new List<Card>();
+        var nonEquipCards = new List<Card>();
+        foreach (var c in allCards)
+        {
+            if (c == null || c.data == null) continue;
+
             if (IsEquipment(c))
             {
                 equipCards.Add(c);
             }
             else
             {
-                otherCards.Add(rootCard);
+                nonEquipCards.Add(c);
             }
         }
-
         if (equipCards.Count == 0)
         {
-            Debug.Log("[EquipStack] 这叠里面没有装备卡！");
+            // 理论上不会出现（sourceRootCard 一定是装备），但为了稳妥：
+            Debug.Log("[TryEquipStack] 这叠里没有装备卡，交回给普通 stack 逻辑处理");
             return false;
         }
 
-        // 3) 确保 villager 有对应的装备状态
+        // 4) 确保 villager 有对应的装备状态
         if (!villagerEquipStates.TryGetValue(villagerCard, out var state))
         {
             state = new VillagerEquipState();
             villagerEquipStates[villagerCard] = state;
         }
 
-        // 4) 一件一件装备
+        // 5) 处理装备卡堆
         foreach (var equipCard in equipCards)
         {
-            EquipSingelCardToVillagerSlot(equipCard, villagerCard);
-            Debug.Log("装备了stack中的一件装备");
+            if (equipCard == null) continue;
+            EquipSingleCardToVillagerSlot(equipCard, villagerCard);
+        }
+        Debug.Log($"[TryEquipStack] 装备{equipCards.Count} 张，装备到 {villagerCard.name}");
+
+        // 6) 非装备部分：如果存在，把它们组成一叠，掉在 villager 下方
+        if (nonEquipCards.Count > 0)
+        {
+            Transform villagerRoot = villagerCard.stackRoot != null
+                ? villagerCard.stackRoot
+                : villagerCard.transform;
+
+            Vector3 dropPos = villagerRoot.position + new Vector3(0f, -1.5f, 0f);
+
+            // 选非装备里的第一个作为新 root
+            Card newRootCard = nonEquipCards[0];
+            Transform newRootTf = newRootCard.transform;
+
+            // 先把新 root 脱离原 stack
+            newRootTf.SetParent(null);
+            newRootCard.ResetToDefaultSize();
+            newRootTf.position = dropPos;
+            newRootCard.stackRoot = newRootTf;
+
+            // 其余非装备卡挂到这个 newRootTf 下
+            for (int i = 1; i < nonEquipCards.Count; i++)
+            {
+                Card c = nonEquipCards[i];
+                if (c == null) continue;
+                c.transform.SetParent(null);
+                c.ResetToDefaultSize();
+
+                c.transform.SetParent(newRootTf);
+                c.stackRoot = newRootTf;
+            }
+
+            // 4.3 排一下新叠的位置
+            newRootCard.LayoutStack();
+
+            Debug.Log($"[TryEquipStack] 非装备 {nonEquipCards.Count} 张，掉在 {villagerCard.name} 下方");
         }
 
         // TODO: 这里之后可以根据装备更新村民的战斗属性
@@ -484,7 +510,7 @@ public class CardManager : MonoBehaviour
     /// 把一件装备装到 villager 身上某个槽位
     /// TODO: 目前先简单实现塞 hand 槽位，后续再根据 CardData 分槽位
     /// </summary>
-    private void EquipSingelCardToVillagerSlot(Card equipCard, Card villagerCard)
+    private void EquipSingleCardToVillagerSlot(Card equipCard, Card villagerCard)
     {
         if (equipCard == null || villagerCard == null) return;
         if (equipCard.data == null) return;
@@ -498,7 +524,7 @@ public class CardManager : MonoBehaviour
         EquipSlotType slot = equipCard.data.equipSlot;
         if (slot == EquipSlotType.None)
         {
-            Debug.LogWarning($"[Equip] {equipCard.name} 的 equipSlot == None，忽略这次装备");
+            Debug.LogWarning($"[Equip] {equipCard.name} 的 equipSlot 未设置，忽略这次装备");
             return;
         }
 
@@ -570,6 +596,7 @@ public class CardManager : MonoBehaviour
         // 更新 stackRoot
         // ！！！！！不能清空！！！！！清空会drag不了
         equipCard.stackRoot = equipCard.transform;
+        equipCard.isTopVisual = false;
 
         // 槽位有旧装备，把旧装备扔回场上
         // TODO: 扔回场上的位置后续改成范围内随机
@@ -590,7 +617,9 @@ public class CardManager : MonoBehaviour
     }
 
 
+    /// <summary>
     /// 找到这件装备当前挂在哪个 villager 身上（没有就返回 null）
+    /// </summary>
     private Card FindEquipOwner(Card equipCard)
     {
         if (equipCard == null) return null;
@@ -611,7 +640,10 @@ public class CardManager : MonoBehaviour
         return null;
     }
 
-    /// 把这张装备从它原本所属的 villager 身上解绑
+    /// <summary>
+    /// 把这张装备从它原本所属的 villager 身上解绑，刷新原 owner 装备栏UI
+    /// 这里不操作装备卡的 oboard 状态，不处理注册
+    /// </summary>
     private void ClearEquipRelation(Card equipCard)
     {
         if (equipCard == null) return;
@@ -652,18 +684,22 @@ public class CardManager : MonoBehaviour
                     EquipmentUIController.Instance.RebuildBigPanelContent(owner);
                 else
                     EquipmentUIController.Instance.EnsureSmallBar(owner);
+                Debug.Log($"[ClearEquipRelation] 装备{equipCard.name}从{owner.name}解绑，保留装备栏");
             }
 
             else
             {
                 EquipmentUIController.Instance.CloseBigPanel(owner);
                 EquipmentUIController.Instance.CloseSmallBar(owner);
+                Debug.Log($"[ClearEquipRelation] 装备{equipCard.name}从{owner.name}解绑，清除装备栏");
             }
         }
 
     }
 
+    /// <summary>
     /// 把这一整叠里的所有卡都从各自 villager 的装备状态中解绑
+    /// </summary>
     private void ClearEquipRelationForStack(Card stackRootCard)
     {
         if (stackRootCard == null) return;
@@ -681,27 +717,10 @@ public class CardManager : MonoBehaviour
     }
 
 
-    /// 把这张装备从装备栏卸下，变成普通场上卡牌
-    public void UnequipToBoard(Card equipCard)
-    {
-        if (equipCard == null || equipCard.data == null) return;
-        if (equipCard.data.cardClass != CardClass.Equipment) return;
-
-        ClearEquipRelation(equipCard);
-
-        equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
-
-        equipCard.transform.localScale = equipCard.defaultScale;
-
-        equipCard.transform.SetParent(null);
-
-        equipCard.gameObject.SetActive(true);
-
-        Debug.Log($"[Equip] UnequipToBoard: {equipCard.name} 已卸下，回到场上");
-    }
-
-
-    // 在开始拖拽时调用：把这件装备从 villager 身上卸下，变成手里的一张普通卡
+    /// <summary>
+    /// 在开始拖拽时调用：把这件装备从 villager 身上卸下，变成手里的一张普通卡
+    /// 处理原 owner 装备状态和装备UI + 装备卡UI/状态/注册
+    /// </summary>
     public void UnequipFromVillagerImmediate(Card equipCard)
     {
         if (equipCard == null || equipCard.data == null) return;
@@ -711,6 +730,7 @@ public class CardManager : MonoBehaviour
         ClearEquipRelation(equipCard);
 
         // 状态/视觉还原
+        equipCard.isTopVisual = true;
         equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
         equipCard.ResetToDefaultSize();
         equipCard.gameObject.SetActive(true);

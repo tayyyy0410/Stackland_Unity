@@ -208,20 +208,96 @@ public class Card : MonoBehaviour
         }
     }
 
-    /// stack 的 layout
+
     public void LayoutStack()
     {
-        Debug.Log("1");
         if (stackRoot == null) return;
-        Card card = stackRoot.GetComponent<Card>();
 
-        // 如果stack中有村民，关掉他的装备栏
-        if (EquipmentUIController.Instance != null &&
-            card != null &&
-            card.data != null)
+        // 包括 root 的整个 stack
+        Card[] cardsInStack = stackRoot.GetComponentsInChildren<Card>();
+
+        // 1. 先把这个 stack 里的所有 Card 的 isTopVisual 清零
+        foreach (var c in cardsInStack)
         {
-            EquipmentUIController.Instance.CloseBigPanel(card);
+            if (c != null)
+            {
+                c.isTopVisual = false;
+            }
         }
+
+        int i = 0;
+        Card lastCard = null;
+
+        // 2. 只移动真正的 Card 子物体（跳过 StatsRoot 等 UI）
+        foreach (Transform child in stackRoot)
+        {
+            Card childCard = child.GetComponent<Card>();
+            if (childCard == null) continue;
+
+            i++;
+            child.localPosition = new Vector3(0f, i * yOffset, 0f);
+            lastCard = childCard;
+
+        }
+
+        // 3. 标记最上面那张卡
+        Card topCard = null;
+
+        if (lastCard != null)
+        {
+            topCard = lastCard;
+        }
+        else
+        {
+            topCard = stackRoot.GetComponent<Card>();
+        }
+
+        if (topCard != null)
+        {
+            topCard.isTopVisual = true;
+        }
+
+        // ============ 4. 处理村民装备栏显示逻辑 ==========
+        if (EquipmentUIController.Instance != null)
+        {
+            List<Card> villagersInStack = new List<Card>();
+
+            foreach (var c in cardsInStack)
+            {
+                if (c == null || c.data == null) continue;
+
+                if (c.data.cardClass == CardClass.Villager)
+                {
+                    villagersInStack.Add(c);
+                }
+            }
+
+            foreach (Card v in villagersInStack)
+            {
+                bool villagerIsTop = (v == topCard);
+
+                if (!villagerIsTop)
+                {
+                    // 不是顶牌要关掉大面板 + 隐藏小条
+                    EquipmentUIController.Instance.CloseBigPanel(v);
+                    EquipmentUIController.Instance.SetSmallBarVisible(v, false);
+                }
+                else if (CardManager.Instance != null && CardManager.Instance.VillagerHasAnyEquip(v))
+                {
+                    // 是顶牌且有装备：小条显示
+                    EquipmentUIController.Instance.SetSmallBarVisible(v, true);
+                }
+
+            }
+        }
+    }
+
+
+    // ================= LayoutStack 我改动比较大，怕出现ui问题把原版存在这了
+    /// stack 的 layout
+    /*public void LayoutStack()
+    {
+        if (stackRoot == null) return;
 
         // 1. 先把这个 stack 里的所有 Card 的 isTopVisual 清零
         foreach (Transform t in stackRoot)
@@ -230,12 +306,6 @@ public class Card : MonoBehaviour
             if (c != null)
             {
                 c.isTopVisual = false;
-                // 如果stack中有村民，关掉他的装备栏
-                if (EquipmentUIController.Instance != null &&
-                    c.data.cardClass == CardClass.Villager)
-                {
-                    EquipmentUIController.Instance.CloseBigPanel(c);
-                }
 
             }
         }
@@ -268,7 +338,7 @@ public class Card : MonoBehaviour
                 rootCard.isTopVisual = true;
             }
         }
-    }
+    }*/
 
     private void OnMouseEnter()
     {
@@ -398,7 +468,7 @@ public class Card : MonoBehaviour
     }
 
     /// <summary>
-    /// 更改卡牌是否处于装备栏状态
+    /// 更改卡牌 onboard 状态
     /// 同时根据新状态 toggle register
     /// </summary>
     public void SetRuntimeState(CardRuntimeState newState)

@@ -13,6 +13,12 @@ public class EquipBar : MonoBehaviour
     {
         if (ownerVillager == null) return;
 
+        if (!ownerVillager.isTopVisual)
+        {
+            Debug.Log($"[EquipUI] {ownerVillager.name} 不是顶牌，EquipBar点击被忽略");
+            return;
+        }
+
         // 比如暂停、结算阶段不允许开关
         if (DayManager.Instance == null) return;
         if (DayManager.Instance.CurrentState != DayManager.DayState.Running &&
