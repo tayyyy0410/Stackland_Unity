@@ -19,6 +19,14 @@ public enum CardClass
     Prefab,
 }
 
+public enum EquipSlotType
+{
+    None,
+    Hand,
+    Head,
+    Body
+}
+
 //卡牌的可配置数据
 [CreateAssetMenu(fileName = "CardData", menuName = "Scriptable Objects/CardData")]
 public class CardData : ScriptableObject
@@ -56,6 +64,7 @@ public class CardData : ScriptableObject
     [Tooltip("增加多少卡牌容量")]
     public int capacity;
 
+
     /// <summary>
     /// ////战斗相关
     /// </summary>
@@ -91,8 +100,12 @@ public class CardData : ScriptableObject
     [Tooltip("每次死亡最多掉几张卡")]
     public int maxDeathLoot = 1;
 
-    
-    [Header("weapons")]
+
+    // 装备和战斗
+    [Header("Equipment")]
+    [Tooltip("这个卡如果是装备，属于哪个槽位")]
+    public EquipSlotType equipSlot = EquipSlotType.None;
+
     [Tooltip("是否增加伤害")]
     public bool hasDamage;
 

@@ -9,6 +9,10 @@ public class DraggableCard : MonoBehaviour
     private bool isDragging = false;
     private Vector3 offset;
 
+    //本次拖拽开始时，这张卡是否在装备状态
+    private bool wasEquipAtDragStart;
+
+
     private SpriteRenderer sr;
     private int originalSortingOrder;
 
@@ -27,6 +31,17 @@ public class DraggableCard : MonoBehaviour
     private void OnMouseDown()
     {
         if (!CanInteract()) return;
+        if (card == null ) return;
+        wasEquipAtDragStart = (card.RuntimeState == CardRuntimeState.InEquipmentUI);
+
+        // 拖动 villager 的时候会自动关掉大装备栏
+        if (card != null &&
+            card.data != null &&
+            card.data.cardClass == CardClass.Villager &&
+            EquipmentUIController.Instance != null)
+        {
+            EquipmentUIController.Instance.CloseBigPanel(card);
+        }
 
         // 战斗：如果这是正在战斗中的村民 ，拖动时先中断战斗 
         if (cam == null) cam = Camera.main;
@@ -174,7 +189,26 @@ public class DraggableCard : MonoBehaviour
         }
 
         //  尝试和附近的 stack 合并
-        stacked = TryStackOnOtherCard();
+        //stacked = TryStackOnOtherCard();
+
+        bool equipmentDropHandled = TryStackOnOtherCard();
+        if (equipmentDropHandled) return;
+
+        // 针对“从装备栏拖出来”的特殊处理：
+        // 如果一开始是在装备栏里，这次又没有被 TryStackOnOtherCard 处理，
+        // 说明是拖出装备栏，扔在空地
+        if (wasEquipAtDragStart &&
+            card != null &&
+            card.data != null &&
+            card.data.cardClass == CardClass.Equipment &&
+            CardManager.Instance != null)
+        {
+            if (!equipmentDropHandled && card.RuntimeState == CardRuntimeState.InEquipmentUI)
+            {
+                CardManager.Instance.UnequipToBoard(card);
+            }
+        }
+
 
         //  触发 recipe
         if (RecipeManager.Instance != null)
@@ -260,7 +294,7 @@ public class DraggableCard : MonoBehaviour
     }
 
     /// 检测周围有没有其他牌，用来自动堆叠
-    public bool TryStackOnOtherCard()
+    /*public bool TryStackOnOtherCard()
     {
         if (card == null) return false;
         if (dragRoot == null) return false;
@@ -290,6 +324,64 @@ public class DraggableCard : MonoBehaviour
             break;
         }
         return stacked;
+    }*/
+
+    public bool TryStackOnOtherCard()
+    {
+        if (card == null) return false;
+        if (dragRoot == null) return false;
+
+        radius = 0.2f;
+        var hits = Physics2D.OverlapCircleAll(dragRoot.position, radius);
+
+        Card sourceRootCard = dragRoot.GetComponent<Card>();
+        if (sourceRootCard == null) return false;
+
+        if (sourceRootCard.data != null &&
+            sourceRootCard.data.cardClass == CardClass.Equipment &&
+            CardManager.Instance != null)
+        {
+            foreach (var hit in hits)
+            {
+                // 跳过自己这整个 stack 里的牌
+                if (hit.transform == dragRoot || hit.transform.IsChildOf(dragRoot))
+                    continue;
+
+                var otherCard = hit.GetComponent<Card>();
+
+                // 在装备栏中的卡牌不能作为target
+                if (otherCard == null || !otherCard.IsOnBoard) continue;
+
+                Debug.Log("是equipment且有hit");
+
+                // 如果有target，需要交给CardManager来处理装备堆叠
+                bool equipped = CardManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
+                if (equipped)
+                {
+                    return true;    // 后续不检测sell/recipe
+                }
+            }
+
+            return false;
+            // 周围没有target，相当于这次只是在map移动了装备的位置，后续需要检测sell/recipe
+        }
+
+        foreach (var hit in hits)
+        {
+            // 跳过自己这整个 stack 里的牌
+            if (hit.transform == dragRoot || hit.transform.IsChildOf(dragRoot))
+                continue;
+
+            var otherCard = hit.GetComponent<Card>();
+            if (otherCard == null) continue;
+
+            // TODO：之后这里可以加 class 规则 / maxStack 限制
+
+            // 把这个子stack整叠的 root 叠到对方那一个stack上
+            sourceRootCard.JoinStackOf(otherCard);
+            break;
+        }
+        return false;
     }
 
     // 在除了 running 和 selling 阶段锁死卡牌拖拽

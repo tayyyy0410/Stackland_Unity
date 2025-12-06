@@ -3,6 +3,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections.Generic;
 
+// 卡牌当前状态，用于管理装备
+public enum CardRuntimeState
+{
+    OnBoard,        // 在场/stack里，被记入total count
+    InEquipmentUI,  // 在装备栏，不算进total count
+}
+
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
 public class Card : MonoBehaviour
 {
@@ -27,6 +34,8 @@ public class Card : MonoBehaviour
     private CardStatsUI statsUI;
     [HideInInspector] public bool isTopVisual = true;
 
+
+    // Battle 相关
     [Header("Battle Runtime")]
     [Tooltip("当前 HP")]
     public int currentHP;
@@ -37,12 +46,27 @@ public class Card : MonoBehaviour
     [HideInInspector] public BattleManager.BattleInstance currentBattle;
     public bool IsInBattle => currentBattle != null;
 
+
+    // Equipment 相关
+    [Header("Runtime State")]
+    [Tooltip("当前卡牌是否处于装备栏")]
+    [SerializeField] private CardRuntimeState runtimeState = CardRuntimeState.OnBoard;
+    public CardRuntimeState RuntimeState => runtimeState;
+    public bool IsOnBoard => runtimeState == CardRuntimeState.OnBoard;
+    public Vector3 defaultScale;
+
+
     // CardManager 相关
     public bool HasRegisteredToManager { get; set; } = false;
+
+
+
+
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        defaultScale = transform.localScale;
 
         if (data != null)
         {
@@ -349,9 +373,43 @@ public class Card : MonoBehaviour
         if (CardManager.Instance == null) return;
         if (data == null) return;   // 没 data 先别注册
 
+        // 不登记装备栏内的卡牌
+        if (RuntimeState != CardRuntimeState.OnBoard) return;
+
         CardManager.Instance.RegisterCard(this);
     }
 
+    /// <summary>
+    /// 更改卡牌是否处于装备栏状态
+    /// 同时根据新状态 toggle register
+    /// </summary>
+    public void SetRuntimeState(CardRuntimeState newState)
+    {
+        if (runtimeState == newState) return;
+
+        var oldState = runtimeState;
+        runtimeState = newState;
+
+        if (CardManager.Instance == null) return;
+
+        // 从 OnBoard 被移到装备栏需要 unregister
+        if (oldState == CardRuntimeState.OnBoard && newState != CardRuntimeState.OnBoard)
+        {
+            if (HasRegisteredToManager)
+            {
+                CardManager.Instance.UnregisterCard(this);
+                HasRegisteredToManager = false;
+            }
+        }
+
+        // 从装备栏移到 OnBoard 需要 register
+        else if (oldState != CardRuntimeState.OnBoard && newState == CardRuntimeState.OnBoard)
+        {
+            TryRegisterToManager();
+        }
+    }
+
+    // ========================== Battle ============================
     /// <summary>
     /// 确保 currentHP 按 data 初始化一次
     /// </summary>

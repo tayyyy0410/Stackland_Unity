@@ -230,8 +230,7 @@ public class DayManager : MonoBehaviour
         // 因为多个text闪烁的颜色是同步的，所以不单独写method，而是储存一个颜色，符合条件时调用
         int phase = Mathf.FloorToInt(Time.time / flashInterval);
         useRed = (phase % 2 == 0);
-        Debug.Log($"[DayManager]useRed={useRed}");
-        //useRed = (Mathf.FloorToInt((Time.time / flashInterval) % 2) == 0);
+        //Debug.Log($"[DayManager]useRed={useRed}");
 
         if (moonProgressFill != null)
         {
