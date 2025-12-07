@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -35,6 +36,8 @@ public class CardManager : MonoBehaviour
 
     public int CardToSellCount => NonCoinCount - MaxCardCapacity;   // UI：还需售卖的卡牌数量
 
+    //UI:卡牌多出反映文本
+    public TMP_Text cardSellText;
 
     // 管理 villager 的装备状态
     public Dictionary<Card, VillagerEquipState> villagerEquipStates = new Dictionary<Card, VillagerEquipState>();

@@ -57,6 +57,10 @@ public class DayManager : MonoBehaviour
     public TMP_Text moonTextInSell;
     public TMP_Text moonTextInNext;
 
+    [Tooltip("显示当前多出的卡牌数量")]
+    public TMP_Text cardSellText;
+    public TMP_Text cardSellButtonText;
+
     [Tooltip("“所有人都吃饱了”页面展示时长")]
     public float allFedResultDuration;
 
@@ -169,6 +173,7 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.WaitingSell && moonTextInSell != null)
         {
             moonTextInSell.text = currentMoon.ToString();
+            UpdateSellStatus();
         }
         else if (CurrentState == DayState.WaitingNextDay && moonTextInNext != null)
         {
@@ -180,8 +185,14 @@ public class DayManager : MonoBehaviour
     {
 
           hungerNumText.text = $"There is not enough food..{lastHungryVillagers.Count} Human will starve of Hunger";
+         
 
+    }
 
+    private void UpdateSellStatus()
+    {
+        cardSellText.text = $"You have {CardManager.Instance.CardToSellCount} Cards too many!";
+        cardSellButtonText.text = $"Sell {CardManager.Instance.CardToSellCount} Cards";
     }
 
     private void UpdateRunning()
