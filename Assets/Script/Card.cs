@@ -32,7 +32,7 @@ public class Card : MonoBehaviour
     [Header("UI Display")]
     private InfoBarIndep infoBar;
     private CardStatsUI statsUI;
-    [HideInInspector] public bool isTopVisual = true;
+    public bool isTopVisual = true;
 
 
     // Battle 相关

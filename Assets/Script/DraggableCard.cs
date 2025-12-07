@@ -203,7 +203,7 @@ public class DraggableCard : MonoBehaviour
         }
 
         // 处理是否装备
-        // 只要是装备卡就会被处理，之后不走常规stack逻辑
+        // 被处理的装备卡之后不走常规stack逻辑
         bool equipmentDropHandled = TryStackOnOtherCard();
         if (equipmentDropHandled) return;
 
@@ -349,13 +349,10 @@ public class DraggableCard : MonoBehaviour
 
                 // 如果有target，需要交给CardManager来处理装备堆叠
                 bool equipped = CardManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
-                if (equipped)
-                {
-                    return true;    // 后续不检测sell/recipe
-                }
+                return equipped;
             }
 
-            return true;
+            return false;
             // 周围没有target，相当于这次只是在map移动了装备的位置，后续仍不检测sell/recipe
         }
 

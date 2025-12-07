@@ -258,6 +258,29 @@ public class CardManager : MonoBehaviour
         return state != null && state.HasAnyEquip;
     }
 
+    // 找 equipment 的 owner
+    public Card FindOwnerVillagerOfEquip(Card equipCard)
+    {
+        if (equipCard == null) return null;
+
+        foreach (var kvp in villagerEquipStates)
+        {
+            Card villager = kvp.Key;
+            VillagerEquipState state = kvp.Value;
+            if (state == null) continue;
+
+            if (state.head == equipCard ||
+                state.hand == equipCard ||
+                state.body == equipCard)
+            {
+                return villager;
+            }
+        }
+
+        return null;
+    }
+
+
     /// <summary>
     /// 拖拽装备松手时的逻辑入口
     /// return true: 处理完成，跳过常规 stack 逻辑
@@ -286,28 +309,30 @@ public class CardManager : MonoBehaviour
             return false;
         }
 
+        Debug.Log($"[EquipDrop] targetCard = {targetCard.name}");
+
         // 算出 target stack 的 root 和 最上层的牌
         // 且要跳过卡牌子物体内的 equipment（可能处于装备栏内）
+
+        // targetCard 如果是装备栏中的卡，先找到 owner 改 true target
+        Card effectiveTarget = targetCard;
+
+        if (targetCard.RuntimeState == CardRuntimeState.InEquipmentUI &&
+            CardManager.Instance != null)
+        {
+            Card owner = CardManager.Instance.FindOwnerVillagerOfEquip(targetCard);
+            if (owner != null)
+            {
+                effectiveTarget = owner;
+                Debug.Log($"[EquipDrop] 命中装备栏卡 {targetCard.name}，映射到 owner {owner.name}");
+            }
+        }
+
+        targetCard = effectiveTarget;
         Transform targetRoot = targetCard.stackRoot != null ? targetCard.stackRoot : targetCard.transform;
 
         Card topCard = null;
         Card[] allCards = targetRoot.GetComponentsInChildren<Card>();
-
-        // 先找子物体
-        /*for (int i = targetRoot.childCount - 1; i >= 0; i--)
-        {
-            Transform child = targetRoot.GetChild(i);
-            Card c = child.GetComponent<Card>();
-            if (c != null)
-            {
-                if (c.RuntimeState == CardRuntimeState.OnBoard)
-                {
-                    topCard = c;
-                    Debug.Log($"{c.name}{c.RuntimeState}");
-                    break;
-                }
-            }
-        }*/
 
         foreach (var c in allCards)
         {
@@ -389,7 +414,7 @@ public class CardManager : MonoBehaviour
 
         ClearEquipRelation(sourceRootCard);
         Debug.Log($"EquipDrop] {sourceRootCard.name} 不能装备/堆叠， 掉在 {targetCard.name} 下方");
-        return true;
+        return false;
     }
 
     /// <summary>
