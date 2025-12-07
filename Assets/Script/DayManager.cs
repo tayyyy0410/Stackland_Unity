@@ -54,6 +54,7 @@ public class DayManager : MonoBehaviour
     public TMP_Text moonTextInFeeding;
     public TMP_Text moonTextInFed;
     public TMP_Text moonTextInHungary;
+    public TMP_Text moonTextInSell;
     public TMP_Text moonTextInNext;
 
     [Tooltip("“所有人都吃饱了”页面展示时长")]
@@ -142,6 +143,7 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.FeedingAnimation || 
                  CurrentState == DayState.FeedingResultAllFull || 
                  CurrentState == DayState.FeedingResultHungry || 
+                 CurrentState == DayState.WaitingSell ||
                  CurrentState == DayState.WaitingNextDay)
         {
             UpdateBarDate();
@@ -163,6 +165,10 @@ public class DayManager : MonoBehaviour
         {
             moonTextInHungary.text = currentMoon.ToString();
             UpdateHungerStatus();
+        }
+        else if (CurrentState == DayState.WaitingSell && moonTextInSell != null)
+        {
+            moonTextInSell.text = currentMoon.ToString();
         }
         else if (CurrentState == DayState.WaitingNextDay && moonTextInNext != null)
         {
