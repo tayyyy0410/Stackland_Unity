@@ -54,7 +54,13 @@ public class DayManager : MonoBehaviour
     public TMP_Text moonTextInFeeding;
     public TMP_Text moonTextInFed;
     public TMP_Text moonTextInHungary;
+    public TMP_Text moonTextInSell;
     public TMP_Text moonTextInNext;
+
+    [Tooltip("显示当前多出的卡牌数量")]
+    public TMP_Text cardSellText;
+    public TMP_Text cardSellButtonText;
+    public TMP_Text cardSellingText;
 
     [Tooltip("“所有人都吃饱了”页面展示时长")]
     public float allFedResultDuration;
@@ -142,6 +148,7 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.FeedingAnimation || 
                  CurrentState == DayState.FeedingResultAllFull || 
                  CurrentState == DayState.FeedingResultHungry || 
+                 CurrentState == DayState.WaitingSell ||
                  CurrentState == DayState.WaitingNextDay)
         {
             UpdateBarDate();
@@ -164,6 +171,11 @@ public class DayManager : MonoBehaviour
             moonTextInHungary.text = currentMoon.ToString();
             UpdateHungerStatus();
         }
+        else if (CurrentState == DayState.WaitingSell && moonTextInSell != null)
+        {
+            moonTextInSell.text = currentMoon.ToString();
+            UpdateSellStatus();
+        }
         else if (CurrentState == DayState.WaitingNextDay && moonTextInNext != null)
         {
             moonTextInNext.text = (currentMoon+1).ToString();
@@ -174,8 +186,14 @@ public class DayManager : MonoBehaviour
     {
 
           hungerNumText.text = $"There is not enough food..{lastHungryVillagers.Count} Human will starve of Hunger";
+         
 
+    }
 
+    private void UpdateSellStatus()
+    {
+        cardSellText.text = $"You have {CardManager.Instance.CardToSellCount} Cards too many!";
+        cardSellButtonText.text = $"Sell {CardManager.Instance.CardToSellCount} Cards";
     }
 
     private void UpdateRunning()
@@ -217,6 +235,9 @@ public class DayManager : MonoBehaviour
     private void UpdateSelling()
     {
         if (CardManager.Instance == null) return;
+
+        cardSellingText.text = $"You have {CardManager.Instance.CardToSellCount} Cards too many!";
+
         if (CardManager.Instance.NonCoinCount > CardManager.Instance.MaxCardCapacity) return;
 
         SetState(DayState.WaitingNextDay);
