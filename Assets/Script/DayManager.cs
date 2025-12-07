@@ -60,6 +60,7 @@ public class DayManager : MonoBehaviour
     [Tooltip("显示当前多出的卡牌数量")]
     public TMP_Text cardSellText;
     public TMP_Text cardSellButtonText;
+    public TMP_Text cardSellingText;
 
     [Tooltip("“所有人都吃饱了”页面展示时长")]
     public float allFedResultDuration;
@@ -234,6 +235,9 @@ public class DayManager : MonoBehaviour
     private void UpdateSelling()
     {
         if (CardManager.Instance == null) return;
+
+        cardSellingText.text = $"You have {CardManager.Instance.CardToSellCount} Cards too many!";
+
         if (CardManager.Instance.NonCoinCount > CardManager.Instance.MaxCardCapacity) return;
 
         SetState(DayState.WaitingNextDay);
