@@ -448,8 +448,7 @@
 
 
         /// 生成新card
-        /// 生成新card
-    private void CraftRecipeInstant(RecipeData recipe, Transform stackRoot)
+        private void CraftRecipeInstant(RecipeData recipe, Transform stackRoot)
     {
         if (cardPrefab == null)
         {
@@ -461,7 +460,7 @@
 
         Vector3 spawnPos = stackRoot.position + (Vector3)spawnOffset;
 
-        // 1. 计算需要消耗的材料（consume == true）
+        // 算需要消耗的材料
         Dictionary<CardData, int> needConsume = new Dictionary<CardData, int>();
         foreach (var ing in recipe.ingredients)
         {
@@ -474,7 +473,7 @@
             needConsume[ing.cardData] += ing.amount;
         }
 
-        // 2. stack 里所有 Card
+        // stack 里所有 Card
         List<Card> allCards = new List<Card>(stackRoot.GetComponentsInChildren<Card>());
         List<GameObject> toDestroy = new List<GameObject>();
 
@@ -491,7 +490,7 @@
             }
         }
 
-        // 有要消耗的卡 → 把剩余的从原 stack 脱离出来，各自成为新 stackRoot
+        // 有要消耗的卡 
         if (toDestroy.Count > 0)
         {
             foreach (var c in allCards)
@@ -517,14 +516,14 @@
             }
         }
 
-        // 3. 处理可采集的卡（harvest）
+        // 处理可采集的卡
         CardData harvestOutput = null;  // 这次采集要掉的那张卡
 
         foreach (var c in allCards)
         {
             if (c == null) continue;
             if (toDestroy.Contains(c.gameObject))
-                continue;  // 已经被删掉的不管
+                continue;  
 
             if (c.data != null && c.data.harvestLootPack != null)
             {
@@ -534,13 +533,13 @@
 
                 Debug.Log($"[Harvest] {c.data.displayName} 被采集一次，剩余 {c.harvestUsesLeft}");
 
-                // 本次掉落（只决定一次）
+                // 本次掉落（
                 if (harvestOutput == null)
                 {
                     harvestOutput = GetRandomFromPack(c.data.harvestLootPack);
                 }
 
-                // 用完了就销毁 / 变枯萎
+                // 用完了就销毁 
                 if (c.harvestUsesLeft <= 0)
                 {
                     if (c.data.depletedCardData != null)
@@ -574,10 +573,9 @@
                 }
             }
         }
-
-        // 4. 决定最终生成哪张卡：
-        //    - 如果是采集，用 harvestOutput
-        //    - 否则用配方自身的 output
+        
+        //    如果是采集，用 harvestOutput
+        //    否则用配方自身的 output
         CardData resultData = harvestOutput != null ? harvestOutput : recipe.output;
 
         if (resultData == null)
@@ -596,16 +594,15 @@
             newCard.ApplyData();
             newCard.LayoutStack();
 
-            // ===============================
-            // 自动叠堆
-            // 条件：本次是 harvest
-            // ===============================
+            
+            // // 只对“harvestOutput != null生效，
+          
             if (harvestOutput != null)
             {
-                float radius = 0.05f;   // 小小范围，只看同一点附近
-                Collider2D[] hits = Physics2D.OverlapCircleAll(newCard.transform.position, radius);
+                float radius = 0.05f;   // 小范围，只看同一点附近
+                Collider2D[] hits = Physics2D.OverlapCircleAll(spawnPos, radius);
 
-                Card stackTarget = null;
+                Transform existingRoot = null;
 
                 foreach (var hit in hits)
                 {
@@ -615,47 +612,43 @@
                     if (other == null) continue;
                     if (other == newCard) continue;
 
-                    // 只和同一种结果卡叠堆（比如都是 Berry）
+                    // 只和“同一种结果卡”叠堆（比如都是 Berry）
                     if (other.data == null || other.data != resultData)
                         continue;
 
-                    // 不是同一个 stackRoot 的卡，才当作叠堆目标
-                    if (other.stackRoot != newCard.stackRoot)
-                    {
-                        stackTarget = other;
-                        break;
-                    }
+                    // 找到这堆的真正 stackRoot（可能是自己，也可能是上一张）
+                    existingRoot = other.stackRoot != null ? other.stackRoot : other.transform;
+                    break;
                 }
 
-                if (stackTarget != null)
+                if (existingRoot != null)
                 {
-                    // 让新卡加入已有的 stack
-                    newCard.JoinStackOf(stackTarget);
+                    // 固定一个 stackRoot所有新掉落统一挂在这个 root 下
+                    newCard.transform.SetParent(existingRoot);
+                    newCard.stackRoot = existingRoot;
 
-                   
+                  
+                    // 如果想“新掉的在下面”，可以加一句：
                     newCard.transform.SetSiblingIndex(0);
 
-                    // 重新排一下 stack
-                    if (stackTarget.stackRoot != null)
+                    // 重新排一下这叠卡
+                    Card rootCard = existingRoot.GetComponent<Card>();
+                    if (rootCard != null)
                     {
-                        Card rootCard = stackTarget.stackRoot.GetComponent<Card>();
-                        if (rootCard != null)
-                        {
-                            rootCard.LayoutStack();
-                        }
+                        rootCard.LayoutStack();
                     }
                 }
             }
         }
 
-        
         if (AudioManager.I != null && AudioManager.I.spawnSfx != null)
-         {
+        {
             AudioManager.I.PlaySFX(AudioManager.I.spawnSfx);
         }
 
         Debug.Log($"配方合成完成：生成 {resultData.displayName}");
     }
+
 
         
         
