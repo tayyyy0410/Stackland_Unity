@@ -5,35 +5,26 @@ public class IdeaToQuestBarIndep : MonoBehaviour
     public GameObject IdeaBar;
     public GameObject QuestBar;
 
-    private bool ideaBarOn = true;
-    private bool questBarOn = false;
-
-    public void Decision()
-    {
-        if(questBarOn)
-        {
-            ConvertQuestToIdea();
-        }
-        else if (ideaBarOn)
-        {
-            ConvertIdeaToQuest();
-        }
-    }
+    public GameObject ItQButton;
+    public GameObject QtIButton;
 
     public void ConvertIdeaToQuest()
     {
         IdeaBar.SetActive(false);
         QuestBar.SetActive(true);
-        questBarOn = true;
-        ideaBarOn = false;
+
+        ItQButton.SetActive(false);
+        QtIButton.SetActive(true);
     }
 
     public void ConvertQuestToIdea()
     {
         QuestBar.SetActive(false);
         IdeaBar.SetActive(true);
-        ideaBarOn = true;
-        questBarOn = false;
+
+        ItQButton.SetActive(true);
+        QtIButton.SetActive(false);
+
 
     }
 
