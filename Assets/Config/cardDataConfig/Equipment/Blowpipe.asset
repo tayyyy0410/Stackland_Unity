@@ -44,12 +44,15 @@ MonoBehaviour:
   hasHealing: 0
   healing: 0
   cardClass: 9
-  backgroundSprite: {fileID: 0}
+  backgroundSprite: {fileID: -844789128460177097, guid: a42fd821e81ba7a41b036c046cbb2b58, type: 3}
   maxStackSize: 100
   canStackWithSameClass: 1
   isHarvestable: 0
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
   pickSfx: {fileID: 0}
   dropSfx: {fileID: 0}

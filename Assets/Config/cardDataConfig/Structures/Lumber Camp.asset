@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: Lumber Camp
+  m_EditorClassIdentifier: 
+  id: Lumber_Camp_id
+  displayName: Lumber Camp
+  description: An unlimited source of Wood
+  value: 5
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
+  hasCapacity: 0
+  capacity: 0
+  hasHP: 0
+  baseHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  hitChance: 0
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
+  equipSlot: 0
+  hasDamage: 0
+  damage: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
+  showHP: 0
+  showHunger: 0
+  showValue: 0
+  useDarkText: 1
+  hasHealing: 0
+  healing: 0
+  cardClass: 4
+  backgroundSprite: {fileID: 9158878038411568897, guid: 6d81b8af3a2539b4a87d0ab7a2e195f7, type: 3}
+  maxStackSize: 2
+  canStackWithSameClass: 1
+  isHarvestable: 1
+  maxHarvestUses: 999
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
+  pickSfx: {fileID: 0}
+  dropSfx: {fileID: 0}
