@@ -221,7 +221,7 @@ public class DraggableCard : MonoBehaviour
         // 检查是否在 Shop / Sell 区域 
         TryBuyPackIfOnShop();
 
-        // 🔥 关键补丁：最后再找一次“真正的最终 stackRoot”，统一排一下
+        // 最后再找一次“真正的最终 stackRoot”，统一排一下
         Card finalRootCard = null;
         if (card != null)
         {
@@ -403,13 +403,19 @@ public class DraggableCard : MonoBehaviour
     }
 
     // 战斗触发检测
+    // 战斗触发检测
     private bool TryStartBattle(Card rootCard)
     {
         if (rootCard == null || rootCard.data == null) return false;
         if (BattleManager.Instance == null) return false;
 
-        // 只有村民主动开战
-        if (rootCard.data.cardClass != CardClass.Villager) return false;
+        // 只有 村民 / 敌人 / 动物 参与战斗触发，其他卡直接略过
+        if (rootCard.data.cardClass != CardClass.Villager &&
+            rootCard.data.cardClass != CardClass.Enemy &&
+            rootCard.data.cardClass != CardClass.Animals)
+        {
+            return false;
+        }
 
         float r = 0.3f;
         Vector3 center = rootCard.stackRoot != null ? rootCard.stackRoot.position : rootCard.transform.position;
@@ -427,16 +433,39 @@ public class DraggableCard : MonoBehaviour
             Card otherCard = hit.GetComponent<Card>();
             if (otherCard == null || otherCard.data == null) continue;
 
-            if (otherCard.data.cardClass == CardClass.Enemy ||
-                otherCard.data.cardClass == CardClass.Animals)
+            Card villager = null;
+            Card enemy = null;
+
+            // 情况 1：村民拖到 敌人 / 动物 上
+            if (rootCard.data.cardClass == CardClass.Villager &&
+                (otherCard.data.cardClass == CardClass.Enemy ||
+                 otherCard.data.cardClass == CardClass.Animals))
             {
-                BattleManager.Instance.StartBattle(rootCard, otherCard);
-                return true;
+                villager = rootCard;
+                enemy = otherCard;
             }
+            // 情况 2：敌人 / 动物 拖到 村民 上
+            else if ((rootCard.data.cardClass == CardClass.Enemy ||
+                      rootCard.data.cardClass == CardClass.Animals) &&
+                     otherCard.data.cardClass == CardClass.Villager)
+            {
+                villager = otherCard;
+                enemy = rootCard;
+            }
+            else
+            {
+                // 其他组合不触发战斗
+                continue;
+            }
+
+            // 统一走 BattleManager，里面会再做一次安全检查
+            BattleManager.Instance.StartBattle(villager, enemy);
+            return true;
         }
 
         return false;
     }
+
 
     //根据状态选择audio
     private void PlayDropOrStackSfx(bool stacked)

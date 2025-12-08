@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 168953208190107797}
   - component: {fileID: -2615846190882381163}
   - component: {fileID: 1052498609267720169}
+  - component: {fileID: 6251526635108078259}
+  - component: {fileID: 1610766424790389252}
   m_Layer: 0
   m_Name: initPrefab
   m_TagString: Untagged
@@ -149,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19febb04753c8a947892bc5c4d1b11db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDragging: 0
   radius: 0.1
 --- !u!114 &-2615846190882381163
 MonoBehaviour:
@@ -171,6 +174,8 @@ MonoBehaviour:
   isTopVisual: 1
   currentHP: 0
   hasInitHP: 0
+  runtimeState: 0
+  defaultScale: {x: 0, y: 0, z: 0}
 --- !u!114 &1052498609267720169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,3 +189,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   margin: 0.5
+--- !u!114 &6251526635108078259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4506365281572697528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b880e4e86857c14cbf72bdd4480ba4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statsRoot: {fileID: 2575832379521728012, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  hpTextDark: {fileID: 4463874101694520918, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  hpTextWhite: {fileID: 3173794926736264872, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  hungerTextDark: {fileID: 2842751374222166595, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  hungerTextWhite: {fileID: 2866588157942787203, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  coinTextDark: {fileID: 804392989200523486, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+  coinTextWhite: {fileID: 4092928391705032165, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
+--- !u!114 &1610766424790389252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4506365281572697528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53c1c87eecae7c84f93c8ef753348194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hopMoveDuration: 0.05
+  hopPauseDuration: 2
+  moveDistanceFactor: 155
+  avoidRadius: 0.25
+  avoidDistance: 0.4
+  avoidStrength: 0.7

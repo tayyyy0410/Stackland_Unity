@@ -448,157 +448,215 @@
 
 
         /// 生成新card
-        private void CraftRecipeInstant(RecipeData recipe, Transform stackRoot)
+        /// 生成新card
+    private void CraftRecipeInstant(RecipeData recipe, Transform stackRoot)
+    {
+        if (cardPrefab == null)
         {
-            if (cardPrefab == null)
+            Debug.LogError("RecipeManager 没有设置 cardPrefab，无法生成结果卡");
+            return;
+        }
+
+        if (stackRoot == null) return;
+
+        Vector3 spawnPos = stackRoot.position + (Vector3)spawnOffset;
+
+        // 1. 计算需要消耗的材料（consume == true）
+        Dictionary<CardData, int> needConsume = new Dictionary<CardData, int>();
+        foreach (var ing in recipe.ingredients)
+        {
+            if (ing.cardData == null || ing.amount <= 0) continue;
+            if (!ing.consume) continue;
+
+            if (!needConsume.ContainsKey(ing.cardData))
+                needConsume[ing.cardData] = 0;
+
+            needConsume[ing.cardData] += ing.amount;
+        }
+
+        // 2. stack 里所有 Card
+        List<Card> allCards = new List<Card>(stackRoot.GetComponentsInChildren<Card>());
+        List<GameObject> toDestroy = new List<GameObject>();
+
+        // 找出要被消耗的卡
+        foreach (var c in allCards)
+        {
+            if (c == null || c.data == null) continue;
+
+            if (needConsume.TryGetValue(c.data, out int remaining) && remaining > 0)
             {
-                Debug.LogError("RecipeManager 没有设置 cardPrefab，无法生成结果卡");
-                return;
+                Debug.Log($"[Recipe] 将要消耗：{c.data.displayName}");
+                toDestroy.Add(c.gameObject);
+                needConsume[c.data] = remaining - 1;
             }
+        }
 
-            if (stackRoot == null) return;
-
-            Vector3 spawnPos = stackRoot.position + (Vector3)spawnOffset;
-
-           
-            Dictionary<CardData, int> needConsume = new Dictionary<CardData, int>();
-            foreach (var ing in recipe.ingredients)
-            {
-                if (ing.cardData == null || ing.amount <= 0) continue;
-                if (!ing.consume) continue;              
-
-                if (!needConsume.ContainsKey(ing.cardData))
-                    needConsume[ing.cardData] = 0;
-
-                needConsume[ing.cardData] += ing.amount;
-            }
-
-            // stack 里所有 Card
-            List<Card> allCards = new List<Card>(stackRoot.GetComponentsInChildren<Card>());
-            List<GameObject> toDestroy = new List<GameObject>();
-
-
-            foreach (var c in allCards)
-            {
-                if (c == null || c.data == null) continue;
-
-                if (needConsume.TryGetValue(c.data, out int remaining) && remaining > 0)
-                {
-                    Debug.Log($"[Recipe] 将要消耗：{c.data.displayName}");
-                    toDestroy.Add(c.gameObject);
-                    needConsume[c.data] = remaining - 1;
-                }
-            }
-
-            if (toDestroy.Count > 0)
-            {
-                foreach (var c in allCards)
-                {
-                    if (c == null) continue;
-                    if (toDestroy.Contains(c.gameObject)) 
-                        continue;  
-
-                    Transform t = c.transform;
-                    t.SetParent(null); 
-                    c.stackRoot = t;         // 让自己当自己的 stackRoot
-                    c.LayoutStack();
-                    Debug.Log($"[Recipe] 保留：{c.data.displayName}");
-                }
-            }
-            foreach (var go in toDestroy)
-            {
-                if (go != null)
-                {
-                    Destroy(go);
-                }
-            }
-            
-            CardData harvestOutput = null;  // 这次采集要掉的那张卡
-
+        // 有要消耗的卡 → 把剩余的从原 stack 脱离出来，各自成为新 stackRoot
+        if (toDestroy.Count > 0)
+        {
             foreach (var c in allCards)
             {
                 if (c == null) continue;
-                if (toDestroy.Contains(c.gameObject)) 
-                    continue;  // 已经被删掉的不管
+                if (toDestroy.Contains(c.gameObject))
+                    continue;
 
-                if (c.data != null && c.data.harvestLootPack != null)
+                Transform t = c.transform;
+                t.SetParent(null);
+                c.stackRoot = t;    // 让自己当自己的 stackRoot
+                c.LayoutStack();
+                Debug.Log($"[Recipe] 保留：{c.data.displayName}");
+            }
+        }
+
+        // 真正销毁消耗掉的卡
+        foreach (var go in toDestroy)
+        {
+            if (go != null)
+            {
+                Destroy(go);
+            }
+        }
+
+        // 3. 处理可采集的卡（harvest）
+        CardData harvestOutput = null;  // 这次采集要掉的那张卡
+
+        foreach (var c in allCards)
+        {
+            if (c == null) continue;
+            if (toDestroy.Contains(c.gameObject))
+                continue;  // 已经被删掉的不管
+
+            if (c.data != null && c.data.harvestLootPack != null)
+            {
+                // 初始化次数
+                c.EnsureHarvestInit();
+                c.harvestUsesLeft--;
+
+                Debug.Log($"[Harvest] {c.data.displayName} 被采集一次，剩余 {c.harvestUsesLeft}");
+
+                // 本次掉落（只决定一次）
+                if (harvestOutput == null)
                 {
-                    // 初始化次数
-                    c.EnsureHarvestInit();
-                    c.harvestUsesLeft--;
+                    harvestOutput = GetRandomFromPack(c.data.harvestLootPack);
+                }
 
-                    Debug.Log($"[Harvest] {c.data.displayName} 被采集一次，剩余 {c.harvestUsesLeft}");
-
-                    // 本次掉落
-                    if (harvestOutput == null)
+                // 用完了就销毁 / 变枯萎
+                if (c.harvestUsesLeft <= 0)
+                {
+                    if (c.data.depletedCardData != null)
                     {
-                        harvestOutput = GetRandomFromPack(c.data.harvestLootPack);
+                        c.data = c.data.depletedCardData;
+                        c.ApplyData();
+                        c.LayoutStack();
                     }
-
-                    // 用完了就销毁
-                    if (c.harvestUsesLeft <= 0)
+                    else
                     {
-                        if (c.data.depletedCardData != null)
+                        var children = new List<Transform>();
+                        foreach (Transform child in c.transform)
                         {
-                            c.data = c.data.depletedCardData;
-                            c.ApplyData();
-                            c.LayoutStack();
+                            children.Add(child);
                         }
-                        else
+
+                        // 逐个脱离 parent
+                        foreach (var child in children)
                         {
-                            
-                            var children = new List<Transform>();
-                            foreach (Transform child in c.transform)
+                            child.SetParent(null);
+                            Card childCard = child.GetComponent<Card>();
+                            if (childCard != null)
                             {
-                                children.Add(child);
+                                childCard.stackRoot = child;
+                                childCard.LayoutStack();
                             }
+                        }
 
-                            // 逐个脱离 parent
-                            foreach (var child in children)
-                            {
-                                child.SetParent(null);
-                                Card childCard = child.GetComponent<Card>();
-                                if (childCard != null)
-                                {
-                                    childCard.stackRoot = child;
-                                    childCard.LayoutStack();
-                                }
-                            }
+                        Destroy(c.gameObject);
+                    }
+                }
+            }
+        }
 
-                    
-                            Destroy(c.gameObject);
+        // 4. 决定最终生成哪张卡：
+        //    - 如果是采集，用 harvestOutput
+        //    - 否则用配方自身的 output
+        CardData resultData = harvestOutput != null ? harvestOutput : recipe.output;
+
+        if (resultData == null)
+        {
+            Debug.Log("[Recipe] resultData 为 null，本次不生成新卡。");
+            return;
+        }
+
+        // 5. 生成结果卡
+        GameObject newCardObj = Instantiate(cardPrefab, spawnPos, Quaternion.identity);
+        Card newCard = newCardObj.GetComponent<Card>();
+        if (newCard != null)
+        {
+            newCard.data = resultData;
+            newCard.stackRoot = newCard.transform;
+            newCard.ApplyData();
+            newCard.LayoutStack();
+
+            // ===============================
+            // 自动叠堆
+            // 条件：本次是 harvest
+            // ===============================
+            if (harvestOutput != null)
+            {
+                float radius = 0.05f;   // 小小范围，只看同一点附近
+                Collider2D[] hits = Physics2D.OverlapCircleAll(newCard.transform.position, radius);
+
+                Card stackTarget = null;
+
+                foreach (var hit in hits)
+                {
+                    if (hit == null) continue;
+
+                    Card other = hit.GetComponent<Card>();
+                    if (other == null) continue;
+                    if (other == newCard) continue;
+
+                    // 只和同一种结果卡叠堆（比如都是 Berry）
+                    if (other.data == null || other.data != resultData)
+                        continue;
+
+                    // 不是同一个 stackRoot 的卡，才当作叠堆目标
+                    if (other.stackRoot != newCard.stackRoot)
+                    {
+                        stackTarget = other;
+                        break;
+                    }
+                }
+
+                if (stackTarget != null)
+                {
+                    // 让新卡加入已有的 stack
+                    newCard.JoinStackOf(stackTarget);
+
+                   
+                    newCard.transform.SetSiblingIndex(0);
+
+                    // 重新排一下 stack
+                    if (stackTarget.stackRoot != null)
+                    {
+                        Card rootCard = stackTarget.stackRoot.GetComponent<Card>();
+                        if (rootCard != null)
+                        {
+                            rootCard.LayoutStack();
                         }
                     }
                 }
             }
-            
-            CardData resultData = harvestOutput != null ? harvestOutput : recipe.output;
+        }
 
-            if (resultData == null)
-            {
-                Debug.Log("[Recipe] resultData 为 null，本次不生成新卡。");
-                return;
-            }
-
-            // 生成结果卡
-            GameObject newCardObj = Instantiate(cardPrefab, spawnPos, Quaternion.identity);
-            Card newCard = newCardObj.GetComponent<Card>();
-            if (newCard != null)
-            {
-                newCard.data = resultData;
-                newCard.stackRoot = newCard.transform;
-                newCard.ApplyData();
-                newCard.LayoutStack();
-            }
-
-        //播放产出音效
+        
         if (AudioManager.I != null && AudioManager.I.spawnSfx != null)
-        {
+         {
             AudioManager.I.PlaySFX(AudioManager.I.spawnSfx);
         }
 
         Debug.Log($"配方合成完成：生成 {resultData.displayName}");
-        }
+    }
+
         
         
         //craftBar相关

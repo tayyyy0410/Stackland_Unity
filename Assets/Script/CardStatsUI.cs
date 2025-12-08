@@ -12,7 +12,7 @@ public class CardStatsUI : MonoBehaviour
     public TMP_Text hpTextDark;
     public TMP_Text hpTextWhite;
 
-    [Header("Hunger Texts")]
+    [Header("Hunger Texts")]  
     public TMP_Text hungerTextDark;
     public TMP_Text hungerTextWhite;
 
@@ -24,12 +24,12 @@ public class CardStatsUI : MonoBehaviour
     private SpriteRenderer cardSR;
     private Canvas statsCanvas;
 
-    private int lastHp = int.MinValue;
-    private int lastHunger = int.MinValue;
-    private int lastValue = int.MinValue;
+    private int lastHp     = int.MinValue;
+    private int lastHunger = int.MinValue;   
+    private int lastValue  = int.MinValue;
 
     private bool showHP;
-    private bool showHunger;
+    private bool showHunger;  
     private bool showValue;
     private bool useDarkText;
 
@@ -42,7 +42,7 @@ public class CardStatsUI : MonoBehaviour
         {
             statsCanvas = statsRoot.GetComponent<Canvas>();
 
-            // 如果你在 prefab 里不小心把它关了，顺便帮你打开
+            
             if (!statsRoot.activeSelf)
             {
                 statsRoot.SetActive(true);
@@ -60,10 +60,13 @@ public class CardStatsUI : MonoBehaviour
     {
         if (card.data == null) return;
 
-        // 这里根据你的 CardData 自己的字段来写
-        showHP     = card.data.hasHP     && card.data.showHP;
-        showHunger = card.data.hasHunger && card.data.showHunger;
-        showValue  = card.data.value > 0 && card.data.showValue;
+       
+        showHP     = card.data.hasHP         && card.data.showHP;
+
+        
+        showHunger = card.data.hasSaturation && card.data.showHunger;
+
+        showValue  = card.data.value > 0     && card.data.showValue;
 
         useDarkText = card.data.useDarkText;
         
@@ -83,28 +86,28 @@ public class CardStatsUI : MonoBehaviour
         coinTextWhite.gameObject.SetActive(showValue && !useDarkText);
     }
 
-    // 用 LateUpdate 更稳一点：等所有 sortingOrder 都调完再跟随
+    // 等所有 sortingOrder 都调完再跟随
     private void LateUpdate()
     {
-        // ① 让 Canvas 的排序跟随这张卡的 sprite
+        // 让 Canvas 的排序跟随这张卡的 sprite
         if (statsCanvas != null && cardSR != null)
         {
             statsCanvas.sortingLayerID = cardSR.sortingLayerID;
             statsCanvas.sortingOrder   = cardSR.sortingOrder + 1; // 永远比卡本身高一点
         }
 
-        // ② 这张卡本来就不需要任何数值，直接退
+        // 这张卡本来就不需要任何数值直接退
         if (!showHP && !showHunger && !showValue)
             return;
 
-        // ③ 不是这一叠的顶牌：隐藏文字（但不关 root）
+        // 不是这一叠的顶牌：隐藏文字（但不关 root）
         if (!card.isTopVisual)
         {
             SetStatsVisible(false);
             return;
         }
 
-        // ④ 顶牌：显示文字
+        // 显示文字
         SetStatsVisible(true);
         RefreshAll();
     }
@@ -159,11 +162,13 @@ public class CardStatsUI : MonoBehaviour
 
         if (showHunger)
         {
-            int hunger = Mathf.Max(0, card.currentHunger);
-            if (hunger != lastHunger)
+         
+            int sat = Mathf.Max(0, card.currentSaturation);
+
+            if (sat != lastHunger)
             {
-                GetHungerText().text = hunger.ToString();
-                lastHunger = hunger;
+                GetHungerText().text = sat.ToString();
+                lastHunger = sat;
             }
         }
 

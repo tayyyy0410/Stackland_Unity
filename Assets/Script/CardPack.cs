@@ -9,13 +9,17 @@ public class CardPack : MonoBehaviour
     public GameObject cardPrefab;
 
     [Header("开包槽位")]
-    public Vector2[] slotOffsets = new Vector2[4]
+    public Vector2[] slotOffsets = new Vector2[]
     {
-        new Vector2(-0.7f,  0.7f), 
-        new Vector2(-0.7f, -0.7f), 
-        new Vector2( 0.7f,  0.7f), 
-        new Vector2( 0.7f, -0.7f)  
+        new Vector2(-1.2f,  0.6f),
+        new Vector2( 0f,     0.6f),
+        new Vector2( 1.2f,   0.6f),
+        new Vector2(-1.2f, -0.1f),
+        new Vector2( 0f,    -0.1f),
+        new Vector2( 1.2f,  -0.1f),
+        new Vector2( 0f,    -0.8f)
     };
+
 
     [Header(" Drag Settings")]
     [Tooltip("鼠标移动小于这个像素就当点击")]
@@ -28,7 +32,7 @@ public class CardPack : MonoBehaviour
     public float dragSensitivity = 1f;
 
     // 一次卡包一共能开几张
-    private int remainingOpens = 0;
+    public int remainingOpens = 0;
     private int totalOpens = 0;
     private bool initialized = false;
 
@@ -73,7 +77,8 @@ public class CardPack : MonoBehaviour
             return;
         }
 
-        int maxSlots = Mathf.Min(4, slotOffsets.Length);
+        int maxSlots = Mathf.Min(slotOffsets.Length, totalOpens);
+
 
         if (totalOpens <= maxSlots)
         {
@@ -217,10 +222,26 @@ public class CardPack : MonoBehaviour
     // 生成一张卡使用预定的槽位
     private void SpawnOneCard()
     {
-        CardData dropData = GetRandomCardFromPack();
-        if (dropData == null) return;
+        // 已经开了几张 = 总数 - 剩余
+        int openedCount = totalOpens - remainingOpens;
 
-        int openedCount = totalOpens - remainingOpens; 
+        CardData dropData = null;
+
+        // ★ 如果这个 pack 配置了固定结果，就按 fixedResults 的顺序给
+        if (packData != null && packData.useFixedResults &&
+            packData.fixedResults != null && packData.fixedResults.Count > 0)
+        {
+            // 超出长度就 clamp 一下，避免越界（正常情况下 openedCount < fixedResults.Count）
+            int idx = Mathf.Clamp(openedCount, 0, packData.fixedResults.Count - 1);
+            dropData = packData.fixedResults[idx];
+        }
+        else
+        {
+            // 否则按原来的权重随机
+            dropData = GetRandomCardFromPack();
+        }
+
+        if (dropData == null) return;
 
         Vector3 spawnPos = transform.position;
 
@@ -249,6 +270,7 @@ public class CardPack : MonoBehaviour
             newCard.LayoutStack();
         }
     }
+
 
     /// 按权重随机抽一张卡
     private CardData GetRandomCardFromPack()
