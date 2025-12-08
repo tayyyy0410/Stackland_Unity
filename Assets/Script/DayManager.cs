@@ -56,6 +56,7 @@ public class DayManager : MonoBehaviour
     public TMP_Text moonTextInHungary;
     public TMP_Text moonTextInSell;
     public TMP_Text moonTextInNext;
+    public TMP_Text moonTextInOver;
 
     [Tooltip("显示当前多出的卡牌数量")]
     public TMP_Text cardSellText;
@@ -149,7 +150,8 @@ public class DayManager : MonoBehaviour
                  CurrentState == DayState.FeedingResultAllFull || 
                  CurrentState == DayState.FeedingResultHungry || 
                  CurrentState == DayState.WaitingSell ||
-                 CurrentState == DayState.WaitingNextDay)
+                 CurrentState == DayState.WaitingNextDay ||
+                 CurrentState == DayState.WaitingEndGame)
         {
             UpdateBarDate();
         }
@@ -179,6 +181,10 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.WaitingNextDay && moonTextInNext != null)
         {
             moonTextInNext.text = (currentMoon+1).ToString();
+        }
+        else if (CurrentState == DayState.WaitingEndGame && moonTextInOver != null)
+        {
+            moonTextInOver.text = currentMoon.ToString();
         }
     }
 
