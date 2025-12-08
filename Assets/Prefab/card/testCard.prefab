@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3940790264552071064
 RectTransform:
   m_ObjectHideFlags: 0
@@ -200,8 +200,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -241637333
-  m_SortingOrder: 0
+  m_SortingLayerID: 2129098039
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &7658657432574014876
 MonoBehaviour:
@@ -260,7 +260,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &554603862212353335
 RectTransform:
   m_ObjectHideFlags: 0
@@ -396,7 +396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7875953331243227955
 RectTransform:
   m_ObjectHideFlags: 0
@@ -530,6 +530,7 @@ GameObject:
   - component: {fileID: -2615846190882381163}
   - component: {fileID: 1052498609267720169}
   - component: {fileID: 4102980012799427946}
+  - component: {fileID: 833219149706340608}
   m_Layer: 0
   m_Name: testCard
   m_TagString: Untagged
@@ -666,6 +667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19febb04753c8a947892bc5c4d1b11db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDragging: 0
   radius: 0.1
 --- !u!114 &-2615846190882381163
 MonoBehaviour:
@@ -685,9 +687,11 @@ MonoBehaviour:
   harvestUsesLeft: -1
   currentSaturation: -1
   currentHunger: 0
+  isTopVisual: 1
   currentHP: 0
   hasInitHP: 0
-  isTopVisual: 1
+  runtimeState: 0
+  defaultScale: {x: 0, y: 0, z: 0}
 --- !u!114 &1052498609267720169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -720,6 +724,24 @@ MonoBehaviour:
   hungerTextWhite: {fileID: 2866588157942787203}
   coinTextDark: {fileID: 804392989200523486}
   coinTextWhite: {fileID: 4092928391705032165}
+--- !u!114 &833219149706340608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4506365281572697528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53c1c87eecae7c84f93c8ef753348194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hopMoveDuration: 0.05
+  hopPauseDuration: 2
+  moveDistanceFactor: 15
+  avoidRadius: 0.25
+  avoidDistance: 0.4
+  avoidStrength: 0.7
 --- !u!1 &7368958697183193996
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,7 +759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2080814482742196666
 RectTransform:
   m_ObjectHideFlags: 0
@@ -873,7 +895,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3549679327998388285
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1009,7 +1031,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4078629733370641016
 RectTransform:
   m_ObjectHideFlags: 0

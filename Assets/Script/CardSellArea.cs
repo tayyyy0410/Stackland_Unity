@@ -29,70 +29,69 @@ public class CardSellArea : MonoBehaviour
     /// 用某一叠卡来尝试卖出换钱
     public void TrySellFromStack(Card anyCardInStack)
     {
-        if (coinPrefab == null)
-        {
-            Debug.LogWarning("[SellArea] 没有设置 coinPrefab，无法卖卡换钱。");
-            return;
-        }
+        if (anyCardInStack == null) return;
 
-        if (anyCardInStack == null || anyCardInStack.data == null)
+        // 卖卡区域自己的碰撞体
+        var col = GetComponent<Collider2D>();
+        if (col == null) return;
+
+        // 找到这一叠的 root
+        Transform root = anyCardInStack.stackRoot != null
+            ? anyCardInStack.stackRoot
+            : anyCardInStack.transform;
+
+        // 必须整叠放在卖卡区域上
+        if (!col.OverlapPoint(root.position))
             return;
 
-        // 检查 stack 的 root 位置是否在卖卡区域内
-        Transform root = anyCardInStack.stackRoot != null ? anyCardInStack.stackRoot : anyCardInStack.transform;
-        Vector2 pos = root.position;
-        if (!col.OverlapPoint(pos))
-        {
-            
-            return;
-        }
+        Card rootCard = root.GetComponent<Card>();   // 可能为 null，仅用于后面给 coin 定 stackRoot
 
-        // 收集这一叠里所有可以卖的卡
-        List<Card> cardsToSell = new List<Card>();
+        // 找出这一叠里的所有卡
+        Card[] cards = root.GetComponentsInChildren<Card>();
+
+        List<Card> toDestroy = new List<Card>();
         int totalCoins = 0;
 
-        // root 自己
-        Card rootCard = root.GetComponent<Card>();
-        if (rootCard != null && rootCard.data != null)
+        foreach (var c in cards)
         {
-            if (rootCard.data.cardClass != CardClass.Coin && rootCard.data.value > 0)
+            if (c == null || c.data == null) continue;
+
+            // Coin 本身不在这里处理，直接跳过
+            if (c.data.cardClass == CardClass.Coin)
+                continue;
+
+            // 所有非 Coin 卡都可以卖掉（包括 value == 0）
+            toDestroy.Add(c);
+
+            // 只有 value > 0 的卡才产生金币
+            if (c.data.value > 0)
             {
-                cardsToSell.Add(rootCard);
-                totalCoins += rootCard.data.value;
+                totalCoins += c.data.value;
             }
         }
 
-        // 子物体
-        for (int i = 0; i < root.childCount; i++)
-        {
-            Transform child = root.GetChild(i);
-            Card c = child.GetComponent<Card>();
-            if (c != null && c.data != null)
-            {
-                if (c.data.cardClass != CardClass.Coin && c.data.value > 0)
-                {
-                    cardsToSell.Add(c);
-                    totalCoins += c.data.value;
-                }
-            }
-        }
-
-        Debug.Log($"[SellArea] 这叠卡可以卖出 {totalCoins} 个 coin，对应卡数量 = {cardsToSell.Count}");
-
-        // 如果没有任何可以卖的卡直接返回
-        if (totalCoins <= 0 || cardsToSell.Count == 0)
+        // 没有任何可以被卖掉的卡，直接返回
+        if (toDestroy.Count == 0)
             return;
 
-        // 销毁被卖掉的卡
-        foreach (var card in cardsToSell)
+        // 先销毁被卖掉的卡
+        foreach (var c in toDestroy)
         {
-            if (card != null)
-                Destroy(card.gameObject);
+            if (c != null)
+            {
+                Destroy(c.gameObject);
+            }
         }
 
-        // 生成等额的 coin
-        GiveCoins(totalCoins);
+        // 再根据总价值给金币（可能是 0）
+        if (totalCoins > 0)
+        {
+            GiveCoins(totalCoins);
+        }
+
+        Debug.Log($"[SellArea] 卖卡完成：销毁了 {toDestroy.Count} 张卡，获得 {totalCoins} 个 coin。");
     }
+
     
     /// 生成指定数量的 coinPrefab
     private void GiveCoins(int count)

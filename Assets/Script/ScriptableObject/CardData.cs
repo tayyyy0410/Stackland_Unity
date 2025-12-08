@@ -164,6 +164,17 @@ public class CardData : ScriptableObject
 
     [Tooltip("留空就直接消失")]
     public CardData depletedCardData;
+    
+    [Header("Enemy Movement")]
+    [Tooltip("如果是 Enemy/Animals，是否会自动追击最近的村民")]
+    public bool autoChaseVillagers = false;
+
+    [Tooltip("敌人追击移动速度（不同敌人可以配不同值）")]
+    public float enemyMoveSpeed = 1.5f;
+
+    [Tooltip("敌人靠多近算是接触到村民并开始战斗")]
+    public float enemyBattleTriggerDistance = 0.2f;
+
 
     [Header("Card SFX")]
     public AudioClip pickSfx;   // 捡起

@@ -41,4 +41,12 @@ public class PackData : ScriptableObject
     [Header("Loot Table")]
     [Tooltip("这个卡包里可能开出来的卡 + 权重")]
     public List<PackEntry> entries = new List<PackEntry>();
+    
+    [Header("Fixed Results")]
+    [Tooltip("如果勾选，则这个卡包不会按权重随机，而是按下面这个列表的顺序固定掉落")]
+    public bool useFixedResults = false;
+
+    [Tooltip("固定掉落的卡列表，New Beginning 这类固定卡包可以直接在这里配置")]
+    public List<CardData> fixedResults = new List<CardData>();
+
 }
