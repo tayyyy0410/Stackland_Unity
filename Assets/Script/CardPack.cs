@@ -282,6 +282,15 @@ public class CardPack : MonoBehaviour
         foreach (var entry in packData.entries)
         {
             if (entry.cardData == null || entry.weight <= 0) continue;
+
+            // ★ 如果是 Idea 且已经解锁过，就不再计入权重
+            if (entry.cardData.cardClass == CardClass.Idea &&
+                CardManager.Instance != null &&
+                CardManager.Instance.HasDiscoveredIdea(entry.cardData))
+            {
+                continue;
+            }
+
             totalWeight += entry.weight;
         }
 
@@ -294,6 +303,14 @@ public class CardPack : MonoBehaviour
         {
             if (entry.cardData == null || entry.weight <= 0) continue;
 
+            // 跳过已经解锁的 Idea
+            if (entry.cardData.cardClass == CardClass.Idea &&
+                CardManager.Instance != null &&
+                CardManager.Instance.HasDiscoveredIdea(entry.cardData))
+            {
+                continue;
+            }
+
             cumulative += entry.weight;
             if (rand < cumulative)
             {
@@ -303,4 +320,5 @@ public class CardPack : MonoBehaviour
 
         return null;
     }
+
 }

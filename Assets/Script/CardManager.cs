@@ -5,8 +5,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
-/// ´¢´æ³¡¾°ÖĞµÄ Coin, Food, Villager
-/// ´¢´æ Villager µÄ ×°±¸À¸×´Ì¬
+/// ï¿½ï¿½ï¿½æ³¡ï¿½ï¿½ï¿½Ğµï¿½ Coin, Food, Villager
+/// ï¿½ï¿½ï¿½ï¿½ Villager ï¿½ï¿½ ×°ï¿½ï¿½ï¿½ï¿½×´Ì¬
 /// </summary>
 
 public class CardManager : MonoBehaviour
@@ -16,29 +16,54 @@ public class CardManager : MonoBehaviour
     public List<Card> AllCards { get; private set; } = new List<Card>();
     public List<Card> FoodCards { get; private set; } = new List<Card>();
     public List<Card> VillagerCards { get; private set; } = new List<Card>();
+    
+    
+    public HashSet<CardData> discoveredIdeas = new HashSet<CardData>();
 
-    // UIÊµÊ±¼ÆÊıÍ³¼Æ
+    
+
+
+    // UIÊµÊ±ï¿½ï¿½ï¿½ï¿½Í³ï¿½ï¿½
     [Header("Runtime Stats (Debug)")]
-    [Tooltip("ÊµÊ±¸üĞÂµÄ¿¨ÅÆÊı¾İ (debug only)")]
+    [Tooltip("ÊµÊ±ï¿½ï¿½ï¿½ÂµÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (debug only)")]
     [SerializeField] private int coinCount;
     [SerializeField] private int totalSaturation;
     [SerializeField] private int totalHunger;
     [SerializeField] private int maxCardCapacity;
     private int fixedMaxCapcity = 20;
 
-    // UI: ÆäËû Class µ÷ÓÃµÄÊı¾İ
-    public int MaxCardCapacity => maxCardCapacity;  // UI: ¿¨ÅÆÈİÁ¿ÉÏÏŞ
-    public int CoinCount => coinCount;  // UI£ºÏÖÓĞcoinÊıÁ¿
-    public int TotalSaturation => totalSaturation;  // UI£ºÏÖÓĞ±¥¸¹Öµ
-    public int TotalHunger => totalHunger;  // UI£ºĞèÒªµÄ±¥¸¹Öµ
+    // UI: ï¿½ï¿½ï¿½ï¿½ Class ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½
+    public int MaxCardCapacity => maxCardCapacity;  // UI: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public int CoinCount => coinCount;  // UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½coinï¿½ï¿½ï¿½ï¿½
+    public int TotalSaturation => totalSaturation;  // UIï¿½ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½ï¿½ï¿½Öµ
+    public int TotalHunger => totalHunger;  // UIï¿½ï¿½ï¿½ï¿½Òªï¿½Ä±ï¿½ï¿½ï¿½Öµ
 
-    public int NonCoinCount => AllCards.Count - CoinCount;  // UI£ºÏÖÓĞ³ıÁËcoinµÄ¿¨ÅÆÊıÁ¿
+    public int NonCoinCount => AllCards.Count - CoinCount;  // UIï¿½ï¿½ï¿½ï¿½ï¿½Ğ³ï¿½ï¿½ï¿½coinï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    public int CardToSellCount => NonCoinCount - MaxCardCapacity;   // UI£º»¹ĞèÊÛÂôµÄ¿¨ÅÆÊıÁ¿
+    public int CardToSellCount => NonCoinCount - MaxCardCapacity;   // UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     
+    
+    
+    //idea card////
+    public bool HasDiscoveredIdea(CardData data)
+    {
+        return data != null && discoveredIdeas.Contains(data);
+    }
 
-    // ¹ÜÀí villager µÄ×°±¸×´Ì¬
+    public void RegisterIdeaIfNeeded(Card card)
+    {
+        if (card == null || card.data == null) return;
+        if (card.data.cardClass != CardClass.Idea) return;
+
+        if (!discoveredIdeas.Contains(card.data))
+        {
+            discoveredIdeas.Add(card.data);
+            Debug.Log($"[Idea] è§£é”æ–° Ideaï¼š{card.data.displayName}");
+        }
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½ villager ï¿½ï¿½×°ï¿½ï¿½×´Ì¬
     public Dictionary<Card, VillagerEquipState> villagerEquipStates = new Dictionary<Card, VillagerEquipState>();
 
     public VillagerEquipState GetEquipState(Card villager)
@@ -103,21 +128,23 @@ public class CardManager : MonoBehaviour
 
     // ===================================== Register Helpers =============================================
     /// <summary>
-    /// Éú³É¿¨ÅÆÊ±×¢²á
+    /// ï¿½ï¿½ï¿½É¿ï¿½ï¿½ï¿½Ê±×¢ï¿½ï¿½
     /// </summary>
     public void RegisterCard(Card card)
     {
         if (card == null) return;
-        if (!card.IsOnBoard) return;    // ²»Í³¼Æ×°±¸ÀïµÄ¿¨
+        if (!card.IsOnBoard) return;    // ï¿½ï¿½Í³ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½
 
         var data = card.data;
         if (data == null)
         {
-            Debug.LogWarning($"[Register] {card.name} Ã»ÓĞ data");
+            Debug.LogWarning($"[Register] {card.name} Ã»ï¿½ï¿½ data");
             return;
         }
 
         if (card.data.cardClass == CardClass.Prefab) return;
+        
+        RegisterIdeaIfNeeded(card); //è®°ä½ä¸Šåœºçš„idea
 
         switch (data.cardClass)
         {
@@ -168,7 +195,7 @@ public class CardManager : MonoBehaviour
 
 
     /// <summary>
-    /// Ïú»Ù¿¨ÅÆÊ±É¾³ıÊı¾İ
+    /// ï¿½ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½Ê±É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void UnregisterCard(Card card)
     {
@@ -190,7 +217,7 @@ public class CardManager : MonoBehaviour
             maxCardCapacity = Mathf.Max(0, MaxCardCapacity - data.capacity);
         }
 
-        // Ïú»Ù villager Ê±ensureÒ»ÏÂ×°±¸À¸Ò²ÇåµôÁË
+        // ï¿½ï¿½ï¿½ï¿½ villager Ê±ensureÒ»ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½
         if (card.data != null && card.data.cardClass == CardClass.Villager)
         {
             if (EquipmentUIController.Instance != null)
@@ -213,7 +240,7 @@ public class CardManager : MonoBehaviour
         totalSaturation = 0;
         totalHunger = 0;
 
-        // ÖØĞÂÀÛ¼ÓËùÓĞ food µÄ currentSaturation
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Û¼ï¿½ï¿½ï¿½ï¿½ï¿½ food ï¿½ï¿½ currentSaturation
         foreach (var food in FoodCards)
         {
             if (food == null) continue;
@@ -223,7 +250,7 @@ public class CardManager : MonoBehaviour
             }
         }
 
-        // ÖØĞÂÀÛ¼ÓËùÓĞ villager µÄ currentHunger
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Û¼ï¿½ï¿½ï¿½ï¿½ï¿½ villager ï¿½ï¿½ currentHunger
         foreach (var v in VillagerCards)
         {
             if (v == null) continue;
@@ -238,7 +265,7 @@ public class CardManager : MonoBehaviour
 
 
     // ===================================== Equipment =============================================
-    // villager ÉíÉÏµÄ equipment ĞÅÏ¢
+    // villager ï¿½ï¿½ï¿½Ïµï¿½ equipment ï¿½ï¿½Ï¢
     [System.Serializable]
     public class VillagerEquipState
     {
@@ -258,7 +285,7 @@ public class CardManager : MonoBehaviour
         return state != null && state.HasAnyEquip;
     }
 
-    // ÕÒ equipment µÄ owner
+    // ï¿½ï¿½ equipment ï¿½ï¿½ owner
     public Card FindOwnerVillagerOfEquip(Card equipCard)
     {
         if (equipCard == null) return null;
@@ -282,39 +309,39 @@ public class CardManager : MonoBehaviour
 
 
     /// <summary>
-    /// ÍÏ×§×°±¸ËÉÊÖÊ±µÄÂß¼­Èë¿Ú
-    /// return true: ´¦ÀíÍê³É£¬Ìø¹ı³£¹æ stack Âß¼­
-    /// return false: ²»ÊôÓÚ×°±¸³¡¾°£¬×ßÔ­À´µÄ stack Âß¼­
+    /// ï¿½ï¿½×§×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½
+    /// return true: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ stack ï¿½ß¼ï¿½
+    /// return false: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ stack ï¿½ß¼ï¿½
     /// </summary>
     public bool TryHandleEquipmentDrop(Card sourceRootCard, Card targetCard)
     {
         if (sourceRootCard == null || sourceRootCard.data == null)
         {
-            Debug.Log("[TryHandleEquipmentDrop]±»ÌáÇ°ÖĞÖ¹£ºsourceRootCard == null || sourceRootCard.data == null");
+            Debug.Log("[TryHandleEquipmentDrop]ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¹ï¿½ï¿½sourceRootCard == null || sourceRootCard.data == null");
             return false;
         }
         if (!IsEquipment(sourceRootCard))
         {
-            Debug.Log("[TryHandleEquipmentDrop]±»ÌáÇ°ÖĞÖ¹£º !IsEquipment(sourceRootCard)");
+            Debug.Log("[TryHandleEquipmentDrop]ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¹ï¿½ï¿½ !IsEquipment(sourceRootCard)");
             return false;
         }
         if (targetCard == null || targetCard.data == null)
         {
-            Debug.Log("[TryHandleEquipmentDrop]±»ÌáÇ°ÖĞÖ¹£º targetCard == null || targetCard.data == null");
+            Debug.Log("[TryHandleEquipmentDrop]ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¹ï¿½ï¿½ targetCard == null || targetCard.data == null");
             return false;
         }
         if (targetCard == sourceRootCard)
         {
-            Debug.Log("[TryHandleEquipmentDrop]±»ÌáÇ°ÖĞÖ¹£º targetCard == sourceRootCard");
+            Debug.Log("[TryHandleEquipmentDrop]ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¹ï¿½ï¿½ targetCard == sourceRootCard");
             return false;
         }
 
         Debug.Log($"[EquipDrop] targetCard = {targetCard.name}");
 
-        // Ëã³ö target stack µÄ root ºÍ ×îÉÏ²ãµÄÅÆ
-        // ÇÒÒªÌø¹ı¿¨ÅÆ×ÓÎïÌåÄÚµÄ equipment£¨¿ÉÄÜ´¦ÓÚ×°±¸À¸ÄÚ£©
+        // ï¿½ï¿½ï¿½ target stack ï¿½ï¿½ root ï¿½ï¿½ ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½
+        // ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ equipmentï¿½ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½
 
-        // targetCard Èç¹ûÊÇ×°±¸À¸ÖĞµÄ¿¨£¬ÏÈÕÒµ½ owner ¸Ä true target
+        // targetCard ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ĞµÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ owner ï¿½ï¿½ true target
         Card effectiveTarget = targetCard;
 
         if (targetCard.RuntimeState == CardRuntimeState.InEquipmentUI &&
@@ -324,7 +351,7 @@ public class CardManager : MonoBehaviour
             if (owner != null)
             {
                 effectiveTarget = owner;
-                Debug.Log($"[EquipDrop] ÃüÖĞ×°±¸À¸¿¨ {targetCard.name}£¬Ó³Éäµ½ owner {owner.name}");
+                Debug.Log($"[EquipDrop] ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {targetCard.name}ï¿½ï¿½Ó³ï¿½äµ½ owner {owner.name}");
             }
         }
 
@@ -351,13 +378,13 @@ public class CardManager : MonoBehaviour
             return false;
         }
 
-        Debug.Log($"[EquipDrop] ¶ÑµşÄ¿±êtopCard£º{topCard.name}");
+        Debug.Log($"[EquipDrop] ï¿½Ñµï¿½Ä¿ï¿½ï¿½topCardï¿½ï¿½{topCard.name}");
 
-        // ×ÓÎïÌåÃ»ÓĞÔÙ¿´root×Ô¼ºÊÇ²»ÊÇ¿¨
-        // root×Ô¼º²»ÓÃÌø¹ı equipment
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ù¿ï¿½rootï¿½Ô¼ï¿½ï¿½Ç²ï¿½ï¿½Ç¿ï¿½
+        // rootï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ equipment
         /*if (topCard == null)
         {
-            // BUG£º»á¼ì²âµ½×°±¸À¸ÀïµÄ¿¨
+            // BUGï¿½ï¿½ï¿½ï¿½ï¿½âµ½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½
             topCard = targetRoot.GetComponent<Card>();
         }
 
@@ -367,40 +394,40 @@ public class CardManager : MonoBehaviour
             return false;
         }*/
 
-        Debug.Log($"[EquipDrop] ¶ÑµşÄ¿±êtopCard£º{topCard.name}");
+        Debug.Log($"[EquipDrop] ï¿½Ñµï¿½Ä¿ï¿½ï¿½topCardï¿½ï¿½{topCard.name}");
 
-        // 1) Èç¹û×î¶¥ÊÇ villager£¬³¢ÊÔ×°±¸µ½´åÃñÉíÉÏ
+        // 1) ï¿½ï¿½ï¿½ï¿½î¶¥ï¿½ï¿½ villagerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (topCard.data.cardClass == CardClass.Villager)
         {
             bool equipped = TryEquipStackToVillager(sourceRootCard, topCard);
             if (equipped)
             {
-                Debug.Log($"[EquipDrop] {sourceRootCard.name} ËùÔÚµÄÕûµş ×°±¸µ½ ´åÃñ{topCard.name} ÉíÉÏ");
+                Debug.Log($"[EquipDrop] {sourceRootCard.name} ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ×°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½{topCard.name} ï¿½ï¿½ï¿½ï¿½");
             }
             return equipped;
         }
 
-        // 2) ×°±¸¸ú×°±¸¿ÉÒÔstack£¬×ßÆÕÍ¨stackÂß¼­
-        // ÇÒÄ¿±ê×°±¸²»ÄÜÔÚ×°±¸À¸ÄÚ
-        // UIĞèÒªÈ·±£×°±¸À¸ÄÚÈÎÒâ¿¨ÅÆµÄ¼ì²â·¶Î§¶¼ÔÚvillagerµÄ¼ì²â·¶Î§Ö®ÄÚ£¨Õë¶ÔÎŞ·¨×°±¸£¬ÊÔÍ¼stack×°±¸À¸ÖĞµÄ×°±¸¿¨Çé¿ö£©
+        // 2) ×°ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½stackï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨stackï¿½ß¼ï¿½
+        // ï¿½ï¿½Ä¿ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // UIï¿½ï¿½ÒªÈ·ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¿¨ï¿½ÆµÄ¼ï¿½â·¶Î§ï¿½ï¿½ï¿½ï¿½villagerï¿½Ä¼ï¿½â·¶Î§Ö®ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Ş·ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼stack×°ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (IsEquipment(topCard) && topCard.IsOnBoard)
         {
 
-            // °ÑÕâµşµ±×÷ÆÕÍ¨ stack µşÔÚ topCard ÄÇÒ»µşÉÏ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ stack ï¿½ï¿½ï¿½ï¿½ topCard ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
             sourceRootCard.JoinStackOf(topCard);
-            Debug.Log($"[EquipDrop] {sourceRootCard.name} ËùÔÚµÄÕûµş ¶Ñµşµ½ onboard ×°±¸ÉÏ");
+            Debug.Log($"[EquipDrop] {sourceRootCard.name} ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñµï¿½ï¿½ï¿½ onboard ×°ï¿½ï¿½ï¿½ï¿½");
 
             return true;
 
         }
 
-        // 3) ·Å²»½ø×°±¸stack£¬Ò²×°±¸²»µ½villagerÉíÉÏ -> ·µ»Øµ½ target ÏÂ·½
+        // 3) ï¿½Å²ï¿½ï¿½ï¿½×°ï¿½ï¿½stackï¿½ï¿½Ò²×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½villagerï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½Øµï¿½ target ï¿½Â·ï¿½
         Transform sourceRootTf = sourceRootCard.stackRoot != null ? sourceRootCard.stackRoot : sourceRootCard.transform;
 
         Vector3 dropPos = targetRoot.position + new Vector3(0f, -1.5f, 0f);
         sourceRootTf.position = dropPos;
 
-        // ¸üĞÂstackµÄ stackRoot
+        // ï¿½ï¿½ï¿½ï¿½stackï¿½ï¿½ stackRoot
         sourceRootCard.stackRoot = sourceRootTf;
         foreach (Transform child in sourceRootTf)
         {
@@ -413,12 +440,12 @@ public class CardManager : MonoBehaviour
         sourceRootCard.LayoutStack();
 
         ClearEquipRelation(sourceRootCard);
-        Debug.Log($"EquipDrop] {sourceRootCard.name} ²»ÄÜ×°±¸/¶Ñµş£¬ µôÔÚ {targetCard.name} ÏÂ·½");
+        Debug.Log($"EquipDrop] {sourceRootCard.name} ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½/ï¿½Ñµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ {targetCard.name} ï¿½Â·ï¿½");
         return false;
     }
 
     /// <summary>
-    /// ³¢ÊÔ°ÑÒ»Õûµş×°±¸¿¨¹Òµ½´åÃñÉíÉÏ
+    /// ï¿½ï¿½ï¿½Ô°ï¿½Ò»ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public bool TryEquipStackToVillager(Card anyCardInStack, Card villagerCard)
     {
@@ -426,12 +453,12 @@ public class CardManager : MonoBehaviour
         if (anyCardInStack.data == null ||  villagerCard.data == null) return false;
         if (villagerCard.data.cardClass != CardClass.Villager) return false;
         
-        // 1) ÕÒµ½ÕûµşµÄroot
+        // 1) ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½root
         Transform srcRoot = anyCardInStack.stackRoot != null
             ? anyCardInStack.stackRoot
             : anyCardInStack.transform;
 
-        // 2) ÊÕ¼¯Õûµş×°±¸¿¨
+        // 2) ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½
         var allCards = new List<Card>();
         Card rootCard = srcRoot.GetComponent<Card>();
         
@@ -450,11 +477,11 @@ public class CardManager : MonoBehaviour
 
         if (allCards.Count == 0)
         {
-            Debug.Log("[TryEquipStack] ÕâµşÀïÃæÃ»ÓĞ Card£¡");
+            Debug.Log("[TryEquipStack] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ Cardï¿½ï¿½");
             return false;
         }
 
-        // 3) ²ğ·Ö×°±¸ºÍ·Ç×°±¸
+        // 3) ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½Í·ï¿½×°ï¿½ï¿½
         var equipCards = new List<Card>();
         var nonEquipCards = new List<Card>();
         foreach (var c in allCards)
@@ -472,27 +499,27 @@ public class CardManager : MonoBehaviour
         }
         if (equipCards.Count == 0)
         {
-            // ÀíÂÛÉÏ²»»á³öÏÖ£¨sourceRootCard Ò»¶¨ÊÇ×°±¸£©£¬µ«ÎªÁËÎÈÍ×£º
-            Debug.Log("[TryEquipStack] ÕâµşÀïÃ»ÓĞ×°±¸¿¨£¬½»»Ø¸øÆÕÍ¨ stack Âß¼­´¦Àí");
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½sourceRootCard Ò»ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½×£ï¿½
+            Debug.Log("[TryEquipStack] ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½Í¨ stack ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½");
             return false;
         }
 
-        // 4) È·±£ villager ÓĞ¶ÔÓ¦µÄ×°±¸×´Ì¬
+        // 4) È·ï¿½ï¿½ villager ï¿½Ğ¶ï¿½Ó¦ï¿½ï¿½×°ï¿½ï¿½×´Ì¬
         if (!villagerEquipStates.TryGetValue(villagerCard, out var state))
         {
             state = new VillagerEquipState();
             villagerEquipStates[villagerCard] = state;
         }
 
-        // 5) ´¦Àí×°±¸¿¨¶Ñ
+        // 5) ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         foreach (var equipCard in equipCards)
         {
             if (equipCard == null) continue;
             EquipSingleCardToVillagerSlot(equipCard, villagerCard);
         }
-        Debug.Log($"[TryEquipStack] ×°±¸{equipCards.Count} ÕÅ£¬×°±¸µ½ {villagerCard.name}");
+        Debug.Log($"[TryEquipStack] ×°ï¿½ï¿½{equipCards.Count} ï¿½Å£ï¿½×°ï¿½ï¿½ï¿½ï¿½ {villagerCard.name}");
 
-        // 6) ·Ç×°±¸²¿·Ö£ºÈç¹û´æÔÚ£¬°ÑËüÃÇ×é³ÉÒ»µş£¬µôÔÚ villager ÏÂ·½
+        // 6) ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ villager ï¿½Â·ï¿½
         if (nonEquipCards.Count > 0)
         {
             Transform villagerRoot = villagerCard.stackRoot != null
@@ -501,17 +528,17 @@ public class CardManager : MonoBehaviour
 
             Vector3 dropPos = villagerRoot.position + new Vector3(0f, -1.5f, 0f);
 
-            // Ñ¡·Ç×°±¸ÀïµÄµÚÒ»¸ö×÷ÎªĞÂ root
+            // Ñ¡ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Äµï¿½Ò»ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ root
             Card newRootCard = nonEquipCards[0];
             Transform newRootTf = newRootCard.transform;
 
-            // ÏÈ°ÑĞÂ root ÍÑÀëÔ­ stack
+            // ï¿½È°ï¿½ï¿½ï¿½ root ï¿½ï¿½ï¿½ï¿½Ô­ stack
             newRootTf.SetParent(null);
             newRootCard.ResetToDefaultSize();
             newRootTf.position = dropPos;
             newRootCard.stackRoot = newRootTf;
 
-            // ÆäÓà·Ç×°±¸¿¨¹Òµ½Õâ¸ö newRootTf ÏÂ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ newRootTf ï¿½ï¿½
             for (int i = 1; i < nonEquipCards.Count; i++)
             {
                 Card c = nonEquipCards[i];
@@ -523,19 +550,19 @@ public class CardManager : MonoBehaviour
                 c.stackRoot = newRootTf;
             }
 
-            // 4.3 ÅÅÒ»ÏÂĞÂµşµÄÎ»ÖÃ
+            // 4.3 ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Î»ï¿½ï¿½
             newRootCard.LayoutStack();
 
-            Debug.Log($"[TryEquipStack] ·Ç×°±¸ {nonEquipCards.Count} ÕÅ£¬µôÔÚ {villagerCard.name} ÏÂ·½");
+            Debug.Log($"[TryEquipStack] ï¿½ï¿½×°ï¿½ï¿½ {nonEquipCards.Count} ï¿½Å£ï¿½ï¿½ï¿½ï¿½ï¿½ {villagerCard.name} ï¿½Â·ï¿½");
         }
 
-        // TODO: ÕâÀïÖ®ºó¿ÉÒÔ¸ù¾İ×°±¸¸üĞÂ´åÃñµÄÕ½¶·ÊôĞÔ
+        // TODO: ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         return true;
     }
 
     /// <summary>
-    /// °ÑÒ»¼ş×°±¸×°µ½ villager ÉíÉÏÄ³¸ö²ÛÎ»
-    /// TODO: Ä¿Ç°ÏÈ¼òµ¥ÊµÏÖÈû hand ²ÛÎ»£¬ºóĞøÔÙ¸ù¾İ CardData ·Ö²ÛÎ»
+    /// ï¿½ï¿½Ò»ï¿½ï¿½×°ï¿½ï¿½×°ï¿½ï¿½ villager ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½Î»
+    /// TODO: Ä¿Ç°ï¿½È¼ï¿½Êµï¿½ï¿½ï¿½ï¿½ hand ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ CardData ï¿½Ö²ï¿½Î»
     /// </summary>
     private void EquipSingleCardToVillagerSlot(Card equipCard, Card villagerCard)
     {
@@ -551,13 +578,13 @@ public class CardManager : MonoBehaviour
         EquipSlotType slot = equipCard.data.equipSlot;
         if (slot == EquipSlotType.None)
         {
-            Debug.LogWarning($"[Equip] {equipCard.name} µÄ equipSlot Î´ÉèÖÃ£¬ºöÂÔÕâ´Î×°±¸");
+            Debug.LogWarning($"[Equip] {equipCard.name} ï¿½ï¿½ equipSlot Î´ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½");
             return;
         }
 
         EquipmentUIController.Instance.OpenBigPanel(villagerCard);
 
-        // ·Ö²ÛÎ»
+        // ï¿½Ö²ï¿½Î»
         Card oldEquip = null;
         switch (slot)
         {
@@ -575,10 +602,10 @@ public class CardManager : MonoBehaviour
                 break;
         }
 
-        // ´ÓÊÀ½çÍ³¼ÆÖĞÒÆ³ı£¬±ê¼ÇÎª InEquipmentUI
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í³ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª InEquipmentUI
         equipCard.SetRuntimeState(CardRuntimeState.InEquipmentUI);
 
-        // TODO: Ğ§¹ûÏÈĞ´¹Òµ½villagerµ×ÏÂËõĞ¡Ò»µã, ºóĞø¸ü¸Äui
+        // TODO: Ğ§ï¿½ï¿½ï¿½ï¿½Ğ´ï¿½Òµï¿½villagerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡Ò»ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ui
         /*var villagerSR = villagerCard.GetComponent<SpriteRenderer>();
         var equipSR = equipCard.GetComponent<SpriteRenderer>();
         equipSR.sortingOrder = villagerSR.sortingOrder + 100;
@@ -599,17 +626,17 @@ public class CardManager : MonoBehaviour
                 break;
         }*/
 
-        // ¸üĞÂÏÖÔÚÓĞÃ»ÓĞ×°±¸
-        // ¸ù¾İÊÇ²»ÊÇµÚÒ»´Î×°±¸Ë¢ĞÂ´óĞ¡×°±¸À¸
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½×°ï¿½ï¿½
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½Çµï¿½Ò»ï¿½ï¿½×°ï¿½ï¿½Ë¢ï¿½Â´ï¿½Ğ¡×°ï¿½ï¿½ï¿½ï¿½
         //bool hasNow = VillagerHasAnyEquip(villagerCard);
 
-        //  ÕâÊÇµÚÒ»¼ş×°±¸£¬Á¢¿Ì´ò¿ª ¡°Õâ¸ö villager µÄ´ó×°±¸À¸¡±
+        //  ï¿½ï¿½ï¿½Çµï¿½Ò»ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ villager ï¿½Ä´ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         //if (!hadBefore && hasNow && EquipmentUIController.Instance != null)
         //{
         //}
         /*else if (hasNow && EquipmentUIController.Instance != null)
         {
-            // ²»ÊÇµÚÒ»´Î×°±¸
+            // ï¿½ï¿½ï¿½Çµï¿½Ò»ï¿½ï¿½×°ï¿½ï¿½
             if (EquipmentUIController.Instance.IsBigPanelOpenFor(villagerCard))
             {
                 EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
@@ -620,13 +647,13 @@ public class CardManager : MonoBehaviour
             }
         }*/
 
-        // ¸üĞÂ stackRoot
-        // £¡£¡£¡£¡£¡²»ÄÜÇå¿Õ£¡£¡£¡£¡£¡Çå¿Õ»ádrag²»ÁË
+        // ï¿½ï¿½ï¿½ï¿½ stackRoot
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½dragï¿½ï¿½ï¿½ï¿½
         equipCard.stackRoot = equipCard.transform;
         equipCard.isTopVisual = false;
 
-        // ²ÛÎ»ÓĞ¾É×°±¸£¬°Ñ¾É×°±¸ÈÓ»Ø³¡ÉÏ
-        // TODO: ÈÓ»Ø³¡ÉÏµÄÎ»ÖÃºóĞø¸Ä³É·¶Î§ÄÚËæ»ú
+        // ï¿½ï¿½Î»ï¿½Ğ¾ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½×°ï¿½ï¿½ï¿½Ó»Ø³ï¿½ï¿½ï¿½
+        // TODO: ï¿½Ó»Ø³ï¿½ï¿½Ïµï¿½Î»ï¿½Ãºï¿½ï¿½ï¿½ï¿½Ä³É·ï¿½Î§ï¿½ï¿½ï¿½ï¿½ï¿½
         if (oldEquip != null && oldEquip != equipCard)
         {
             oldEquip.SetRuntimeState(CardRuntimeState.OnBoard);
@@ -640,12 +667,12 @@ public class CardManager : MonoBehaviour
 
         EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
 
-        Debug.Log($"[EquipSingle]{villagerCard.name} hand²ÛÎ»×°±¸{equipCard.name}(Ô­×°±¸: {(oldEquip != null ? oldEquip.name : "ÎŞ")})");
+        Debug.Log($"[EquipSingle]{villagerCard.name} handï¿½ï¿½Î»×°ï¿½ï¿½{equipCard.name}(Ô­×°ï¿½ï¿½: {(oldEquip != null ? oldEquip.name : "ï¿½ï¿½")})");
     }
 
 
     /// <summary>
-    /// ÕÒµ½Õâ¼ş×°±¸µ±Ç°¹ÒÔÚÄÄ¸ö villager ÉíÉÏ£¨Ã»ÓĞ¾Í·µ»Ø null£©
+    /// ï¿½Òµï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ villager ï¿½ï¿½ï¿½Ï£ï¿½Ã»ï¿½Ğ¾Í·ï¿½ï¿½ï¿½ nullï¿½ï¿½
     /// </summary>
     private Card FindEquipOwner(Card equipCard)
     {
@@ -668,8 +695,8 @@ public class CardManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÑÕâÕÅ×°±¸´ÓËüÔ­±¾ËùÊôµÄ villager ÉíÉÏ½â°ó£¬Ë¢ĞÂÔ­ owner ×°±¸À¸UI
-    /// ÕâÀï²»²Ù×÷×°±¸¿¨µÄ oboard ×´Ì¬£¬²»´¦Àí×¢²á
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ villager ï¿½ï¿½ï¿½Ï½ï¿½ï¿½Ë¢ï¿½ï¿½Ô­ owner ×°ï¿½ï¿½ï¿½ï¿½UI
+    /// ï¿½ï¿½ï¿½ï²»ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ oboard ×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
     /// </summary>
     private void ClearEquipRelation(Card equipCard)
     {
@@ -702,7 +729,7 @@ public class CardManager : MonoBehaviour
 
         CleanupEquipStateIfEmpty(owner);
 
-        // Í¨Öª UI Ë¢ĞÂÕâ¸ö villager µÄ×°±¸À¸
+        // Í¨Öª UI Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½ villager ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½
         if (EquipmentUIController.Instance != null)
         {
             if (VillagerHasAnyEquip(owner))
@@ -711,21 +738,21 @@ public class CardManager : MonoBehaviour
                     EquipmentUIController.Instance.RebuildBigPanelContent(owner);
                 else
                     EquipmentUIController.Instance.EnsureSmallBar(owner);
-                Debug.Log($"[ClearEquipRelation] ×°±¸{equipCard.name}´Ó{owner.name}½â°ó£¬±£Áô×°±¸À¸");
+                Debug.Log($"[ClearEquipRelation] ×°ï¿½ï¿½{equipCard.name}ï¿½ï¿½{owner.name}ï¿½ï¿½ó£¬±ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½");
             }
 
             else
             {
                 EquipmentUIController.Instance.CloseBigPanel(owner);
                 EquipmentUIController.Instance.CloseSmallBar(owner);
-                Debug.Log($"[ClearEquipRelation] ×°±¸{equipCard.name}´Ó{owner.name}½â°ó£¬Çå³ı×°±¸À¸");
+                Debug.Log($"[ClearEquipRelation] ×°ï¿½ï¿½{equipCard.name}ï¿½ï¿½{owner.name}ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½");
             }
         }
 
     }
 
     /// <summary>
-    /// °ÑÕâÒ»ÕûµşÀïµÄËùÓĞ¿¨¶¼´Ó¸÷×Ô villager µÄ×°±¸×´Ì¬ÖĞ½â°ó
+    /// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¿ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ villager ï¿½ï¿½×°ï¿½ï¿½×´Ì¬ï¿½Ğ½ï¿½ï¿½
     /// </summary>
     private void ClearEquipRelationForStack(Card stackRootCard)
     {
@@ -745,25 +772,25 @@ public class CardManager : MonoBehaviour
 
 
     /// <summary>
-    /// ÔÚ¿ªÊ¼ÍÏ×§Ê±µ÷ÓÃ£º°ÑÕâ¼ş×°±¸´Ó villager ÉíÉÏĞ¶ÏÂ£¬±ä³ÉÊÖÀïµÄÒ»ÕÅÆÕÍ¨¿¨
-    /// ´¦ÀíÔ­ owner ×°±¸×´Ì¬ºÍ×°±¸UI + ×°±¸¿¨UI/×´Ì¬/×¢²á
+    /// ï¿½Ú¿ï¿½Ê¼ï¿½ï¿½×§Ê±ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ villager ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
+    /// ï¿½ï¿½ï¿½ï¿½Ô­ owner ×°ï¿½ï¿½×´Ì¬ï¿½ï¿½×°ï¿½ï¿½UI + ×°ï¿½ï¿½ï¿½ï¿½UI/×´Ì¬/×¢ï¿½ï¿½
     /// </summary>
     public void UnequipFromVillagerImmediate(Card equipCard)
     {
         if (equipCard == null || equipCard.data == null) return;
         if (equipCard.data.cardClass != CardClass.Equipment) return;
 
-        // ´Ó×°±¸Êı¾İÀï½â°ó
+        // ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         ClearEquipRelation(equipCard);
 
-        // ×´Ì¬/ÊÓ¾õ»¹Ô­
+        // ×´Ì¬/ï¿½Ó¾ï¿½ï¿½ï¿½Ô­
         equipCard.isTopVisual = true;
         equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
         equipCard.ResetToDefaultSize();
         equipCard.gameObject.SetActive(true);
-        equipCard.transform.SetParent(null);   // ²»ÔÙ¹ÒÔÚ UI panel ÏÂÃæ
+        equipCard.transform.SetParent(null);   // ï¿½ï¿½ï¿½Ù¹ï¿½ï¿½ï¿½ UI panel ï¿½ï¿½ï¿½ï¿½
 
-        Debug.Log($"[Equip] UnequipFromVillagerImmediate: {equipCard.name} ÒÑĞ¶ÏÂ£¬µ±Ç°ÊÓÎªÆÕÍ¨ OnBoard ¿¨");
+        Debug.Log($"[Equip] UnequipFromVillagerImmediate: {equipCard.name} ï¿½ï¿½Ğ¶ï¿½Â£ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Îªï¿½ï¿½Í¨ OnBoard ï¿½ï¿½");
     }
 
 
