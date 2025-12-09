@@ -54,5 +54,5 @@ MonoBehaviour:
   autoChaseVillagers: 0
   enemyMoveSpeed: 1.5
   enemyBattleTriggerDistance: 0.2
-  pickSfx: {fileID: 0}
-  dropSfx: {fileID: 0}
+  pickSfx: {fileID: 8300000, guid: 4c9ed354d991aaa4796c45a239a1f89f, type: 3}
+  dropSfx: {fileID: 8300000, guid: 424ab2335edf8f049a6b553cfd9a95b3, type: 3}

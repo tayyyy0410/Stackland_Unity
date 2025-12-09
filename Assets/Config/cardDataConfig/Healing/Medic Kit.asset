@@ -51,5 +51,8 @@ MonoBehaviour:
   maxHarvestUses: 1
   harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
-  pickSfx: {fileID: 0}
-  dropSfx: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
+  pickSfx: {fileID: 8300000, guid: 2554fb0110e85b6438e01c9da0f35e48, type: 3}
+  dropSfx: {fileID: 8300000, guid: a8aa63276a28d6a49be4727f1515b512, type: 3}

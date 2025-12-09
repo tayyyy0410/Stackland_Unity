@@ -12,6 +12,8 @@ public class DraggableCard : MonoBehaviour
     //本次拖拽开始时，这张卡是否在装备状态
     private bool wasEquipAtDragStart;
 
+    //本次拖拽是否成功叠加
+    private bool stackedThisDrop = false;
 
     private SpriteRenderer sr;
     private int originalSortingOrder;
@@ -33,6 +35,8 @@ public class DraggableCard : MonoBehaviour
         if (!CanInteract()) return;
         if (card == null ) return;
         //wasEquipAtDragStart = (card.RuntimeState == CardRuntimeState.InEquipmentUI);
+
+        stackedThisDrop = false;
 
         // 如果点击了装备卡，立刻卸下，拿在手中
         if (card.RuntimeState == CardRuntimeState.InEquipmentUI &&
@@ -190,7 +194,7 @@ public class DraggableCard : MonoBehaviour
 
         Card rootCard = dragRoot.GetComponent<Card>();
 
-        bool stacked = false;
+        //bool stacked = false;
 
         // 优先尝试开始战斗
         if (rootCard != null)
@@ -238,7 +242,7 @@ public class DraggableCard : MonoBehaviour
             finalRootCard.LayoutStack();
         }
 
-        PlayDropOrStackSfx(stacked);
+        PlayDropOrStackSfx(stackedThisDrop);
     }
 
     
@@ -387,6 +391,9 @@ public class DraggableCard : MonoBehaviour
             }
             // 把这个子stack整叠的 root 叠到对方那一个stack上
             sourceRootCard.JoinStackOf(otherCard);
+
+            stackedThisDrop = true;
+
             break;
         }
         return false;
