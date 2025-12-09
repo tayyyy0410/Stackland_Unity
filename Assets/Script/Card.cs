@@ -19,7 +19,7 @@ public class Card : MonoBehaviour
 
     [Header("Stacking")]
     public Transform stackRoot;  // 一个stack的root
-    public float yOffset = -0.5f; // 往下偏移
+    public float yOffset = -0.2f; // 往下偏移
 
     [Header("Harvest Runtime")]
     [HideInInspector] public int harvestUsesLeft = -1;
@@ -33,6 +33,19 @@ public class Card : MonoBehaviour
     private InfoBarIndep infoBar;
     private CardStatsUI statsUI;
     public bool isTopVisual = true;
+
+    [Header("Stack Follow Lerp")]
+    [Tooltip("stack 中跟随 root 的基础速度")]
+    public float stackFollowSpeed = 20f;   // 越大跟得越紧
+    [Tooltip("越往下的牌额外的拖尾系数")]
+    public float perCardLagFactor = 0.3f;  // 越大，下面的牌越慢
+
+    private int stackIndexInRoot = 0;    // 在 stack 中的序号（第几张）
+    private Vector3 stackOffsetLocal;    // 相对于 stackRoot 的偏移（0, i * yOffset, 0）
+
+    // 拖尾用的坐标
+    private Vector3 smoothedWorldPos;
+    private bool hasSmoothedWorldPos = false;
 
 
     // Battle 相关
@@ -108,6 +121,32 @@ public class Card : MonoBehaviour
         }
     }
 
+
+    private void LateUpdate()
+    {
+        // stack 拖尾
+        if (stackRoot == null) return;
+        if (transform == stackRoot) return;
+        if (!IsOnBoard) return;
+
+        // 计算目标位置
+        Vector3 rootPos = stackRoot.position;
+        Vector3 targetWorldPos = rootPos + stackOffsetLocal;
+
+        if (!hasSmoothedWorldPos)
+        {
+            smoothedWorldPos = transform.position;
+            hasSmoothedWorldPos = true;
+        }
+
+        float lagMultiplier = 1f / (1f + (stackIndexInRoot - 1) * perCardLagFactor);
+        float speed = stackFollowSpeed * lagMultiplier;
+
+        smoothedWorldPos = Vector3.Lerp(smoothedWorldPos, targetWorldPos, speed * Time.deltaTime);
+
+        transform.position = smoothedWorldPos;
+    }
+
     public void EnsureHarvestInit()
     {
         if (data == null) return;
@@ -155,6 +194,11 @@ public class Card : MonoBehaviour
 
         harvestUsesLeft = -1;
         HasMovedDuringFeed = false;
+
+        yOffset = -0.22f;
+        perCardLagFactor = 0.3f;
+        stackFollowSpeed = 20f;
+
         EnsureHarvestInit();
         FoodInit();
         HungerInit();
@@ -239,7 +283,14 @@ public class Card : MonoBehaviour
             if (childCard == null) continue;
 
             i++;
-            child.localPosition = new Vector3(0f, i * yOffset, 0f);
+
+            childCard.stackIndexInRoot = i;
+            childCard.stackOffsetLocal = new Vector3(0f, i * yOffset, 0f);
+            //child.localPosition = new Vector3(0f, i * yOffset, 0f);
+
+            childCard.smoothedWorldPos = child.position;
+            childCard.hasSmoothedWorldPos = true;
+
             lastCard = childCard;
 
         }
