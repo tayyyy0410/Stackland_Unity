@@ -244,6 +244,12 @@ public class FeedAnimationController : MonoBehaviour
             foodTf.position = targetPos;
         }
 
+        //吃吃吃吃吃吃吃吃
+        if (AudioManager.I != null && AudioManager.I.eatSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.eatSfx);
+        }
+
         // 飞到villager脸上后改变 food的饱腹值 和 villager的饥饿值
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
         food.ChangeSaturation(eatAmount);

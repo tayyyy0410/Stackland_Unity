@@ -468,6 +468,12 @@ public class BattleManager : MonoBehaviour
         Vector3 attackerStart = attackerRoot.position;
         Vector3 defenderPos = defenderRoot.position;
 
+        //攻击音效
+        if (AudioManager.I != null && AudioManager.I.attackSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.attackSfx);
+        }
+
         // 计算攻击方向
         Vector3 dir = defenderPos - attackerStart;
         float totalDist = dir.magnitude;

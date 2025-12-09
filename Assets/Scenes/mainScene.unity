@@ -5273,9 +5273,9 @@ MonoBehaviour:
   stackSfx: {fileID: 8300000, guid: 8e824c9c8b436cc46a6437fd1981ea7a, type: 3}
   spawnSfx: {fileID: 8300000, guid: d1ad45b7dbe391c4e911e92062ad8158, type: 3}
   packOpenSfx: {fileID: 8300000, guid: 7f5aca5f5a2231448bda8a5a9fc18196, type: 3}
-  bellSfx: {fileID: 0}
-  eatSfx: {fileID: 0}
-  hitSfx: {fileID: 0}
+  bellSfx: {fileID: 8300000, guid: 79d275c1c86c6f549a5c74c313d1406b, type: 3}
+  eatSfx: {fileID: 8300000, guid: 9bb3dea785bb859468a7c02e70219f68, type: 3}
+  attackSfx: {fileID: 8300000, guid: 3e7c790a601897b4ea369db875eb2ca4, type: 3}
 --- !u!82 &938853237
 AudioSource:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip packOpenSfx;   // 开包
     public AudioClip bellSfx;       // 摇铃
     public AudioClip eatSfx;        // 进食
-    public AudioClip hitSfx;        // 攻击
+    public AudioClip attackSfx;     // 攻击
 
 
     private void Awake()

@@ -347,6 +347,12 @@ public class DayManager : MonoBehaviour
 
         dayPaused = true;       // 一天结束之后卡牌coroutine被冻结
         SetState(DayState.WaitingFeed);
+
+        //摇铃音效
+        if (AudioManager.I != null && AudioManager.I.bellSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.bellSfx);
+        }
     }
 
     /// <summary>
