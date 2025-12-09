@@ -282,7 +282,7 @@ public class Card : MonoBehaviour
                     EquipmentUIController.Instance.CloseBigPanel(v);
                     EquipmentUIController.Instance.SetSmallBarVisible(v, false);
                 }
-                else if (CardManager.Instance != null && CardManager.Instance.VillagerHasAnyEquip(v))
+                else if (EquipManager.Instance != null && EquipManager.Instance.VillagerHasAnyEquip(v))
                 {
                     // 是顶牌且有装备：小条显示
                     EquipmentUIController.Instance.SetSmallBarVisible(v, true);

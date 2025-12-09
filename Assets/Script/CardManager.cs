@@ -4,11 +4,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-/// <summary>
-/// ���泡���е� Coin, Food, Villager
-/// ���� Villager �� װ����״̬
-/// </summary>
-
 public class CardManager : MonoBehaviour
 {
     public static CardManager Instance { get; private set; }
@@ -23,9 +18,9 @@ public class CardManager : MonoBehaviour
     
 
 
-    // UIʵʱ����ͳ��
+    // UI需要显示的数据
     [Header("Runtime Stats (For Debug)")]
-    [Tooltip("ʵʱ���µĿ������� (debug only)")]
+    [Tooltip("实时统计数据 (debug only)")]
     [SerializeField] private int coinCount;
     [SerializeField] private int totalSaturation;
     [SerializeField] private int totalHunger;
@@ -36,15 +31,15 @@ public class CardManager : MonoBehaviour
     [SerializeField] private CardData passengerCardData;
 
 
-    // UI: ���� Class ���õ�����
-    public int MaxCardCapacity => maxCardCapacity;  // UI: ������������
-    public int CoinCount => coinCount;  // UI������coin����
-    public int TotalSaturation => totalSaturation;  // UI�����б���ֵ
-    public int TotalHunger => totalHunger;  // UI����Ҫ�ı���ֵ
+    // UI: 外部调用
+    public int MaxCardCapacity => maxCardCapacity;  
+    public int CoinCount => coinCount;  
+    public int TotalSaturation => totalSaturation;  
+    public int TotalHunger => totalHunger;  
 
-    public int NonCoinCount => AllCards.Count - CoinCount;  // UI�����г���coin�Ŀ�������
+    public int NonCoinCount => AllCards.Count - CoinCount; 
 
-    public int CardToSellCount => NonCoinCount - MaxCardCapacity;   // UI�����������Ŀ�������
+    public int CardToSellCount => NonCoinCount - MaxCardCapacity; 
 
     
     
@@ -66,39 +61,6 @@ public class CardManager : MonoBehaviour
             Debug.Log($"[Idea] 解锁新 Idea：{card.data.displayName}");
         }
     }
-
-    // ���� villager ��װ��״̬
-    public Dictionary<Card, VillagerEquipState> villagerEquipStates = new Dictionary<Card, VillagerEquipState>();
-
-    public VillagerEquipState GetEquipState(Card villager)
-    {
-        if (villager == null) return null;
-        if (villagerEquipStates.TryGetValue(villager, out var state))
-        {
-            return state;
-        }
-        return null;
-    }
-
-    public void CleanupEquipStateIfEmpty(Card villager)
-    {
-        if (villager == null) return;
-        if (villagerEquipStates.TryGetValue(villager,out var state))
-        {
-            if (!state.HasAnyEquip)
-            {
-                villagerEquipStates.Remove(villager);
-            }
-        }
-    }
-
-    private bool IsEquipment(Card c)
-    {
-        return c != null &&
-               c.data != null &&
-               c.data.cardClass == CardClass.Equipment;
-    }
-
 
     // ==========================================================================================
     private void Awake()
@@ -131,13 +93,14 @@ public class CardManager : MonoBehaviour
 
 
     // ===================================== Register Helpers =============================================
+
     /// <summary>
-    /// ���ɿ���ʱע��
+    /// 在 card enable时调用，把卡牌注册到 CardManager 并更新一遍数据
     /// </summary>
     public void RegisterCard(Card card)
     {
         if (card == null) return;
-        if (!card.IsOnBoard) return;    // ��ͳ��װ����Ŀ�
+        if (!card.IsOnBoard) return;    // 不注册装备栏中的卡牌
 
         var data = card.data;
         if (data == null)
@@ -164,9 +127,9 @@ public class CardManager : MonoBehaviour
                 {
                     VillagerCards.Add(card);
                 }
-                if (!villagerEquipStates.ContainsKey(card))
+                if (EquipManager.Instance != null && EquipManager.Instance.allEquipStates.ContainsKey(card))
                 {
-                    villagerEquipStates[card] = new VillagerEquipState();
+                    EquipManager.Instance.allEquipStates[card] = new EquipManager.VillagerEquipState();
                 }
                 break;
 
@@ -199,7 +162,7 @@ public class CardManager : MonoBehaviour
 
 
     /// <summary>
-    /// ���ٿ���ʱɾ������
+    /// 在 card disable时调用，把卡牌从 CardManager 中删除并更新一遍数据
     /// </summary>
     public void UnregisterCard(Card card)
     {
@@ -208,7 +171,7 @@ public class CardManager : MonoBehaviour
         AllCards.Remove(card);
         FoodCards.Remove(card);
         VillagerCards.Remove(card);
-        villagerEquipStates.Remove(card);
+        EquipManager.Instance.allEquipStates.Remove(card);
 
         var data = card.data;
         if (data != null && data.cardClass == CardClass.Coin)
@@ -221,7 +184,7 @@ public class CardManager : MonoBehaviour
             maxCardCapacity = Mathf.Max(0, MaxCardCapacity - data.capacity);
         }
 
-        // ���� villager ʱensureһ��װ����Ҳ�����
+        // villager取消注册时同时清除装备栏UI
         if (card.data != null && card.data.cardClass == CardClass.Villager)
         {
             if (EquipmentUIController.Instance != null)
@@ -246,7 +209,7 @@ public class CardManager : MonoBehaviour
         totalSaturation = 0;
         totalHunger = 0;
 
-        // �����ۼ����� food �� currentSaturation
+        // 计算所有 food 的 currentSaturation
         foreach (var food in FoodCards)
         {
             if (food == null) continue;
@@ -256,7 +219,7 @@ public class CardManager : MonoBehaviour
             }
         }
 
-        // �����ۼ����� villager �� currentHunger
+        // 计算所有 villager 的 currentHunger
         foreach (var v in VillagerCards)
         {
             if (v == null) continue;
@@ -292,8 +255,18 @@ public class CardManager : MonoBehaviour
 
 
     // ===================================== Equipment =============================================
+    // ===================================== Deleted =============================================
+
+
+
+
+
+
+
+
+
     // villager ���ϵ� equipment ��Ϣ
-    [System.Serializable]
+    /*[System.Serializable]
     public class VillagerEquipState
     {
         public Card head;
@@ -419,7 +392,7 @@ public class CardManager : MonoBehaviour
         {
             Debug.Log("[EquipDrop] topCard == null");
             return false;
-        }*/
+        }
 
         Debug.Log($"[EquipDrop] �ѵ�Ŀ��topCard��{topCard.name}");
 
@@ -653,178 +626,178 @@ public class CardManager : MonoBehaviour
                 break;
         }*/
 
-        // ����������û��װ��
-        // �����ǲ��ǵ�һ��װ��ˢ�´�Сװ����
-        //bool hasNow = VillagerHasAnyEquip(villagerCard);
+    // ����������û��װ��
+    // �����ǲ��ǵ�һ��װ��ˢ�´�Сװ����
+    //bool hasNow = VillagerHasAnyEquip(villagerCard);
 
-        //  ���ǵ�һ��װ�������̴� ����� villager �Ĵ�װ������
-        //if (!hadBefore && hasNow && EquipmentUIController.Instance != null)
-        //{
-        //}
-        /*else if (hasNow && EquipmentUIController.Instance != null)
+    //  ���ǵ�һ��װ�������̴� ����� villager �Ĵ�װ������
+    //if (!hadBefore && hasNow && EquipmentUIController.Instance != null)
+    //{
+    //}
+    /*else if (hasNow && EquipmentUIController.Instance != null)
+    {
+        // ���ǵ�һ��װ��
+        if (EquipmentUIController.Instance.IsBigPanelOpenFor(villagerCard))
         {
-            // ���ǵ�һ��װ��
-            if (EquipmentUIController.Instance.IsBigPanelOpenFor(villagerCard))
-            {
-                EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
-            }
+            EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
+        }
+        else
+        {
+            EquipmentUIController.Instance.EnsureSmallBar(villagerCard);
+        }
+    }
+
+    // ���� stackRoot
+    // ����������������գ�����������ջ�drag����
+    equipCard.stackRoot = equipCard.transform;
+    equipCard.isTopVisual = false;
+
+    // ��λ�о�װ�����Ѿ�װ���ӻس���
+    // TODO: �ӻس��ϵ�λ�ú����ĳɷ�Χ�����
+    if (oldEquip != null && oldEquip != equipCard)
+    {
+        oldEquip.SetRuntimeState(CardRuntimeState.OnBoard);
+        oldEquip.transform.SetParent(null);
+
+        Vector3 dropPos = villagerCard.transform.position + new Vector3(0f, -1.5f, 0f);
+        oldEquip.transform.position = dropPos;
+        oldEquip.transform.localScale = oldEquip.defaultScale;
+        oldEquip.stackRoot = oldEquip.transform;
+    }
+
+    EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
+
+    if (QuestManager.Instance != null && equipCard.data != null)
+    {
+        QuestManager.Instance.NotifyItemEquipped(equipCard.data);
+    }
+
+
+    Debug.Log($"[EquipSingle]{villagerCard.name} hand��λװ��{equipCard.name}(ԭװ��: {(oldEquip != null ? oldEquip.name : "��")})");
+}
+
+
+/// <summary>
+/// �ҵ����װ����ǰ�����ĸ� villager ���ϣ�û�оͷ��� null��
+/// </summary>
+private Card FindEquipOwner(Card equipCard)
+{
+    if (equipCard == null) return null;
+
+    foreach (var kvp in villagerEquipStates)
+    {
+        var villager = kvp.Key;
+        var state = kvp.Value;
+        if (state == null) continue;
+
+        if (state.head == equipCard ||
+            state.hand == equipCard ||
+            state.body == equipCard)
+        {
+            return villager;
+        }
+    }
+    return null;
+}
+
+/// <summary>
+/// ������װ������ԭ�������� villager ���Ͻ��ˢ��ԭ owner װ����UI
+/// ���ﲻ����װ������ oboard ״̬��������ע��
+/// </summary>
+private void ClearEquipRelation(Card equipCard)
+{
+    if (equipCard == null) return;
+
+    Card owner = null;
+    VillagerEquipState ownerState = null;
+
+    foreach (var kvp in villagerEquipStates)
+    {
+        var v = kvp.Key;
+        var state = kvp.Value;
+        if (state == null) continue;
+
+        if (state.head == equipCard ||
+            state.hand == equipCard ||
+            state.body == equipCard)
+        {
+            owner = v;
+            ownerState = state;
+            break;
+        }
+    }
+
+    if (owner == null || ownerState == null) return;
+
+    if (ownerState.head == equipCard) ownerState.head = null;
+    if (ownerState.hand == equipCard) ownerState.hand = null;
+    if (ownerState.body == equipCard) ownerState.body = null;
+
+    CleanupEquipStateIfEmpty(owner);
+
+    // ֪ͨ UI ˢ����� villager ��װ����
+    if (EquipmentUIController.Instance != null)
+    {
+        if (VillagerHasAnyEquip(owner))
+        {
+            if (EquipmentUIController.Instance.IsBigPanelOpenFor(owner))
+                EquipmentUIController.Instance.RebuildBigPanelContent(owner);
             else
-            {
-                EquipmentUIController.Instance.EnsureSmallBar(villagerCard);
-            }
-        }*/
-
-        // ���� stackRoot
-        // ����������������գ�����������ջ�drag����
-        equipCard.stackRoot = equipCard.transform;
-        equipCard.isTopVisual = false;
-
-        // ��λ�о�װ�����Ѿ�װ���ӻس���
-        // TODO: �ӻس��ϵ�λ�ú����ĳɷ�Χ�����
-        if (oldEquip != null && oldEquip != equipCard)
-        {
-            oldEquip.SetRuntimeState(CardRuntimeState.OnBoard);
-            oldEquip.transform.SetParent(null);
-
-            Vector3 dropPos = villagerCard.transform.position + new Vector3(0f, -1.5f, 0f);
-            oldEquip.transform.position = dropPos;
-            oldEquip.transform.localScale = oldEquip.defaultScale;
-            oldEquip.stackRoot = oldEquip.transform;
+                EquipmentUIController.Instance.EnsureSmallBar(owner);
+            Debug.Log($"[ClearEquipRelation] װ��{equipCard.name}��{owner.name}��󣬱���װ����");
         }
 
-        EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
-        
-        if (QuestManager.Instance != null && equipCard.data != null)
+        else
         {
-            QuestManager.Instance.NotifyItemEquipped(equipCard.data);
+            EquipmentUIController.Instance.CloseBigPanel(owner);
+            EquipmentUIController.Instance.CloseSmallBar(owner);
+            Debug.Log($"[ClearEquipRelation] װ��{equipCard.name}��{owner.name}������װ����");
         }
-    
-
-        Debug.Log($"[EquipSingle]{villagerCard.name} hand��λװ��{equipCard.name}(ԭװ��: {(oldEquip != null ? oldEquip.name : "��")})");
     }
 
+}
 
-    /// <summary>
-    /// �ҵ����װ����ǰ�����ĸ� villager ���ϣ�û�оͷ��� null��
-    /// </summary>
-    private Card FindEquipOwner(Card equipCard)
+/// <summary>
+/// ����һ����������п����Ӹ��� villager ��װ��״̬�н��
+/// </summary>
+private void ClearEquipRelationForStack(Card stackRootCard)
+{
+    if (stackRootCard == null) return;
+    var root = stackRootCard.stackRoot != null
+             ? stackRootCard.stackRoot
+             : stackRootCard.transform;
+
+    var cards = root.GetComponentsInChildren<Card>();
+    if (cards == null || cards.Length == 0) return;
+
+    foreach (var c in cards)
     {
-        if (equipCard == null) return null;
-
-        foreach (var kvp in villagerEquipStates)
-        {
-            var villager = kvp.Key;
-            var state = kvp.Value;
-            if (state == null) continue;
-
-            if (state.head == equipCard ||
-                state.hand == equipCard ||
-                state.body == equipCard)
-            {
-                return villager;
-            }
-        }
-        return null;
+        ClearEquipRelation(c);
     }
-
-    /// <summary>
-    /// ������װ������ԭ�������� villager ���Ͻ��ˢ��ԭ owner װ����UI
-    /// ���ﲻ����װ������ oboard ״̬��������ע��
-    /// </summary>
-    private void ClearEquipRelation(Card equipCard)
-    {
-        if (equipCard == null) return;
-
-        Card owner = null;
-        VillagerEquipState ownerState = null;
-
-        foreach (var kvp in villagerEquipStates)
-        {
-            var v = kvp.Key;
-            var state = kvp.Value;
-            if (state == null) continue;
-
-            if (state.head == equipCard ||
-                state.hand == equipCard ||
-                state.body == equipCard)
-            {
-                owner = v;
-                ownerState = state;
-                break;
-            }
-        }
-
-        if (owner == null || ownerState == null) return;
-
-        if (ownerState.head == equipCard) ownerState.head = null;
-        if (ownerState.hand == equipCard) ownerState.hand = null;
-        if (ownerState.body == equipCard) ownerState.body = null;
-
-        CleanupEquipStateIfEmpty(owner);
-
-        // ֪ͨ UI ˢ����� villager ��װ����
-        if (EquipmentUIController.Instance != null)
-        {
-            if (VillagerHasAnyEquip(owner))
-            {
-                if (EquipmentUIController.Instance.IsBigPanelOpenFor(owner))
-                    EquipmentUIController.Instance.RebuildBigPanelContent(owner);
-                else
-                    EquipmentUIController.Instance.EnsureSmallBar(owner);
-                Debug.Log($"[ClearEquipRelation] װ��{equipCard.name}��{owner.name}��󣬱���װ����");
-            }
-
-            else
-            {
-                EquipmentUIController.Instance.CloseBigPanel(owner);
-                EquipmentUIController.Instance.CloseSmallBar(owner);
-                Debug.Log($"[ClearEquipRelation] װ��{equipCard.name}��{owner.name}������װ����");
-            }
-        }
-
-    }
-
-    /// <summary>
-    /// ����һ����������п����Ӹ��� villager ��װ��״̬�н��
-    /// </summary>
-    private void ClearEquipRelationForStack(Card stackRootCard)
-    {
-        if (stackRootCard == null) return;
-        var root = stackRootCard.stackRoot != null
-                 ? stackRootCard.stackRoot
-                 : stackRootCard.transform;
-
-        var cards = root.GetComponentsInChildren<Card>();
-        if (cards == null || cards.Length == 0) return;
-
-        foreach (var c in cards)
-        {
-            ClearEquipRelation(c);
-        }
-    }
+}
 
 
-    /// <summary>
-    /// �ڿ�ʼ��קʱ���ã������װ���� villager ����ж�£���������һ����ͨ��
-    /// ����ԭ owner װ��״̬��װ��UI + װ����UI/״̬/ע��
-    /// </summary>
-    public void UnequipFromVillagerImmediate(Card equipCard)
-    {
-        if (equipCard == null || equipCard.data == null) return;
-        if (equipCard.data.cardClass != CardClass.Equipment) return;
+/// <summary>
+/// �ڿ�ʼ��קʱ���ã������װ���� villager ����ж�£���������һ����ͨ��
+/// ����ԭ owner װ��״̬��װ��UI + װ����UI/״̬/ע��
+/// </summary>
+public void UnequipFromVillagerImmediate(Card equipCard)
+{
+    if (equipCard == null || equipCard.data == null) return;
+    if (equipCard.data.cardClass != CardClass.Equipment) return;
 
-        // ��װ����������
-        ClearEquipRelation(equipCard);
+    // ��װ����������
+    ClearEquipRelation(equipCard);
 
-        // ״̬/�Ӿ���ԭ
-        equipCard.isTopVisual = true;
-        equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
-        equipCard.ResetToDefaultSize();
-        equipCard.gameObject.SetActive(true);
-        equipCard.transform.SetParent(null);   // ���ٹ��� UI panel ����
+    // ״̬/�Ӿ���ԭ
+    equipCard.isTopVisual = true;
+    equipCard.SetRuntimeState(CardRuntimeState.OnBoard);
+    equipCard.ResetToDefaultSize();
+    equipCard.gameObject.SetActive(true);
+    equipCard.transform.SetParent(null);   // ���ٹ��� UI panel ����
 
-        Debug.Log($"[Equip] UnequipFromVillagerImmediate: {equipCard.name} ��ж�£���ǰ��Ϊ��ͨ OnBoard ��");
-    }
+    Debug.Log($"[Equip] UnequipFromVillagerImmediate: {equipCard.name} ��ж�£���ǰ��Ϊ��ͨ OnBoard ��");
+}*/
 
 
 
