@@ -61,3 +61,7 @@ MonoBehaviour:
     weight: 1
   - cardData: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
     weight: 2
+  - cardData: {fileID: 11400000, guid: 9e852b81093c4164bad7ab6300f1b786, type: 2}
+    weight: 1
+  useFixedResults: 0
+  fixedResults: []

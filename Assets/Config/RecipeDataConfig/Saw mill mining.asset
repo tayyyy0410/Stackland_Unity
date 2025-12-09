@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bf1fa9fb1ad0de4b9dff716c6a4debb, type: 3}
-  m_Name: Fish Pond
+  m_Name: Saw mill mining
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 93bf071bed9c14047b98f537348a5b64, type: 2}
+  - cardData: {fileID: 11400000, guid: f9f72a1953f20d445afacad4ba95453c, type: 2}
     amount: 1
     consume: 0
-  - cardData: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
+  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
     amount: 1
-    consume: 0
-  output: {fileID: 0}
-  useOutputPack: 1
-  outputPack: {fileID: 11400000, guid: 255161ac8e5d7434e9a84a7f401a7e2a, type: 2}
-  craftTime: 20
+    consume: 1
+  output: {fileID: 11400000, guid: 31794f05d37351b46b7b8753f7896e9f, type: 2}
+  useOutputPack: 0
+  outputPack: {fileID: 0}
+  craftTime: 10

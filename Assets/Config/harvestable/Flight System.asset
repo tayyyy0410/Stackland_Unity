@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cd5050d88cbd89409d5d5ecd6621261, type: 3}
-  m_Name: Tree
+  m_Name: Flight System
   m_EditorClassIdentifier: 
   id: 
   displayName: 
@@ -19,11 +19,13 @@ MonoBehaviour:
   minCards: 1
   maxCards: 1
   entries:
-  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
-    weight: 4
-  - cardData: {fileID: 11400000, guid: 08cde1d0384325e41a2c4890fc25f77b, type: 2}
+  - cardData: {fileID: 11400000, guid: 7ad741f6ea4f0cb4587100ba1a1db8f2, type: 2}
     weight: 1
-  - cardData: {fileID: 11400000, guid: 0027cce9279c0b749a5a619a688e95ed, type: 2}
+  - cardData: {fileID: 11400000, guid: 66941e8494094a34bb19a443dea88c36, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 7b889c209ff4dae45a9c4cd05c0e575e, type: 2}
+    weight: 1
+  - cardData: {fileID: 11400000, guid: 5aee05d10a74cda42b27bd718c8a8d6f, type: 2}
     weight: 1
   useFixedResults: 0
   fixedResults: []
