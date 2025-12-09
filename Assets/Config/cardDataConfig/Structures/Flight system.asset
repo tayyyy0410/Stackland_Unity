@@ -32,6 +32,7 @@ MonoBehaviour:
   deathLootPack: {fileID: 0}
   minDeathLoot: 1
   maxDeathLoot: 1
+  equipSlot: 0
   hasDamage: 0
   damage: 0
   hasIncreaseHP: 0
@@ -42,11 +43,16 @@ MonoBehaviour:
   useDarkText: 1
   hasHealing: 0
   healing: 0
-  cardClass: 3
+  cardClass: 4
   backgroundSprite: {fileID: -6385729689511939619, guid: 1f49b4232f2bcec40912d8f2d9c13979, type: 3}
-  maxStackSize: 100
+  maxStackSize: 2
   canStackWithSameClass: 1
-  isHarvestable: 0
-  maxHarvestUses: 1
-  harvestLootPack: {fileID: 0}
+  isHarvestable: 1
+  maxHarvestUses: 999
+  harvestLootPack: {fileID: 11400000, guid: 2ae71d1e37edfc544ba87d34839a6dc8, type: 2}
   depletedCardData: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
+  pickSfx: {fileID: 0}
+  dropSfx: {fileID: 0}
