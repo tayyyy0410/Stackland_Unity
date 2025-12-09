@@ -24,7 +24,7 @@ public class CardManager : MonoBehaviour
 
 
     // UIʵʱ����ͳ��
-    [Header("Runtime Stats (Debug)")]
+    [Header("Runtime Stats (For Debug)")]
     [Tooltip("ʵʱ���µĿ������� (debug only)")]
     [SerializeField] private int coinCount;
     [SerializeField] private int totalSaturation;
@@ -230,10 +230,12 @@ public class CardManager : MonoBehaviour
         RecalculateTotals();
     }
 
+
     public void ReduceSaturation(int delta)
     {
         totalSaturation -= delta;
     }
+
 
     public void RecalculateTotals()
     {
@@ -262,6 +264,8 @@ public class CardManager : MonoBehaviour
 
         Debug.Log($"[CardManager]AllCards={AllCards.Count}, Villager={VillagerCards.Count}, Coin={CoinCount}, NonCoin={NonCoinCount}");
     }
+
+
 
 
     // ===================================== Equipment =============================================
