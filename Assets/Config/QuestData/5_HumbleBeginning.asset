@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 389ad6e44b093d145905d56529b6e5d3, type: 3}
+  m_Name: 5_HumbleBeginning
+  m_EditorClassIdentifier: 
+  questId: buy_humble_begining
+  title: Buy the Humble Beginnings Pack
+  description: 'Stack three Coins and drag them onto the Booster Pack to purchase.
+
+'
+  icon: {fileID: 0}
+  type: 4
+  targetCount: 1
+  moonLimit: 0
+  targetPack: {fileID: 11400000, guid: 9e7eea656d877cc4ca0a2094947b9b37, type: 2}
+  subjectCard: {fileID: 0}
+  targetCard: {fileID: 0}
+  resultCard: {fileID: 0}

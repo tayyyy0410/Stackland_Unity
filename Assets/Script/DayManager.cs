@@ -612,10 +612,17 @@ private void HandleFastForawrd()
 
 private void HandlePause()
 {
+    
+    bool wasPaused = dayPaused;
     dayPaused = dayPaused ? false : true;
 
     if (dayPaused)
     {
+        
+        if (!wasPaused && QuestManager.Instance != null)
+        {
+            QuestManager.Instance.NotifyPaused();
+        }
         pauseIcon.SetActive(true);
         pauseBack.SetActive(true);
         monoSpeedIcon.SetActive(false);

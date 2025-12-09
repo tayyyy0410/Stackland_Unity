@@ -44,6 +44,8 @@ public class CardPack : MonoBehaviour
     private bool isDragging = false;
     private Vector3 dragStartWorldPos;
     private Vector3 dragStartPackPos;
+    
+    private bool questNotified = false;
 
     private void EnsureInitialized()
     {
@@ -195,6 +197,13 @@ public class CardPack : MonoBehaviour
         {
             Debug.LogWarning("CardPack 没有设置 cardPrefab，无法生成卡牌。");
             return;
+        }
+        
+        //通知任务
+        if (!questNotified && QuestManager.Instance != null)
+        {
+            QuestManager.Instance.NotifyPackOpened(packData);
+            questNotified = true;
         }
 
         if (remainingOpens <= 0)

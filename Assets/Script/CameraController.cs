@@ -4,6 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraControllers : MonoBehaviour
 {
+    
+    public static bool uiBlockCameraInput = false;
+    
+    
     [Header(" Center")]
     [Tooltip("镜头默认对准的中心")]
     public Transform focus;
@@ -41,6 +45,11 @@ public class CameraControllers : MonoBehaviour
 
     private void Update()
     {
+        
+        if (uiBlockCameraInput)
+            return;
+        
+        
         if (DayManager.Instance == null) return;
         if (DayManager.Instance.CurrentState != DayManager.DayState.Running &&
             DayManager.Instance.CurrentState != DayManager.DayState.Selling)
