@@ -31,6 +31,10 @@ public class CardManager : MonoBehaviour
     [SerializeField] private int totalHunger;
     [SerializeField] private int maxCardCapacity;
     private int fixedMaxCapcity = 20;
+    
+    [Header("Quest Config")]
+    [SerializeField] private CardData passengerCardData;
+
 
     // UI: ���� Class ���õ�����
     public int MaxCardCapacity => maxCardCapacity;  // UI: ������������
@@ -260,6 +264,25 @@ public class CardManager : MonoBehaviour
             {
                 totalHunger += v.currentHunger;
             }
+        }
+        
+        
+        //村民任务
+        if (passengerCardData != null && QuestManager.Instance != null)
+        {
+            int passengerCount = 0;
+
+            // 这里我用 AllCards 来统计，只要 data == passengerCardData 就算 Passenger
+            foreach (var c in AllCards)
+            {
+                if (c == null || c.data == null) continue;
+                if (c.data == passengerCardData)
+                {
+                    passengerCount++;
+                }
+            }
+
+            QuestManager.Instance.NotifyCardCountChanged(passengerCardData, passengerCount);
         }
 
         Debug.Log($"[CardManager]AllCards={AllCards.Count}, Villager={VillagerCards.Count}, Coin={CoinCount}, NonCoin={NonCoinCount}");
@@ -670,6 +693,12 @@ public class CardManager : MonoBehaviour
         }
 
         EquipmentUIController.Instance.RebuildBigPanelContent(villagerCard);
+        
+        if (QuestManager.Instance != null && equipCard.data != null)
+        {
+            QuestManager.Instance.NotifyItemEquipped(equipCard.data);
+        }
+    
 
         Debug.Log($"[EquipSingle]{villagerCard.name} hand��λװ��{equipCard.name}(ԭװ��: {(oldEquip != null ? oldEquip.name : "��")})");
     }

@@ -380,7 +380,11 @@ public class DraggableCard : MonoBehaviour
 
 
             // TODO：之后这里可以加 class 规则 / maxStack 限制
-
+            
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.NotifyUseCardOnCard(sourceRootCard, otherCard);
+            }
             // 把这个子stack整叠的 root 叠到对方那一个stack上
             sourceRootCard.JoinStackOf(otherCard);
             break;

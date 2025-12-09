@@ -382,6 +382,11 @@ public class BattleManager : MonoBehaviour
     private void HandleEnemyDeath(Card enemy)
     {
         if (enemy == null) return;
+        
+        if (QuestManager.Instance != null && enemy.data != null)
+        {
+            QuestManager.Instance.NotifyEnemyKilled(enemy.data);
+        }
 
         Vector3 dropPos = enemy.stackRoot != null ? enemy.stackRoot.position : enemy.transform.position;
 

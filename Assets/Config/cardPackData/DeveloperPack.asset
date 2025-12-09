@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cd5050d88cbd89409d5d5ecd6621261, type: 3}
+  m_Name: DeveloperPack
+  m_EditorClassIdentifier: 
+  id: developer_pack_id
+  displayName: DeveloperPack
+  description: 
+  price: 5
+  minCards: 2
+  maxCards: 2
+  entries:
+  - cardData: {fileID: 11400000, guid: 6b888ddee52bad6428b39d711320da02, type: 2}
+    weight: 20
+  - cardData: {fileID: 11400000, guid: 16963b04c2ddeb04baf7df3d2c623bfd, type: 2}
+    weight: 20
+  - cardData: {fileID: 11400000, guid: 86deb6b8ab57e4144930087147caa88c, type: 2}
+    weight: 20
+  - cardData: {fileID: 11400000, guid: 8ceadbf8e5f83224a82ab08a74d8c52f, type: 2}
+    weight: 20
+  - cardData: {fileID: 11400000, guid: ca58b792479b41546a4f9dd5563dcffd, type: 2}
+    weight: 20
+  useFixedResults: 0
+  fixedResults: []

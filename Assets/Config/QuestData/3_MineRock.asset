@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 389ad6e44b093d145905d56529b6e5d3, type: 3}
+  m_Name: 3_MineRock
+  m_EditorClassIdentifier: 
+  questId: mine_rock
+  title: Mine a Rock
+  description: Mine a Rock using passenger
+  icon: {fileID: 0}
+  type: 1
+  targetCount: 1
+  moonLimit: 0
+  targetPack: {fileID: 0}
+  subjectCard: {fileID: 11400000, guid: ce3e3b060eb09074a949f9900f1ff09b, type: 2}
+  targetCard: {fileID: 11400000, guid: 3fc0d54d23cdc9e4b928bc9fc4d68109, type: 2}
+  resultCards: []
