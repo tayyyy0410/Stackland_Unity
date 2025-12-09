@@ -1,19 +1,36 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class StartNewRun : MonoBehaviour, IPointerClickHandler
 {
-    public string Scene;
+    [SerializeField] private string sceneName;     
+    [SerializeField] private Transform airplane;   
+    [SerializeField] private float speed = 5f;      
+    [SerializeField] private float exitX = 20f;    
+    [SerializeField] private float delayAfterExit = 1f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    private bool isRunning = false;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        SceneManager.LoadScene(Scene);
+        if (isRunning) return;       // 防止多次点击
+        isRunning = true;
+        StartCoroutine(FlyPlane());
+    }
+
+    private IEnumerator FlyPlane()
+    {
+        while (airplane.position.x < exitX)
+        {
+            airplane.position += Vector3.right * speed * Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(delayAfterExit);
+
+        Debug.Log("Load scene: " + sceneName);
+        SceneManager.LoadScene(sceneName);
     }
 }
