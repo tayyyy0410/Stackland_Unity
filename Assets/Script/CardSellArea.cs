@@ -56,17 +56,32 @@ public class CardSellArea : MonoBehaviour
         {
             if (c == null || c.data == null) continue;
 
-            // Coin 本身不在这里处理，直接跳过
+            // 1) coin 不卖（原逻辑）
             if (c.data.cardClass == CardClass.Coin)
                 continue;
 
-            // 所有非 Coin 卡都可以卖掉（包括 value == 0）
+            // 2) ✅ 这些类型不能卖：Villager / Enemy / Animals
+            if (c.data.cardClass == CardClass.Villager ||
+                c.data.cardClass == CardClass.Enemy ||
+                c.data.cardClass == CardClass.Animals)
+            {
+                // 直接跳过，不加入 toDestroy，也不记钱
+                continue;
+            }
+
+            // 3) 其它所有卡都可以卖掉（包括 value == 0）
             toDestroy.Add(c);
 
             // 只有 value > 0 的卡才产生金币
             if (c.data.value > 0)
             {
                 totalCoins += c.data.value;
+            }
+
+            // 通知任务（只对真正被卖掉的卡触发）
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.NotifyCardSold(c.data);
             }
         }
 
@@ -91,6 +106,7 @@ public class CardSellArea : MonoBehaviour
 
         Debug.Log($"[SellArea] 卖卡完成：销毁了 {toDestroy.Count} 张卡，获得 {totalCoins} 个 coin。");
     }
+
 
     
     /// 生成指定数量的 coinPrefab

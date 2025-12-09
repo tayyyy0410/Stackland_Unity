@@ -10,6 +10,10 @@ public class PackShopArea : MonoBehaviour
 
     [Tooltip("对应卡包Prefab")]
     public GameObject packCardPrefab;
+    
+    [Tooltip("卡包生成位置的随机半径（在 packSpawnOffset 附近抖动）")]
+    public float packSpawnRadius = 0.5f;
+
 
     [Tooltip("卡包生成位置相对于这个区域的偏移")]
     //这个可以改个随机或者别的
@@ -18,9 +22,9 @@ public class PackShopArea : MonoBehaviour
     [Header("找零")]
     public GameObject changeCoinPrefab;
 
-    [Tooltip("找零的 coin 在shop附近随机一点偏移")]
-    //这里也可以随机个别的
-    public float changeSpawnRadius = 0.5f;
+    
+    [Tooltip("找零 coin 生成位置相对于 Shop 的固定偏移")]
+    public Vector2 changeSpawnOffset = new Vector2(1.5f, 0f);  
 
     private Collider2D col;
 
@@ -104,21 +108,40 @@ public void TryBuyFromStack(Card anyCardInStack)
         return;
     }
 
-    int need = packToSell.price;
+    // 先算找零：这叠 coin 一共值多少 - 价格
+    int change = coinCount - packToSell.price;
 
-    // 随便从列表里拿几张就行，这里从后往前删
-    for (int i = coinCards.Count - 1; i >= 0 && need > 0; i--)
+// 1）把这叠里的所有 coin 全部销毁（等于把钱全投进商店）
+    for (int i = coinCards.Count - 1; i >= 0; i--)
     {
         Card coinCard = coinCards[i];
         if (coinCard == null) continue;
 
         Debug.Log("[ShopArea] 消耗一枚金币：" + coinCard.name);
         Destroy(coinCard.gameObject);
-        need--;
     }
 
+// 2）如果需要找零，就在固定位置吐一叠 coin 出来
+    if (change > 0)
+    {
+        Debug.Log($"[ShopArea] 找零 {change} 枚金币。");
+        GiveChange(change);
+    }
+
+
     //  生成卡包 
-    Vector3 packPos = transform.position + (Vector3)packSpawnOffset;
+    //packSpawnOffset 附近一个圆形半径内随机
+    Vector2 rand = Vector2.zero;
+    if (packSpawnRadius > 0f)
+    {
+        rand = Random.insideUnitCircle * packSpawnRadius;
+    }
+
+    Vector3 packPos = transform.position 
+                      + (Vector3)packSpawnOffset 
+                      + new Vector3(rand.x, rand.y, 0f);
+
+    
     GameObject packObj = Instantiate(packCardPrefab, packPos, Quaternion.identity);
 
     CardPack cp = packObj.GetComponent<CardPack>();
@@ -129,6 +152,13 @@ public void TryBuyFromStack(Card anyCardInStack)
     else
     {
         Debug.LogWarning("[ShopArea] 生成的 packCardPrefab 上没有 CardPack 组件！");
+    }
+    
+    
+    //通知任务
+    if (QuestManager.Instance != null)
+    {
+        QuestManager.Instance.NotifyPackBought(packToSell);
     }
 
     Debug.Log("[ShopArea] 成功购买卡包：" + packToSell.name);
@@ -146,9 +176,9 @@ public void TryBuyFromStack(Card anyCardInStack)
             return;
         }
 
-        // 随机一个偏移位置
-        Vector2 offset = Random.insideUnitCircle * changeSpawnRadius;
-        Vector3 basePos = transform.position + new Vector3(offset.x, offset.y, 0f);
+        //用固定偏移
+        Vector3 basePos = transform.position + (Vector3)changeSpawnOffset;
+
 
         // 生成第一个 coin当作这一叠的 root
         GameObject rootObj = Instantiate(changeCoinPrefab, basePos, Quaternion.identity);

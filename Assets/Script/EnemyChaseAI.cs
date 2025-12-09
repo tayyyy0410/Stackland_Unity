@@ -56,6 +56,13 @@ public class EnemyChaseAI : MonoBehaviour
     {
         if (card == null || card.data == null) return;
         if (DayManager.Instance == null) return;
+        
+       
+        if (DayManager.Instance != null && DayManager.Instance.dayPaused)
+        {
+            return;
+        }
+        
 
         // 只在 Running 状态追击
         if (DayManager.Instance.CurrentState != DayManager.DayState.Running)
