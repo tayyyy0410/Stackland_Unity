@@ -202,7 +202,6 @@ public class EquipmentUIController : MonoBehaviour
         {
             equipSR.sortingOrder = panelSR.sortingOrder + 1;
         }
-        Debug.Log("°Ú·Å");
     }
 
     

@@ -31,7 +31,15 @@ public class EquipManager : MonoBehaviour
         public bool HasAnyEquip => head != null ||
                                    hand != null ||
                                    body != null;
+
+        public IEnumerable<Card> EnumerateEquips()
+        {
+            if (head != null) yield return head;
+            if (hand != null) yield return hand;
+            if (body != null) yield return body;
+        }
     }
+
 
     public Dictionary<Card, VillagerEquipState> allEquipStates = new Dictionary<Card, VillagerEquipState> ();
 
@@ -161,6 +169,7 @@ public class EquipManager : MonoBehaviour
                 EquipmentUIController.Instance.CloseSmallBar(owner);
             }
 
+            CalculateEquipStats(owner);
             Debug.Log($"[ClearEquipRelation] 装备 {equipCard.name} 从 {owner.name} 解绑");
         }
 
@@ -243,6 +252,7 @@ public class EquipManager : MonoBehaviour
             if (equipped)
             {
                 Debug.Log($"[EquipDrop] {sourceRootCard.name} 所在的整叠被装备到 {effectiveTarget.name} 身上");
+                CalculateEquipStats(effectiveTarget);
             }
             return equipped;
         }
@@ -467,6 +477,61 @@ public class EquipManager : MonoBehaviour
         Debug.Log($"[EquipSingle] 成功装备{equipCard.name} 到 {villagerCard.name}，原装备 {(oldEquip != null ? oldEquip.name : "无")}");
     }
 
+    /// <summary>
+    /// 返回一张卡牌的装备加成[bonusAttack, bonusHP]
+    /// 并重新计算村民的 currentHP 和 currentAttack
+    /// </summary>
+    public int[] CalculateEquipStats(Card villager)
+    {
+        int[] results = { 0, 0 };
+        if (villager == null || villager.data == null) return results;
+
+        CardData vd = villager.data;
+
+        int bonusHP = 0;
+        int bonusAttack = 0;
+
+        if (villager.data.cardClass != CardClass.Villager)
+        {
+            Debug.Log($"[CalculateEquipStats] {villager.name}: 当前装备加成：bonusAttack={bonusAttack}, bonusHP={bonusHP}\n" +
+                  $"当前状态: currentAttack={villager.currentAttack}, currentOwnHP={villager.currentOwnHP}, currentHP={villager.currentHP}");
+            return results;
+        }
+
+            if (allEquipStates != null &&
+            allEquipStates.TryGetValue(villager, out var state) &&
+            state != null)
+        {
+            foreach (var equipCard in state.EnumerateEquips())
+            {
+                if (equipCard == null || equipCard.data == null) continue;
+
+                CardData ed = equipCard.data;
+
+                if (ed.hasDamage)
+                {
+                    bonusAttack += ed.damage;
+                }
+
+                if (ed.hasIncreaseHP)
+                {
+                    bonusHP += ed.IncreasedHP;
+                }
+            }
+        }
+
+        villager.currentHP = villager.currentOwnHP + bonusHP;
+        villager.currentAttack = villager.data.attack + bonusAttack;
+
+        results[0] = bonusAttack;
+        results[1] = bonusHP;
+
+        Debug.Log($"[CalculateEquipStats] {villager.name}: 当前装备加成：bonusAttack={bonusAttack}, bonusHP={bonusHP}\n" +
+                  $"当前状态: currentAttack={villager.currentAttack}, currentOwnHP={villager.currentOwnHP}, currentHP={villager.currentHP}");
+
+        return results;
+
+    }
 
 
 

@@ -324,23 +324,29 @@ public class BattleManager : MonoBehaviour
     {
         if (!battle.isRunning || attacker == null || defender == null) yield break;
 
+        if (EquipManager.Instance ==  null) yield break;
+        var em = EquipManager.Instance;
+
         // 先播放攻击/受击动画
         yield return PlayAttackAnimation(attacker, defender);
 
         // 命中判定：假设 hitChance 是 0-100 的整数
         int hitChance = attacker.data.hitChance;   // 改成你真实字段
-        int attack = attacker.data.attack;         // 改成你真实字段
 
         float roll = Random.Range(0f, 100f);
         bool hit = roll < hitChance;
 
         if (hit)
         {
-            defender.currentHP -= attack;
+            defender.currentOwnHP -= attacker.currentAttack; // 针对村民单独记录不含加成的hp
+            defender.currentHP -= attacker.currentAttack; // 针对enemy，currentOwnHP 和 currentHP 是同步的
+
+            // 再计算一遍加成后的currentHP
+            defender.currentHP = defender.currentOwnHP + em.CalculateEquipStats(defender)[1];
             if (defender.currentHP < 0) defender.currentHP = 0;
 
             // 显示 Hit + 伤害数字
-            ShowHitOrMissUI(defender, true, attack);
+            ShowHitOrMissUI(defender, true, attacker.currentAttack);
         }
         else
         {

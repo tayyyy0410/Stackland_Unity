@@ -37,8 +37,12 @@ public class Card : MonoBehaviour
 
     // Battle 相关
     [Header("Battle Runtime")]
+    [Tooltip("当前除去装备加成的 HP")]
+    public int currentOwnHP;
     [Tooltip("当前 HP")]
     public int currentHP;
+    [Tooltip("当前 Attack")]
+    public int currentAttack; // 当前加成后的attack
 
     [Tooltip("是否已经初始化过 HP")]
     public bool hasInitHP = false;
@@ -517,7 +521,16 @@ public class Card : MonoBehaviour
         if (hasInitHP) return;
 
         // 这里的 baseHP 改成你 CardData 里真实的字段名
-        currentHP = data != null ? data.baseHP : 0;
+        currentOwnHP = data != null ? data.baseHP : 0;
+        currentHP = currentOwnHP;
+        currentAttack = data != null ? data.attack : 0;
+
+        if (EquipManager.Instance != null)
+        {
+            var em = EquipManager.Instance;
+            currentAttack += em.CalculateEquipStats(this)[0];
+            currentHP += em.CalculateEquipStats(this)[1];
+        }
         hasInitHP = true;
     }
 }

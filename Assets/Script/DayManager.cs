@@ -523,6 +523,11 @@ public class DayManager : MonoBehaviour
     {
         if (CurrentState != DayState.WaitingNextDay) return;
 
+        if (CardManager.Instance != null)
+        {
+            CardManager.Instance.RefreshVillagerHPBeforeNewMoon();
+        }
+
         currentMoon++;
         timer = 0f;
 
