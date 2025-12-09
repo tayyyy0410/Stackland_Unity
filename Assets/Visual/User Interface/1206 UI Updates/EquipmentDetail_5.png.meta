@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f0bc23ecde2fd5b42b8485bf559b5a25
+guid: d6f5b010c5b48314b922bdea9262387d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5597492459990643904
-    second: CardIcon_0
+      213: 3879647318173392234
+    second: EquipmentDetail_5_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CardIcon_0
+      name: EquipmentDetail_5_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 111
-        height: 128
+        width: 335
+        height: 190
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0c47bae4cb94ead40800000000000000
-      internalID: 5597492459990643904
+      spriteID: a6d958d3ea647d530800000000000000
+      internalID: 3879647318173392234
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CardIcon_0: 5597492459990643904
+      EquipmentDetail_5_0: 3879647318173392234
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

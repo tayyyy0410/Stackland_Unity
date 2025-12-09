@@ -19,7 +19,7 @@ public class CameraFocusOnStartPack : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
-        camController = FindObjectOfType<CameraControllers>();
+        camController = FindFirstObjectByType<CameraControllers>();
 
         if (cam == null)
         {

@@ -10,8 +10,18 @@ public class EquipmentUIController : MonoBehaviour
     public GameObject bigEquipPanelPrefab;   // 大装备栏
 
     [Header("Equip Runtime Roots")]
-    [Tooltip("用来暂存装备中的真实卡牌")]
+    [Tooltip("用来暂存装备中真实卡牌的空物体")]
     [SerializeField] private Transform equippedCardsRoot;
+
+    [Header("Equipment Layout")]
+    [Tooltip("调整大装备栏中卡牌的放置")]
+    [SerializeField] public Vector3 headPosOffset;
+    [SerializeField] public Vector3 handPosOffset;
+    [SerializeField] public Vector3 bodyPosOffest;
+    [SerializeField] public float headDegree;
+    [SerializeField] public float handDegree;
+    [SerializeField] public float bodyDegree;
+    [SerializeField] public Vector3 barPosOffset;
 
     private Dictionary<Card, EquipBar> smallBars =
         new Dictionary<Card, EquipBar>();
@@ -34,6 +44,17 @@ public class EquipmentUIController : MonoBehaviour
             var go = new GameObject("EquippedCardsRoot");
             equippedCardsRoot = go.transform;
         }
+    }
+
+    private void Start()
+    {
+        headPosOffset = new Vector3(-0.5f, -0.1f, 0f);
+        handPosOffset = new Vector3(0f, 0f, 0f);
+        bodyPosOffest = new Vector3(0.5f, -0.1f, 0f);
+        headDegree = 25f;
+        handDegree = 0f;
+        bodyDegree = -25f;
+        barPosOffset = new Vector3(0f, -1.1f, 0f);
     }
 
     private void Update()
@@ -136,7 +157,7 @@ public class EquipmentUIController : MonoBehaviour
     public void RebuildBigPanelContent(Card villager)
     {
         if (villager == null) return;
-        if (CardManager.Instance == null) return;
+        if (EquipManager.Instance == null) return;
 
         // 没有大装备栏就不管
         if (!bigPanels.TryGetValue(villager, out var panel) || panel == null)
@@ -146,32 +167,32 @@ public class EquipmentUIController : MonoBehaviour
         }
 
         // 拿到这个 villager 的装备状态
-        var state = CardManager.Instance.GetEquipState(villager);
+        var state = EquipManager.Instance.GetEquipState(villager);
         if (state == null)
         {
             Debug.Log("[RebuildBigPanel] 没有装备状态!");
             return;
         }
-        //Debug.Log($"[VillagerEquipState] hand: {state.hand.data.displayName}");
 
-        PlaceEquipCardIfExists(state.head, panel, new Vector3(-0.7f, 0f, 0f));
-        PlaceEquipCardIfExists(state.hand, panel, new Vector3(0f, 0f, 0f));
-        PlaceEquipCardIfExists(state.body, panel, new Vector3(0.7f, 0f, 0f));
+        PlaceEquipCardIfExists(state.head, panel, headPosOffset, headDegree);
+        PlaceEquipCardIfExists(state.hand, panel, handPosOffset, handDegree);
+        PlaceEquipCardIfExists(state.body, panel, bodyPosOffest, bodyDegree);
     }
 
 
     // 大装备栏的卡牌layout
-    private void PlaceEquipCardIfExists(Card equipCard, GameObject panel, Vector3 localPos)
+    private void PlaceEquipCardIfExists(Card equipCard, GameObject panel, Vector3 localPos, float zDegree)
     {
         if (equipCard == null || panel == null) return;
 
         var t = equipCard.transform;
 
-        t.SetParent(panel.transform, worldPositionStays: true);
+        t.SetParent(panel.transform, worldPositionStays: false);
         equipCard.gameObject.SetActive(true);
 
         t.localPosition = localPos;
-        equipCard.transform.localScale = equipCard.defaultScale * 0.7f;
+        t.localRotation = Quaternion.Euler(0f, 0f, zDegree);
+        t.localScale = equipCard.defaultScale * 0.7f;
 
         // 让装备卡画在大装备栏上面
         var equipSR = equipCard.GetComponent<SpriteRenderer>();
@@ -200,8 +221,8 @@ public class EquipmentUIController : MonoBehaviour
         bigPanels.Remove(villager);
 
         // 关大栏之后，如果这个 villager 仍然有装备，就恢复小条
-        if (CardManager.Instance != null &&
-            CardManager.Instance.VillagerHasAnyEquip(villager))
+        if (EquipManager.Instance != null &&
+            EquipManager.Instance.VillagerHasAnyEquip(villager))
         {
             OnTopDisplaySmallBar(villager);
         }
@@ -250,7 +271,7 @@ public class EquipmentUIController : MonoBehaviour
         }
 
         GameObject go = Instantiate(smallEquipBarPrefab, villager.transform);
-        go.transform.localPosition = new Vector3(0f, -1f, 0f);
+        go.transform.localPosition = barPosOffset;
 
         var bar = go.GetComponent<EquipBar>();
         if (bar != null)
@@ -266,6 +287,7 @@ public class EquipmentUIController : MonoBehaviour
         }
 
         smallBars[villager] = bar;
+        RefreshBarColor(villager);
         return bar;
     }
 
@@ -294,6 +316,7 @@ public class EquipmentUIController : MonoBehaviour
         }
 
         bar.gameObject.SetActive(true);
+        RefreshBarColor(villager);
     }
 
     /// <summary>
@@ -331,6 +354,8 @@ public class EquipmentUIController : MonoBehaviour
             {
                 barSR.sortingOrder = villagerSR.sortingOrder + 1;
             }
+
+            RefreshBarColor(villager);
         }
         else
         {
@@ -382,6 +407,17 @@ public class EquipmentUIController : MonoBehaviour
         bool shouldShowSmallBar = villager.isTopVisual;
 
         SetSmallBarVisible(villager, shouldShowSmallBar);
+    }
+
+
+    public void RefreshBarColor(Card villager)
+    {
+        if (villager == null) return;
+
+        if (smallBars.TryGetValue(villager, out var bar) && bar != null)
+        {
+            bar.RefreshFromOwner();
+        }
     }
 
 

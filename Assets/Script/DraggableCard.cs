@@ -36,10 +36,10 @@ public class DraggableCard : MonoBehaviour
 
         // 如果点击了装备卡，立刻卸下，拿在手中
         if (card.RuntimeState == CardRuntimeState.InEquipmentUI &&
-            CardManager.Instance != null)
+            EquipManager.Instance != null)
         {
             // 立即把装备卡的状态刷新
-            CardManager.Instance.UnequipFromVillagerImmediate(card);
+            EquipManager.Instance.UnequipFromVillagerImmediate(card);
         }
 
         // 拖动 villager 的时候会自动关掉所有大装备栏
@@ -337,7 +337,7 @@ public class DraggableCard : MonoBehaviour
         // 如果 dragroot 是装备卡
         if (sourceRootCard.data != null &&
             sourceRootCard.data.cardClass == CardClass.Equipment &&
-            CardManager.Instance != null)
+            EquipManager.Instance != null)
         {
             foreach (var hit in hits)
             {
@@ -347,8 +347,8 @@ public class DraggableCard : MonoBehaviour
 
                 var otherCard = hit.GetComponent<Card>();
 
-                // 如果有target，需要交给CardManager来处理装备堆叠
-                bool equipped = CardManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
+                // 如果有target，需要交给EquipManager来处理装备堆叠
+                bool equipped = EquipManager.Instance.TryHandleEquipmentDrop(sourceRootCard, otherCard);
                 return equipped;
             }
 

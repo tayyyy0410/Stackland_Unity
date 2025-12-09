@@ -32,7 +32,7 @@ MonoBehaviour:
   deathLootPack: {fileID: 0}
   minDeathLoot: 1
   maxDeathLoot: 1
-  equipSlot: 1
+  equipSlot: 2
   hasDamage: 1
   damage: 3
   hasIncreaseHP: 0

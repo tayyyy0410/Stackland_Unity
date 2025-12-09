@@ -47,6 +47,10 @@ public class DayManager : MonoBehaviour
     public TMP_Text coinCountText;
     public TMP_Text cardCountText;
     public float flashInterval;     // 字体闪烁间隔
+    public Image foodCountIcon;
+    public Image coinCountIcon;
+    public Image cardCountIcon;
+
 
     [Tooltip("显示当前 Moon 文本，比如 `Moon 1`")]
     public TMP_Text moonText;
@@ -69,6 +73,9 @@ public class DayManager : MonoBehaviour
     [Header("Villager & Food")]
     [Tooltip("Villager 饿死之后变成的尸体卡（可以为空，为空则直接 Destroy）")]
     public CardData corpseCardData;
+    public Card cardPrefab;
+    [Tooltip("尸体卡掉落位移")]
+    public Vector3 corpseOffset;
 
     [Header("Time Scale")]
     public float gameSpeed = 1f;
@@ -107,6 +114,10 @@ public class DayManager : MonoBehaviour
         }
 
         Instance = this;
+    }
+
+    private void Start()
+    {
         InitDay();
 
         monoSpeedIcon.SetActive(true);
@@ -130,6 +141,8 @@ public class DayManager : MonoBehaviour
         flashInterval = 0.5f;
         dayPaused = false;
         allFedResultDuration = 2f;
+        corpseOffset = new Vector3(0f, 1f, 0f);
+
         SetState(DayState.Running);
 
         UpdateProgressUI();
@@ -273,15 +286,20 @@ public class DayManager : MonoBehaviour
         if (CardManager.Instance == null) return;
         var cm = CardManager.Instance;
 
-        if (foodCountText != null)
+        if (foodCountText != null && foodCountIcon != null)
         {
             foodCountText.text = $"{cm.TotalSaturation}/{cm.TotalHunger}";
 
             if (cm.TotalSaturation < cm.TotalHunger)
             {
                 foodCountText.color = useRed ? Color.red : Color.black;
+                foodCountIcon.color = useRed ? Color.red : Color.black;
             }
-            else { foodCountText.color = Color.black; }
+            else
+            {
+                foodCountText.color = Color.black;
+                foodCountIcon.color = Color.black;
+            }
         }
 
         if (coinCountText != null)
@@ -289,15 +307,20 @@ public class DayManager : MonoBehaviour
             coinCountText.text = $"{cm.CoinCount}";
         }
 
-        if (cardCountText != null)
+        if (cardCountText != null && cardCountIcon != null)
         {
             cardCountText.text = $"{cm.NonCoinCount}/{cm.MaxCardCapacity}";
 
             if (cm.NonCoinCount > cm.MaxCardCapacity)
             {
                 cardCountText.color = useRed ? Color.red : Color.black;
+                cardCountIcon.color = useRed ? Color.red : Color.black;
             }
-            else { cardCountText.color = Color.black; }
+            else
+            {
+                cardCountText.color = Color.black;
+                cardCountIcon.color = Color.black;
+            }
         }
     }
 
@@ -465,7 +488,7 @@ public class DayManager : MonoBehaviour
         if (CurrentState != DayState.StarvingAnimation) return;
         if (CardManager.Instance == null) return;
 
-        Debug.Log($"[CardManager]Villager={CardManager.Instance.VillagerCards.Count}");
+        Debug.Log($"[CardManager] 结束播放死亡动画，Villager={CardManager.Instance.VillagerCards.Count}");
 
         if (CardManager.Instance.VillagerCards.Count > 0)
         {
@@ -499,6 +522,11 @@ public class DayManager : MonoBehaviour
     public void RequestNextDay()
     {
         if (CurrentState != DayState.WaitingNextDay) return;
+
+        if (CardManager.Instance != null)
+        {
+            CardManager.Instance.RefreshVillagerHPBeforeNewMoon();
+        }
 
         currentMoon++;
         timer = 0f;
@@ -547,12 +575,18 @@ public class DayManager : MonoBehaviour
 
         if (corpseCardData != null)
         {
-            villager.data = corpseCardData;
-            villager.currentHunger = 0;
-            villager.currentSaturation = 0;
+            var spawnPos = villager.GetComponent<Transform>().position + corpseOffset;
 
-            // 让 Card 用新的 data 重刷外观
-            villager.ApplyData();
+            if (cardPrefab == null)
+            {
+                Debug.Log($"[DayManager] 未设置cardPrefab，无法生成corpse");
+            }
+            Card corpseCard = Instantiate(cardPrefab, spawnPos, Quaternion.identity);
+
+            corpseCard.data = corpseCardData;
+            corpseCard.ApplyData();
+
+            Destroy(villager.gameObject);
         }
         else
         {
