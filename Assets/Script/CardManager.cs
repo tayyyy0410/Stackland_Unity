@@ -57,6 +57,7 @@ public class CardManager : MonoBehaviour
     {
         if (card == null || card.data == null) return;
         if (card.data.cardClass == CardClass.Idea) return;
+        if (card.data.cardClass == CardClass.Coin) return;
         string name = card.data.displayName;
         if (!NewCards.Contains(name))
         {
