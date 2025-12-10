@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Fish Pond
   m_EditorClassIdentifier: 
   id: Idea_Fish_Pond_id
-  displayName: 'Idea: Fish Pond'
+  displayName: Fish Pond
   description: "2\xD7 Plank\n1\xD7 Stone\n2\xD7 Pipe"
   value: 1
   hasSaturation: 0

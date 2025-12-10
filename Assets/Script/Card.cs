@@ -93,6 +93,13 @@ public class Card : MonoBehaviour
         }
 
         statsUI = GetComponent<CardStatsUI>();
+        
+        
+        //通知idea manager
+        if (IdeaManager.Instance != null && data != null && data.cardClass == CardClass.Idea)
+        {
+            IdeaManager.Instance.NotifyIdeaCardCreated(data);
+        }
     }
 
     private void OnEnable()

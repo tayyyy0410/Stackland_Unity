@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Nail Gun
   m_EditorClassIdentifier: 
   id: Idea_Nail_Gun_id
-  displayName: 'Idea: Nail Gun'
+  displayName: ' Nail Gun'
   description: "1\xD7 Pipe\n1\xD7 Gear\n1\xD7 Nail\n1\xD7 Tape"
   value: 1
   hasSaturation: 0
