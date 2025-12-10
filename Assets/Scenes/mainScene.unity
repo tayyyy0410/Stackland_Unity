@@ -5108,7 +5108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d613445efe9838c408f674fee47f8a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgm: {fileID: 8300000, guid: 336d39466be38164d8740e9e9ce0b7ac, type: 3}
+  bgm: {fileID: 0}
 --- !u!114 &938853236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5129,6 +5129,7 @@ MonoBehaviour:
   bellSfx: {fileID: 8300000, guid: 79d275c1c86c6f549a5c74c313d1406b, type: 3}
   eatSfx: {fileID: 8300000, guid: 9bb3dea785bb859468a7c02e70219f68, type: 3}
   attackSfx: {fileID: 8300000, guid: 3e7c790a601897b4ea369db875eb2ca4, type: 3}
+  airplaneSfx: {fileID: 8300000, guid: 0f4e18a9df7c7b347b1ce08b47d5197e, type: 3}
 --- !u!82 &938853237
 AudioSource:
   m_ObjectHideFlags: 0
