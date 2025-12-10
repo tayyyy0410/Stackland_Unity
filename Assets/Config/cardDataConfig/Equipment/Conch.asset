@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: Conch
+  m_EditorClassIdentifier: 
+  id: Conch_id
+  displayName: Conch
+  description: '"The conch was silent, a gleaming tusk......"'
+  value: 3
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
+  hasCapacity: 0
+  capacity: 0
+  hasHP: 0
+  baseHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  hitChance: 0
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
+  equipSlot: 1
+  hasDamage: 1
+  damage: 1
+  hasIncreaseHP: 0
+  IncreasedHP: 1
+  showHP: 0
+  showHunger: 0
+  showValue: 1
+  useDarkText: 1
+  hasHealing: 0
+  healing: 0
+  cardClass: 9
+  backgroundSprite: {fileID: -3421836072799467748, guid: 42caf90b934182746bab10e5d9921251, type: 3}
+  maxStackSize: 100
+  canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
+  pickSfx: {fileID: 8300000, guid: 2554fb0110e85b6438e01c9da0f35e48, type: 3}
+  dropSfx: {fileID: 8300000, guid: a8aa63276a28d6a49be4727f1515b512, type: 3}
