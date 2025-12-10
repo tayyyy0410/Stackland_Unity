@@ -14,14 +14,14 @@ public class FeedAnimationController : MonoBehaviour
     [Header("Camera")]
     public Camera targetCamera;                 
     public float zoomInSize = 3f;       // 镜头聚焦村民时的 orthographic size
-    public float zoomOutSize = 6f;      // 动画结束后恢复的 orthographic size
+    public float zoomOutSize = 5f;      // 动画结束后恢复的 orthographic size
     public float cameraMoveDuration = 0.5f;     // 镜头移动 + 缩放时长
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f);
 
     [Header("Feeding Animation")]
     public float delayBeforeFeeding = 0.3f;     // 进入 FeedingAnimation 后稍等
-    public float delayBetweenVillagers = 0.4f;      // 每个 villager 之间间隔
-    public float foodMoveDuration = 0.35f;      // 食物飞到 villager 身上的时间
+    public float delayBetweenVillagers = 0.3f;      // 每个 villager 之间间隔
+    public float foodMoveDuration = 0.4f;      // 食物飞到 villager 身上的时间
     public float foodHoldDuration = 0.3f;       // 食物停在 villager 身上的时间
 
     [Header("Starving Animation")]

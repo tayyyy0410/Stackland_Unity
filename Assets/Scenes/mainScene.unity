@@ -10828,8 +10828,8 @@ MonoBehaviour:
   cameraOffset: {x: 0, y: 0, z: -10}
   delayBeforeFeeding: 0.3
   delayBetweenVillagers: 0.3
-  foodMoveDuration: 0.35
-  foodHoldDuration: 0.2
+  foodMoveDuration: 0.4
+  foodHoldDuration: 0.3
   delayBeforeStarving: 0.3
   starvingPerVillagerDelay: 0.6
 --- !u!1 &1729709445
