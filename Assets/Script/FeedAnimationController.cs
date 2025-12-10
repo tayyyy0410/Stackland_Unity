@@ -211,9 +211,13 @@ public class FeedAnimationController : MonoBehaviour
     {
         if (food == null || villager == null) yield break;
 
+        var oldRoot = food.stackRoot;
+        food.stackRoot = food.transform;
+        food.transform.SetParent(null);
+
         Transform foodTf = food.transform;
         Vector3 originPos = foodTf.position;
-        Vector3 targetPos = villager.transform.position; //+ foodOffsetOnVillager;
+        Vector3 targetPos = villager.transform.position;
 
         float t = 0f;
 
@@ -222,8 +226,14 @@ public class FeedAnimationController : MonoBehaviour
         var foodSR = food.GetComponent<SpriteRenderer>();
         int villagerSO = villagerSR.sortingOrder;
 
-        int temp = foodSR.sortingOrder;
-        foodSR.sortingOrder = villagerSO + 1;
+        // 整理visual状态
+        int tempSR = foodSR.sortingOrder;
+        string tempSLN = foodSR.sortingLayerName;
+        foodSR.sortingOrder = villagerSO + 10;
+        bool tempIsTop = food.isTopVisual;
+        food.isTopVisual = true;
+
+        Debug.Log($"当前村民so：{villagerSO}, 食物so：{foodSR.sortingOrder}，layer：{foodSR.sortingLayerName}");
 
         food.HasMovedDuringFeed = true;
 
@@ -250,17 +260,18 @@ public class FeedAnimationController : MonoBehaviour
             AudioManager.I.PlaySFX(AudioManager.I.eatSfx);
         }
 
+        // 停留一下
+        yield return new WaitForSecondsRealtime(foodHoldDuration);
+
         // 飞到villager脸上后改变 food的饱腹值 和 villager的饥饿值
         villager.currentHunger = Mathf.Max(0, villager.currentHunger - eatAmount);
         food.ChangeSaturation(eatAmount);
-
-        // 停留一下
-        yield return new WaitForSecondsRealtime(foodHoldDuration);
 
         bool isDepleted = food.currentSaturation <= 0;
 
         if (isDepleted)
         {
+            food.LayoutStack();
             // 食物吃光，销毁卡牌
             DayManager.Instance.ConsumeFoodCompletely(food);
         }
@@ -284,7 +295,11 @@ public class FeedAnimationController : MonoBehaviour
                 foodTf.position = originPos;
             }
 
-            foodSR.sortingOrder = temp;
+            // 复原卡牌visual状态
+            foodSR.sortingOrder = tempSR;
+            food.stackRoot = oldRoot;
+            food.transform.SetParent(oldRoot);
+            food.isTopVisual = tempIsTop;
         }
     }
 

@@ -442,7 +442,6 @@ public class DayManager : MonoBehaviour
         }
 
         cm.RecalculateTotals();
-        Debug.Log($"[Daymanager]HungryVillagers={lastHungryVillagers.Count}");
 
         if (lastAllFed)
         {
