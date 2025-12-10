@@ -9804,7 +9804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be4c1f05b10e78d4daa69ed02b0cb471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moonLength: 90
+  moonLength: 120
   startMoon: 1
   moonProgressFill: {fileID: 1294081819}
   foodCountText: {fileID: 861851190}

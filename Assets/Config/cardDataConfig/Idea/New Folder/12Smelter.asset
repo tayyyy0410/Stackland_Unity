@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Idea_Smelter_id
   displayName: "\u2022 Smelter"
-  description: "2\xD7 Flint\n1\xD7 Stone\n1\xD7 Plank\n1\xD7 Passenger"
+  description: "2\xD7 Flint\n2\xD7 Stone\n1\xD7 Plank\n1\xD7 Passenger"
   value: 1
   hasSaturation: 0
   saturation: 0
