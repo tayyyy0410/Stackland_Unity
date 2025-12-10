@@ -391,6 +391,7 @@ public class DayManager : MonoBehaviour
         if (CurrentState != DayState.Running) return;
         if (EquipManager.Instance != null && EquipManager.Instance.AreAllVillagersEquippedWithJetpack())
         {
+            dayPaused = true;
             SetState(DayState.Success);
             return;
         }

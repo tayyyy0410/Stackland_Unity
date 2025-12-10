@@ -486,11 +486,6 @@ public class EquipManager : MonoBehaviour
 
         Debug.Log($"[EquipSingle] 成功装备{equipCard.name} 到 {villagerCard.name}，原装备 {(oldEquip != null ? oldEquip.name : "无")}");
 
-        if (AreAllVillagersEquippedWithJetpack())
-        {
-            Debug.Log("[Win] 所有村民都穿上了 Jetpack，游戏胜利！");
-        }
-
     }
 
 
