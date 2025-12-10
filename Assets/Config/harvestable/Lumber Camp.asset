@@ -20,7 +20,7 @@ MonoBehaviour:
   maxCards: 1
   entries:
   - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
-    weight: 4
+    weight: 5
   - cardData: {fileID: 11400000, guid: 08cde1d0384325e41a2c4890fc25f77b, type: 2}
     weight: 1
   useFixedResults: 0
