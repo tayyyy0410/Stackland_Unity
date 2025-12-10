@@ -11,6 +11,7 @@ public class CardManager : MonoBehaviour
     public List<Card> AllCards { get; private set; } = new List<Card>();
     public List<Card> FoodCards { get; private set; } = new List<Card>();
     public List<Card> VillagerCards { get; private set; } = new List<Card>();
+    public List<string> NewCards { get; private set; } = new List<string>();
     
     
     public HashSet<CardData> discoveredIdeas = new HashSet<CardData>();
@@ -39,7 +40,8 @@ public class CardManager : MonoBehaviour
 
     public int NonCoinCount => AllCards.Count - CoinCount; 
 
-    public int CardToSellCount => NonCoinCount - MaxCardCapacity; 
+    public int CardToSellCount => NonCoinCount - MaxCardCapacity;
+    public int NewCardCount => NewCards.Count;
 
     
     
@@ -48,6 +50,19 @@ public class CardManager : MonoBehaviour
     public bool HasDiscoveredIdea(CardData data)
     {
         return data != null && discoveredIdeas.Contains(data);
+    }
+
+    // new idea
+    public void HasDiscoveredNewCard(Card card)
+    {
+        if (card == null || card.data == null) return;
+        if (card.data.cardClass == CardClass.Idea) return;
+        string name = card.data.displayName;
+        if (!NewCards.Contains(name))
+        {
+            NewCards.Add(name);
+            Debug.Log($"[NewCard] 解锁新卡牌：{name}，一共解锁{NewCardCount}张新卡牌");
+        }
     }
 
     public void RegisterIdeaIfNeeded(Card card)
@@ -100,7 +115,7 @@ public class CardManager : MonoBehaviour
     public void RegisterCard(Card card)
     {
         if (card == null) return;
-        if (!card.IsOnBoard) return;    // 不注册装备栏中的卡牌
+        if (!card.IsOnBoard) return;    // do not register cards in equip
 
         var data = card.data;
         if (data == null)
@@ -111,7 +126,8 @@ public class CardManager : MonoBehaviour
 
         if (card.data.cardClass == CardClass.Prefab) return;
         
-        RegisterIdeaIfNeeded(card); //记住上场的idea
+        RegisterIdeaIfNeeded(card); 
+        HasDiscoveredNewCard(card);
 
         switch (data.cardClass)
         {
