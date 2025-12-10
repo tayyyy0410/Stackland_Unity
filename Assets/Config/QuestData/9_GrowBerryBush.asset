@@ -20,6 +20,6 @@ MonoBehaviour:
   targetCount: 1
   moonLimit: 0
   targetPack: {fileID: 0}
-  subjectCard: {fileID: 11400000, guid: 44ca7c61f0ae40e4a885a63e2490fd63, type: 2}
-  targetCard: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
+  subjectCard: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
+  targetCard: {fileID: 11400000, guid: bd114ca33b12b8a40ad45ba8dfbf90c2, type: 2}
   resultCards: []
