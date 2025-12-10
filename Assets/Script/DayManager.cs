@@ -267,7 +267,7 @@ public class DayManager : MonoBehaviour
         }
 
         if (CardManager.Instance == null) return;
-        if (CardManager.Instance.VillagerCards.Count <= 0)
+        if (!IsLockedByStarterPacks() && CardManager.Instance.VillagerCards.Count <= 0)
         {
             Invoke(nameof(EnterGameOver), 1f);
         }
