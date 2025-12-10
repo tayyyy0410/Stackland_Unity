@@ -29,7 +29,8 @@ public class DayManager : MonoBehaviour
         Selling,        // 售卖多出的卡牌
         WaitingNextDay,     // 还有活人，等待点击 “开始下一天”
         WaitingEndGame,     // 死亡动画播完，死光了，等待点击“结束游戏”
-        GameOver        // 真正的GameOver结算页面
+        GameOver,       // 真正的GameOver结算页面
+        Success,        // 游戏胜利
     }
 
     [Header("Moon Settings")]
@@ -63,6 +64,7 @@ public class DayManager : MonoBehaviour
     public TMP_Text moonTextInNext;
     public TMP_Text moonTextInOver;
     public TMP_Text moonTextInEnd;
+    public TMP_Text moonTextInSuccess;
 
     [Tooltip("显示当前多出的卡牌数量")]
     public TMP_Text cardSellText;
@@ -168,13 +170,14 @@ public class DayManager : MonoBehaviour
         {
             UpdateSelling();
         }
-        else if (CurrentState == DayState.FeedingAnimation || 
-                 CurrentState == DayState.FeedingResultAllFull || 
-                 CurrentState == DayState.FeedingResultHungry || 
+        else if (CurrentState == DayState.FeedingAnimation ||
+                 CurrentState == DayState.FeedingResultAllFull ||
+                 CurrentState == DayState.FeedingResultHungry ||
                  CurrentState == DayState.WaitingSell ||
                  CurrentState == DayState.WaitingNextDay ||
                  CurrentState == DayState.WaitingEndGame ||
-                 CurrentState == DayState.GameOver)
+                 CurrentState == DayState.GameOver ||
+                 CurrentState == DayState.Success)
         {
             UpdateBarDate();
         }
@@ -212,6 +215,10 @@ public class DayManager : MonoBehaviour
         else if (CurrentState == DayState.GameOver && moonTextInEnd != null)
         {
             moonTextInEnd.text = $"You reached Moon {currentMoon}";
+        }
+        else if (CurrentState == DayState.Success && moonTextInSuccess != null)
+        {
+            moonTextInSuccess.text = $"{currentMoon}";
 
         }
     }
@@ -382,8 +389,15 @@ public class DayManager : MonoBehaviour
     private void EndCurrentMoon()
     {
         if (CurrentState != DayState.Running) return;
+        if (EquipManager.Instance != null && EquipManager.Instance.AreAllVillagersEquippedWithJetpack())
+        {
+            SetState(DayState.Success);
+            return;
+        }
 
         dayPaused = true;       // 一天结束之后卡牌coroutine被冻结
+
+
         SetState(DayState.WaitingFeed);
 
         //摇铃音效
