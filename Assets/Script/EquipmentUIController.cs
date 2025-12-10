@@ -54,7 +54,7 @@ public class EquipmentUIController : MonoBehaviour
         headDegree = 25f;
         handDegree = 0f;
         bodyDegree = -25f;
-        barPosOffset = new Vector3(0f, -1.1f, 0f);
+        barPosOffset = new Vector3(0f, -1.1f, -0.1f);
     }
 
     private void Update()
@@ -224,6 +224,7 @@ public class EquipmentUIController : MonoBehaviour
         if (EquipManager.Instance != null &&
             EquipManager.Instance.VillagerHasAnyEquip(villager))
         {
+            RefreshBarColor(villager);
             OnTopDisplaySmallBar(villager);
         }
         else

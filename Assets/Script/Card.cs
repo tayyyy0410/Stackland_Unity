@@ -8,6 +8,7 @@ public enum CardRuntimeState
 {
     OnBoard,        // 在场/stack里，被记入total count
     InEquipmentUI,  // 在装备栏，不算进total count
+    InRecipe        // 合成中
 }
 
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里
@@ -69,7 +70,7 @@ public class Card : MonoBehaviour
     [Tooltip("当前卡牌是否处于装备栏")]
     [SerializeField] private CardRuntimeState runtimeState = CardRuntimeState.OnBoard;
     public CardRuntimeState RuntimeState => runtimeState;
-    public bool IsOnBoard => runtimeState == CardRuntimeState.OnBoard;
+    public bool IsOnBoard => runtimeState != CardRuntimeState.InEquipmentUI;
     public Vector3 defaultScale;
 
 
@@ -610,7 +611,7 @@ public class Card : MonoBehaviour
         if (CardManager.Instance == null) return;
 
         // 从 OnBoard 被移到装备栏需要 unregister
-        if (oldState == CardRuntimeState.OnBoard && newState != CardRuntimeState.OnBoard)
+        if (oldState == CardRuntimeState.OnBoard && newState == CardRuntimeState.InEquipmentUI)
         {
             if (HasRegisteredToManager)
             {
@@ -620,7 +621,7 @@ public class Card : MonoBehaviour
         }
 
         // 从装备栏移到 OnBoard 需要 register
-        else if (oldState != CardRuntimeState.OnBoard && newState == CardRuntimeState.OnBoard)
+        else if (oldState == CardRuntimeState.InEquipmentUI && newState == CardRuntimeState.OnBoard)
         {
             TryRegisterToManager();
         }

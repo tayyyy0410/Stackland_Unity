@@ -9,7 +9,7 @@ public class CardManager : MonoBehaviour
     public static CardManager Instance { get; private set; }
 
     public List<Card> AllCards { get; private set; } = new List<Card>();
-    public List<Card> FoodCards { get; private set; } = new List<Card>();
+    public List<Card> FoodCards { get; set; } = new List<Card>();
     public List<Card> VillagerCards { get; private set; } = new List<Card>();
     public List<string> NewCards { get; private set; } = new List<string>();
     
@@ -58,11 +58,14 @@ public class CardManager : MonoBehaviour
     {
         if (card == null || card.data == null) return;
         if (card.data.cardClass == CardClass.Idea) return;
+        if (card.data.cardClass == CardClass.Coin) return;
         string name = card.data.displayName;
         if (!NewCards.Contains(name))
         {
             NewCards.Add(name);
             Debug.Log($"[NewCard] 解锁新卡牌：{name}，一共解锁{NewCardCount}张新卡牌");
+            finalNewCardText.text = $"{NewCards.Count} New Cards Found";
+            finalNewCardTextSuccesss.text = $"{NewCards.Count}";
         }
     }
 

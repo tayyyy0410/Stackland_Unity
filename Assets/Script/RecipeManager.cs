@@ -153,8 +153,11 @@
                     originalCards.Add(c);
             }
 
-            // 根据 craftTime决定延时合成
-            if (selectedRecipe.craftTime > 0f)
+        // 开始时把所有参与制作的卡设为 InRecipe
+        SetCardsRuntimeState(originalCards, CardRuntimeState.InRecipe);
+
+        // 根据 craftTime决定延时合成
+        if (selectedRecipe.craftTime > 0f)
             {
                 
                 StartCoroutine(CraftRecipeWithDelay(selectedRecipe, stackRoot, originalCards));
@@ -162,6 +165,8 @@
             else
             {
                 CraftRecipeInstant(selectedRecipe, stackRoot);
+                SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
+
             }
         }
         
@@ -218,7 +223,12 @@
         /// 先等待 craftTime 秒再执行 CraftRecipeInstant
     private IEnumerator CraftRecipeWithDelay(RecipeData recipe, Transform stackRoot, List<Card> originalCards)
     {
-        if (stackRoot == null) yield break;
+        if (stackRoot == null)
+        {
+            // stack 已经不在了，恢复状态以防万一
+            SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
+            yield break;
+        }
 
         craftingStacks.Add(stackRoot);
 
@@ -253,6 +263,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         yield break;
                     }
                     var _currentCards = stackRoot.GetComponentsInChildren<Card>();
@@ -260,6 +271,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次合成。");
                         yield break;
                     }
@@ -272,6 +284,7 @@
                 {
                     if (bar != null) RemoveCraftBar(stackRoot);
                     craftingStacks.Remove(stackRoot);
+                    SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                     yield break;
                 }
 
@@ -281,6 +294,7 @@
                 {
                     if (bar != null) RemoveCraftBar(stackRoot);
                     craftingStacks.Remove(stackRoot);
+                    SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                     Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次合成。");
                     yield break;
                 }
@@ -292,6 +306,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：有参与制作的卡被销毁，取消本次合成。");
                         yield break;
                     }
@@ -300,6 +315,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：有参与制作的卡不再属于这个 stack，取消本次合成。");
                         yield break;
                     }
@@ -359,6 +375,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         yield break;
                     }
                     var _currentCards = stackRoot.GetComponentsInChildren<Card>();
@@ -366,6 +383,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次采集循环。");
                         yield break;
                     }
@@ -378,6 +396,7 @@
                 {
                     if (bar != null) RemoveCraftBar(stackRoot);
                     craftingStacks.Remove(stackRoot);
+                    SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                     yield break;
                 }
 
@@ -386,7 +405,9 @@
                 {
                     if (bar != null) RemoveCraftBar(stackRoot);
                     craftingStacks.Remove(stackRoot);
+                    SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                     Debug.Log("制作被打断：stack 里卡牌数量发生变化，取消本次采集循环。");
+
                     yield break;
                 }
 
@@ -396,6 +417,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：有参与制作的卡被销毁，取消本次采集循环。");
                         yield break;
                     }
@@ -404,6 +426,7 @@
                     {
                         if (bar != null) RemoveCraftBar(stackRoot);
                         craftingStacks.Remove(stackRoot);
+                        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
                         Debug.Log("制作被打断：有参与制作的卡不再属于这个 stack，取消本次采集循环。");
                         yield break;
                     }
@@ -441,6 +464,8 @@
         {
             RemoveCraftBar(stackRoot);
         }
+        // 恢复还在场上的卡到 OnBoard
+        SetCardsRuntimeState(originalCards, CardRuntimeState.OnBoard);
 
         craftingStacks.Remove(stackRoot);
     }
@@ -684,6 +709,21 @@
 
 
 
+    // =================== 批量切 RuntimeState ===================
 
+    /// <summary>
+    /// 切换到指定 RuntimeState
+    /// </summary>
+    private void SetCardsRuntimeState(List<Card> cards, CardRuntimeState state)
+    {
+        if (cards == null) return;
 
+        foreach (var c in cards)
+        {
+
+            if (c == null) continue;
+            c.SetRuntimeState(state);
+        }
     }
+
+}

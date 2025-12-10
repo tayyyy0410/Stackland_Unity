@@ -7,6 +7,10 @@ public class EquipManager : MonoBehaviour
 {
     public static EquipManager Instance { get; private set; }
 
+    [Header("Win Condition")]
+    [Tooltip("判定胜利用的喷气背包 CardData")]
+    public CardData jetpackData;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -481,7 +485,14 @@ public class EquipManager : MonoBehaviour
 
 
         Debug.Log($"[EquipSingle] 成功装备{equipCard.name} 到 {villagerCard.name}，原装备 {(oldEquip != null ? oldEquip.name : "无")}");
+
+        if (AreAllVillagersEquippedWithJetpack())
+        {
+            Debug.Log("[Win] 所有村民都穿上了 Jetpack，游戏胜利！");
+        }
+
     }
+
 
     /// <summary>
     /// 返回一张卡牌的装备加成[bonusAttack, bonusHP]
@@ -504,7 +515,7 @@ public class EquipManager : MonoBehaviour
             return results;
         }
 
-            if (allEquipStates != null &&
+        if (allEquipStates != null &&
             allEquipStates.TryGetValue(villager, out var state) &&
             state != null)
         {
@@ -540,6 +551,57 @@ public class EquipManager : MonoBehaviour
     }
 
 
+    // win condition
+    public bool HasJetpackOnBody(Card villager)
+    {
+        if (villager == null || jetpackData == null) return false;
 
-  
+        // 从字典里拿这名村民的装备状态
+        if (!allEquipStates.TryGetValue(villager, out var state))
+            return false;
+
+        if (state == null || state.body == null)
+            return false;
+
+        // body 上那张装备卡的 data 是否等于 jetpackData
+        var bodyEquip = state.body;
+        if (bodyEquip.data == null) return false;
+
+        return bodyEquip.data == jetpackData;
+    }
+
+
+    public bool AreAllVillagersEquippedWithJetpack()
+    {
+        if (CardManager.Instance == null) return false;
+
+        bool hasAtLeastOneVillager = false;
+
+        foreach (var v in CardManager.Instance.VillagerCards)
+        {
+            if (v == null || v.data == null) continue;
+
+            if (v.data.cardClass != CardClass.Villager)
+                continue;
+
+            hasAtLeastOneVillager = true;
+
+            // 只要有一个村民 body 槽不是 jetpack，就还没达成胜利条件
+            if (!HasJetpackOnBody(v))
+            {
+                return false;
+            }
+        }
+
+        // 没有村民也不算“全员有喷气背包”
+        if (!hasAtLeastOneVillager) return false;
+
+        // 跑完没 false，说明所有村民都满足
+        return true;
+    }
+
+
+
+
+
 }

@@ -21,6 +21,7 @@ public class PanelManager : MonoBehaviour
     public GameObject waitingNextDayPanel;      // 有人还活着，等待下一天的button
     public GameObject waitingEndGamePanel;      // 死光了，等待“结束游戏”button
     public GameObject gameOverPanel;        // GameOver结算面板
+    public GameObject successPanel;         // Success结算面板
 
     [Header("Buttons")]
     public Button feedButton;   // waitingFeedPanel的喂养村民
@@ -112,6 +113,7 @@ public class PanelManager : MonoBehaviour
         SetPanelActive(waitingNextDayPanel, false);
         SetPanelActive(waitingEndGamePanel, false);
         SetPanelActive(gameOverPanel, false);
+        SetPanelActive(successPanel, false);
 
         // 再打开一个 Panel
         switch (state)
@@ -158,6 +160,9 @@ public class PanelManager : MonoBehaviour
 
             case DayManager.DayState.GameOver:
                 SetPanelActive(gameOverPanel, true);
+                break;
+            case DayManager.DayState.Success:
+                SetPanelActive(successPanel, true);
                 break;
         }
     }
