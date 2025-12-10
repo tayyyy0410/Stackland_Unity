@@ -340,11 +340,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1879312006604667942, guid: 5291a6d5b66262c4482da57d684a2f3b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1879312006604667942, guid: 5291a6d5b66262c4482da57d684a2f3b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.93
+      value: -0.54
       objectReference: {fileID: 0}
     - target: {fileID: 1879312006604667942, guid: 5291a6d5b66262c4482da57d684a2f3b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1944,8 +1944,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packToSell: {fileID: 11400000, guid: 9e7eea656d877cc4ca0a2094947b9b37, type: 2}
   packCardPrefab: {fileID: 2787357699189455665, guid: c00508b1ee1d30344acb170f549d302e, type: 3}
-  packSpawnRadius: 5
-  packSpawnOffset: {x: 0, y: -7}
+  packSpawnRadius: 2
+  packSpawnOffset: {x: 0, y: -3}
   changeCoinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
   changeSpawnOffset: {x: 0, y: -1}
 --- !u!61 &416818206
@@ -4152,8 +4152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
-  coinSpawnRadius: 0.7
-  coinSpawnOffset: {x: 0, y: -11}
+  coinSpawnPoint: {fileID: 1111444507}
+  coinSpawnOffset: {x: 0, y: -15}
 --- !u!212 &796570579
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4221,7 +4221,8 @@ Transform:
   m_LocalPosition: {x: -2.884718, y: 3.2217422, z: 0}
   m_LocalScale: {x: 1.133171, y: 1.3993418, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1111444507}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &798690104
@@ -5852,6 +5853,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1111444506
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1111444507}
+  m_Layer: 0
+  m_Name: coinspawnpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1111444507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111444506}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.12, y: -1.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 796570580}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1113590713
 GameObject:
   m_ObjectHideFlags: 0
@@ -7362,8 +7394,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packToSell: {fileID: 11400000, guid: 6d919b1ef10acc943a80ee722792ed9b, type: 2}
   packCardPrefab: {fileID: 2787357699189455665, guid: 09d49aa626a25c3469c4d9083c4d5767, type: 3}
-  packSpawnRadius: 5
-  packSpawnOffset: {x: 0, y: -7}
+  packSpawnRadius: 2
+  packSpawnOffset: {x: 0, y: -3}
   changeCoinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
   changeSpawnOffset: {x: 0, y: -1}
 --- !u!212 &1271783601
@@ -8523,8 +8555,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packToSell: {fileID: 11400000, guid: b8c0cc1da4d3d324ca473ff4c41a4568, type: 2}
   packCardPrefab: {fileID: 2787357699189455665, guid: 4252f78e11c9c804eae0b7e385017814, type: 3}
-  packSpawnRadius: 5
-  packSpawnOffset: {x: 0, y: -7}
+  packSpawnRadius: 2
+  packSpawnOffset: {x: 0, y: -3}
   changeCoinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
   changeSpawnOffset: {x: 10, y: -1}
 --- !u!212 &1401281980
@@ -8751,7 +8783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
-  coinSpawnRadius: 1
+  coinSpawnPoint: {fileID: 0}
   coinSpawnOffset: {x: 0, y: -1}
 --- !u!61 &1459693555
 BoxCollider2D:
@@ -8896,67 +8928,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!1001 &1464508284
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -2615846190882381163, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: data
-      value: 
-      objectReference: {fileID: 11400000, guid: 7a1c4029e72991d4a9bcbd5743b23053, type: 2}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.27
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -3.07
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1774432402279018821, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4506365281572697528, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
-      propertyPath: m_Name
-      value: testCard
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: caf3f89825184b24eb2b45b9c207ba07, type: 3}
 --- !u!1 &1491918102
 GameObject:
   m_ObjectHideFlags: 0
@@ -9226,8 +9197,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packToSell: {fileID: 11400000, guid: 8a06d1cb7aee4e74fac2d398cd6fbcbe, type: 2}
   packCardPrefab: {fileID: 2787357699189455665, guid: da1901f6cf513c04b96a3f3ecf188a1a, type: 3}
-  packSpawnRadius: 5
-  packSpawnOffset: {x: 0, y: -7}
+  packSpawnRadius: 2
+  packSpawnOffset: {x: 0, y: -3}
   changeCoinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
   changeSpawnOffset: {x: 0, y: -1}
 --- !u!212 &1502396637
@@ -10891,8 +10862,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packToSell: {fileID: 11400000, guid: 4017dfebd1f3329448a7dc765c6543f2, type: 2}
   packCardPrefab: {fileID: 2787357699189455665, guid: e80300e017f60274983f5a7c0a54f8cb, type: 3}
-  packSpawnRadius: 5
-  packSpawnOffset: {x: 0, y: -7}
+  packSpawnRadius: 2
+  packSpawnOffset: {x: 0, y: -3}
   changeCoinPrefab: {fileID: 4506365281572697528, guid: 78b34eafcc2e8f44fa8b4f98bdb0e5bf, type: 3}
   changeSpawnOffset: {x: 0, y: -1}
 --- !u!212 &2017691745
@@ -11624,7 +11595,6 @@ SceneRoots:
   - {fileID: 1911562398}
   - {fileID: 36206965}
   - {fileID: 668654126}
-  - {fileID: 1464508284}
   - {fileID: 1573766916}
   - {fileID: 796570580}
   - {fileID: 50679031}

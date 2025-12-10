@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2129098039
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: 2082157084429676578, guid: 15488edb4dd0a7b40b9e5e8b33108374, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -158,6 +158,7 @@ MonoBehaviour:
   clickThreshold: 10
   dragStartThreshold: 5
   dragSensitivity: 1
+  remainingOpens: 0
 --- !u!114 &4463180135427144767
 MonoBehaviour:
   m_ObjectHideFlags: 0

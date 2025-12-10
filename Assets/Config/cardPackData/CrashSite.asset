@@ -60,7 +60,7 @@ MonoBehaviour:
   - cardData: {fileID: 11400000, guid: 9e852b81093c4164bad7ab6300f1b786, type: 2}
     weight: 5
   - cardData: {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-    weight: 1
+    weight: 100
   - cardData: {fileID: 11400000, guid: a5056fc0217116341a8630ea2ee99243, type: 2}
     weight: 1
   - cardData: {fileID: 11400000, guid: 539dea7a25f9ab048ab779d41eb4eec2, type: 2}
