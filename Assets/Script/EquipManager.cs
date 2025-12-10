@@ -366,6 +366,12 @@ public class EquipManager : MonoBehaviour
         }
         Debug.Log($"[TryEquipStack] 装备卡 {equipCards.Count} 张，装备到 {villagerCard.name}");
 
+        //播放声音
+        if (AudioManager.I != null && AudioManager.I.stackSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.stackSfx);
+        }
+
         // 6) 退回非装备卡，掉落到 villager 下方
         if (nonEquipCards.Count > 0)
         {

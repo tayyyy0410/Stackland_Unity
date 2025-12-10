@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip bellSfx;       // Ò¡Áå
     public AudioClip eatSfx;        // ½øÊ³
     public AudioClip attackSfx;     // ¹¥»÷
-
+    public AudioClip airplaneSfx;
 
     private void Awake()
     {

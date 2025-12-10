@@ -15,7 +15,7 @@ MonoBehaviour:
   ingredients:
   - cardData: {fileID: 11400000, guid: 773ac5e3be60f3747bec7f86491d5251, type: 2}
     amount: 1
-    consume: 1
+    consume: 0
   - cardData: {fileID: 11400000, guid: bd114ca33b12b8a40ad45ba8dfbf90c2, type: 2}
     amount: 1
     consume: 1

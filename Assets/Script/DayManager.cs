@@ -84,6 +84,13 @@ public class DayManager : MonoBehaviour
     public GameObject monoSpeedIcon;
     public GameObject doubleSpeedIcon;
     public GameObject pauseBack;
+    
+    
+    [Header("Starter Pack Time Lock")]
+    public bool lockTimeUntilStarterPacksOpened = true;
+
+    // 还有多少个标记为 starter 的卡包没开完
+    private int starterPacksBlockingTime = 0;
 
     public DayState CurrentState { get; private set; } = DayState.Running;
     public System.Action<DayState> OnStateChanged;
@@ -200,6 +207,26 @@ public class DayManager : MonoBehaviour
             moonTextInOver.text = currentMoon.ToString();
         }
     }
+    
+    
+    public void RegisterStarterPack()
+    {
+        starterPacksBlockingTime++;
+        // Debug.Log($"[DayManager] 注册 StarterPack，剩余 = {starterPacksBlockingTime}");
+    }
+    
+    
+    public void NotifyStarterPackFullyOpened()
+    {
+        starterPacksBlockingTime = Mathf.Max(0, starterPacksBlockingTime - 1);
+        // Debug.Log($"[DayManager] StarterPack 开完，剩余 = {starterPacksBlockingTime}");
+    }
+
+    // 当前是否应该因为初始包而锁时间
+    private bool IsLockedByStarterPacks()
+    {
+        return lockTimeUntilStarterPacksOpened && starterPacksBlockingTime > 0;
+    }
 
     private void UpdateHungerStatus()
     {
@@ -219,7 +246,10 @@ public class DayManager : MonoBehaviour
     {
         if (moonLength <= 0f) return;
 
-        if (!dayPaused) { timer += Time.deltaTime * gameSpeed; }
+        if (!dayPaused && !IsLockedByStarterPacks())
+        {
+            timer += Time.deltaTime * gameSpeed;
+        }
 
         if (CardManager.Instance == null) return;
         if (CardManager.Instance.VillagerCards.Count <= 0)

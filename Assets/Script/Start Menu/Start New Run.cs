@@ -17,6 +17,12 @@ public class StartNewRun : MonoBehaviour, IPointerClickHandler
     {
         if (isRunning) return;      
         isRunning = true;
+        //飞机音效
+        if (AudioManager.I != null && AudioManager.I.airplaneSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.airplaneSfx);
+        }
+
         StartCoroutine(FlyPlane());
     }
 
