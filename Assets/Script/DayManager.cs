@@ -578,6 +578,11 @@ public class DayManager : MonoBehaviour
         if (villager == null) return;
         villager.TakeRootOutOfStack();
 
+        if (AudioManager.I != null && AudioManager.I.packOpenSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.packOpenSfx);
+        }
+
         if (corpseCardData != null)
         {
             var spawnPos = villager.GetComponent<Transform>().position + corpseOffset;
