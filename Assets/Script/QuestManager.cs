@@ -11,6 +11,7 @@ public class QuestManager : MonoBehaviour
     public List<QuestData> allQuests = new List<QuestData>();
 
     public TMP_Text displayText;
+    public TMP_Text displayTextSuccess;
 
     [Serializable]
     public class QuestRuntime
@@ -361,5 +362,6 @@ public class QuestManager : MonoBehaviour
     public void Update()
     {
         displayText.text = $"{GetCompletedQuestCount()} Quests Completed";
+        displayTextSuccess.text = GetCompletedQuestCount().ToString();
     }
 }
