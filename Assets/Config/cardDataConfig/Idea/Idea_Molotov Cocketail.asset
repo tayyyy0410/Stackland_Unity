@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Molotov Cocketail
   m_EditorClassIdentifier: 
   id: Idea_Molotov_Cocktail_id
-  displayName: Molotov COcktail
+  displayName: "\u2022 Molotov COcktail"
   description: "1\xD7 Bottled Message\n1\xD7 Wine\n1\xD7 Aerial Fuel"
   value: 1
   hasSaturation: 0

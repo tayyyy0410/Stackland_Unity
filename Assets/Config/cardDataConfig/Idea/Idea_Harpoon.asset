@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Harpoon
   m_EditorClassIdentifier: 
   id: Idea_Harpoon_id
-  displayName: Harpoon
+  displayName: "\u2022 Harpoon"
   description: "1\xD7 Stick\n1\xD7 Gear\n1\xD7 Plastic"
   value: 1
   hasSaturation: 0

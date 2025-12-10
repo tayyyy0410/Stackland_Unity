@@ -4965,6 +4965,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8575c2046949bb44f818d1b55b79254f, type: 2}
   - {fileID: 11400000, guid: 64463f85a089e5e4089cc15c89241197, type: 2}
   - {fileID: 11400000, guid: e650b09217f46b847a66b35f16b83ede, type: 2}
+  - {fileID: 11400000, guid: 8756c21321364434abf7a108aa552042, type: 2}
   cardPrefab: {fileID: 4506365281572697528, guid: 37cb4e84b58269d40a721431f60109b4, type: 3}
   spawnOffset: {x: 1, y: 0}
   craftBarPrefab: {fileID: -6752873534920461831, guid: fda6b48d4455cfb47804b2350e92deef, type: 3}
@@ -5050,15 +5051,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingIdeas:
-  - {fileID: 11400000, guid: abebbc4a4ca98734da0c465cc6c57ee1, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
-  - {fileID: 11400000, guid: 3df2471e9a591e842a6605989101e3ed, type: 2}
+  - {fileID: 11400000, guid: ea6f02a7703b25b45bc526222c99bc69, type: 2}
+  - {fileID: 11400000, guid: 42a71dc4bdce6a74a8eecf4b924594c0, type: 2}
+  - {fileID: 11400000, guid: 2e52899cf3ad44a46b5f07235e5ffbc4, type: 2}
+  - {fileID: 11400000, guid: 42ca4b1f3f2319e41b4d91bc331bf5e8, type: 2}
+  - {fileID: 11400000, guid: 445ef39ee9bf2174b8117f7d08514452, type: 2}
+  - {fileID: 11400000, guid: 71cd954c86dbcdc43a16faff9de8206e, type: 2}
+  - {fileID: 11400000, guid: 1e88fef0568f2ec43b74b7ceff00b203, type: 2}
+  - {fileID: 11400000, guid: 5e3f2d8a41b598d4587830b714690f77, type: 2}
+  - {fileID: 11400000, guid: e148c86dececb1743a88ff8e38e7f2df, type: 2}
+  - {fileID: 11400000, guid: 7b04059d51d5b0e46bdd178b9d712201, type: 2}
+  - {fileID: 11400000, guid: 088ce2c0f41df84419aa1e357139e192, type: 2}
+  - {fileID: 11400000, guid: 44ae48b14c39b8744933f14d0312a226, type: 2}
+  - {fileID: 11400000, guid: f4acd03da9fc7734f9d004a5137e6654, type: 2}
+  - {fileID: 11400000, guid: 995bb9f95532f3840994c500676ba8d4, type: 2}
+  - {fileID: 11400000, guid: e06257b541e97bd4cb0f1093c497cd2d, type: 2}
+  - {fileID: 11400000, guid: fa0b017d16779d64dade504271fd2ee0, type: 2}
+  - {fileID: 11400000, guid: c28dcb9c34673cb42af9fc74ad277843, type: 2}
+  - {fileID: 11400000, guid: 9db540e18b3fed3468d9691aaa16173e, type: 2}
+  - {fileID: 11400000, guid: 2aa47a46db460d64ea16f64dd16fac16, type: 2}
   unlockedIdeas: []
 --- !u!4 &921875488 stripped
 Transform:

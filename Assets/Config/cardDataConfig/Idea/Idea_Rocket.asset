@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Rocket
   m_EditorClassIdentifier: 
   id: Idea_Rocket_id
-  displayName: Rocket
+  displayName: "\u2022 Rocket"
   description: "2\xD7 Pipe\n1\xD7 Gear\n2\xD7 Tape\n1\xD7 Aerial Fuel"
   value: 1
   hasSaturation: 0

@@ -962,7 +962,7 @@ MonoBehaviour:
   airplane: {fileID: 1071236750}
   speed: 50
   exitX: 20
-  delayAfterExit: 1
+  delayAfterExit: 0.5
 --- !u!1 &985400782
 GameObject:
   m_ObjectHideFlags: 0
