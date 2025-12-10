@@ -256,7 +256,10 @@ public class CardManager : MonoBehaviour
     {
         foreach (var v in VillagerCards)
         {
-            v.currentOwnHP = Mathf.Max(v.currentOwnHP + 5, v.data.baseHP);
+            int oldOwnHP = v.currentOwnHP;
+            v.currentOwnHP = Mathf.Min(v.currentOwnHP + 5, v.data.baseHP);
+            v.currentHP += v.currentOwnHP - oldOwnHP;
+            
         }
     }
 
