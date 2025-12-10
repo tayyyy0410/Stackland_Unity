@@ -7,6 +7,11 @@ public class CardPack : MonoBehaviour
     public PackData packData;
     
     public GameObject cardPrefab;
+    
+    [Header("Starter Pack")]
+    [Tooltip("是否是初始卡包")]
+    public bool isStarterPack = false;
+
 
     [Header("开包槽位")]
     public Vector2[] slotOffsets = new Vector2[]
@@ -69,6 +74,19 @@ public class CardPack : MonoBehaviour
 
         initialized = true;
     }
+    
+    private void Start()
+    {
+        // 保证初始化过 remainingOpens / totalOpens
+        EnsureInitialized();
+
+        // 如果这是初始卡包，告诉 DayManager 有一个“时间锁”
+        if (isStarterPack && DayManager.Instance != null)
+        {
+            DayManager.Instance.RegisterStarterPack();
+        }
+    }
+
 
     //决定每次开包的槽位
     private void InitSlotOrder()
@@ -224,6 +242,12 @@ public class CardPack : MonoBehaviour
         // 打完就销毁卡包
         if (remainingOpens <= 0)
         {
+            // 如果这是初始卡包，告诉 DayManager：这个“时间锁”解除了
+            if (isStarterPack && DayManager.Instance != null)
+            {
+                DayManager.Instance.NotifyStarterPackFullyOpened();
+            }
+
             Destroy(gameObject);
         }
     }

@@ -29,7 +29,7 @@ MonoBehaviour:
   hasHitChance: 0
   hitChance: 0
   hasDeathLoot: 0
-  deathLootPack: {fileID: 0}
+  deathLootPack: {fileID: 11400000, guid: b6ccec808d52d1742ad9ace7f91ce1ff, type: 2}
   minDeathLoot: 1
   maxDeathLoot: 1
   equipSlot: 0
