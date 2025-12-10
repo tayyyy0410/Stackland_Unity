@@ -49,7 +49,7 @@ MonoBehaviour:
   canStackWithSameClass: 1
   isHarvestable: 1
   maxHarvestUses: 999
-  harvestLootPack: {fileID: 11400000, guid: 2ae71d1e37edfc544ba87d34839a6dc8, type: 2}
+  harvestLootPack: {fileID: 0}
   depletedCardData: {fileID: 0}
   autoChaseVillagers: 0
   enemyMoveSpeed: 1.5
