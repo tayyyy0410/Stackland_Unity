@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Medic
   m_EditorClassIdentifier: 
   id: Idea_Medic_Kit_id
-  displayName: 'Idea: Medic Kit'
+  displayName: ' Medic Kit'
   description: "1\xD7 Wine\n1\xD7 Tape\n1\xD7 Aspirin"
   value: 1
   hasSaturation: 0
