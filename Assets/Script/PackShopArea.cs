@@ -206,9 +206,13 @@ public void TryBuyFromStack(Card anyCardInStack)
         }
         
         rootCard.LayoutStack();
+        
+        
 
         Debug.Log($"[ShopArea] 找零完成：生成了一叠 {change} 个 coin。");
     }
+    
+    
 
     
 }

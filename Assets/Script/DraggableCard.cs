@@ -19,15 +19,26 @@ public class DraggableCard : MonoBehaviour
     private int originalSortingOrder;
 
     private Card card;
+    private Collider2D col;
+
     private Transform dragRoot;
 
-    public float radius = 0.2f; // 检测堆叠的范围
+    public float radius = 0.2f;
+    
+    [Header("Hover / Drag Lift")]
+    public float hoverLiftAmount = 0.15f;  // 上浮高度，自己可以在 Inspector 里调
+
+    private bool isHovering = false;
+    private bool isLifted = false;
+    
+    
 
     private void Awake()
     {
         cam = Camera.main;
         sr = GetComponent<SpriteRenderer>();
         card = GetComponent<Card>();
+        col = GetComponent<Collider2D>();
     }
 
     private void OnMouseDown()
@@ -35,6 +46,14 @@ public class DraggableCard : MonoBehaviour
         if (!CanInteract()) return;
         if (card == null ) return;
         //wasEquipAtDragStart = (card.RuntimeState == CardRuntimeState.InEquipmentUI);
+        
+        
+        if (card.data != null &&
+            (card.data.cardClass == CardClass.Enemy ||
+             card.data.cardClass == CardClass.Animals))
+        {
+            return;
+        }
 
         stackedThisDrop = false;
 
@@ -134,6 +153,8 @@ public class DraggableCard : MonoBehaviour
         }
 
         isDragging = true;
+        
+        UpdateLiftState(); 
 
         // 有 stackRoot 就动 stackRoot，没有就动自己
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -243,6 +264,8 @@ public class DraggableCard : MonoBehaviour
         }
 
         PlayDropOrStackSfx(stackedThisDrop);
+        
+        UpdateLiftState();
     }
 
     
@@ -414,7 +437,6 @@ public class DraggableCard : MonoBehaviour
     }
 
     // 战斗触发检测
-    // 战斗触发检测
     private bool TryStartBattle(Card rootCard)
     {
         if (rootCard == null || rootCard.data == null) return false;
@@ -476,6 +498,79 @@ public class DraggableCard : MonoBehaviour
 
         return false;
     }
+    
+    private void OnMouseEnter()
+    {
+        if (!CanInteract()) return;
+        if (card == null) return;
+
+        isHovering = true;
+        UpdateLiftState();
+    }
+
+    private void OnMouseExit()
+    {
+        if (!CanInteract()) return;
+        if (card == null) return;
+
+        isHovering = false;
+        UpdateLiftState();
+    }
+    
+    // Y 方向调整碰撞体 offset，让世界里的点击区域不动
+    private void AdjustColliderOffset(float deltaY)
+    {
+        if (col == null) return;
+
+        if (col is BoxCollider2D box)
+        {
+            var off = box.offset;
+            off.y += deltaY;
+            box.offset = off;
+        }
+        else if (col is CircleCollider2D circle)
+        {
+            var off = circle.offset;
+            off.y += deltaY;
+            circle.offset = off;
+        }
+        else if (col is CapsuleCollider2D capsule)
+        {
+            var off = capsule.offset;
+            off.y += deltaY;
+            capsule.offset = off;
+        }
+        // PolygonCollider2D / 其他复杂的我就不动了，免得把点阵搞乱
+    }
+
+
+    
+    // 根据当前状态决定要不要上浮
+    private void UpdateLiftState()
+    {
+        bool shouldLift = isHovering || isDragging;
+
+        if (shouldLift && !isLifted)
+        {
+            // 视觉上抬一点
+            transform.localPosition += Vector3.up * hoverLiftAmount;
+            // 碰撞体 offset 往下调同样的量，让点击区域留在原地
+            AdjustColliderOffset(-hoverLiftAmount);
+
+            isLifted = true;
+        }
+        else if (!shouldLift && isLifted)
+        {
+            // 视觉上落回去
+            transform.localPosition -= Vector3.up * hoverLiftAmount;
+            // 碰撞体 offset 往回调
+            AdjustColliderOffset(+hoverLiftAmount);
+
+            isLifted = false;
+        }
+    }
+
+
 
 
     //根据状态选择audio
@@ -497,5 +592,7 @@ public class DraggableCard : MonoBehaviour
             
         }
     }
+    
+    
 
 }

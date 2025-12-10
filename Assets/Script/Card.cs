@@ -108,11 +108,6 @@ public class Card : MonoBehaviour
         statsUI = GetComponent<CardStatsUI>();
         
         
-        //通知idea manager
-        if (IdeaManager.Instance != null && data != null && data.cardClass == CardClass.Idea)
-        {
-            IdeaManager.Instance.NotifyIdeaCardCreated(data);
-        }
     }
 
     private void OnEnable()
@@ -217,6 +212,11 @@ public class Card : MonoBehaviour
 
         // 确保有 data 的牌会被 CardManager 统计
         TryRegisterToManager();
+        
+        if (IdeaManager.Instance != null && data != null && data.cardClass == CardClass.Idea)
+        {
+            IdeaManager.Instance.NotifyIdeaCardCreated(data);
+        }
     }
 
     /// 把自己这一叠叠到 target 的那一叠上
@@ -283,7 +283,7 @@ public class Card : MonoBehaviour
         int i = 0;
         Card lastCard = null;
 
-        // 2. 只移动真正的 Card 子物体（跳过 StatsRoot 等 UI）
+        // 只移动真正的 Card 子物体（跳过 StatsRoot 等 UI）
         foreach (Transform child in stackRoot)
         {
             Card childCard = child.GetComponent<Card>();
@@ -318,8 +318,10 @@ public class Card : MonoBehaviour
         {
             topCard.isTopVisual = true;
         }
+        
+        NormalizeStackSortingForBoard(topCard);
 
-        // ============ 4. 处理村民装备栏显示逻辑 ==========
+        // ============ 处理村民装备栏显示逻辑 ==========
         if (EquipmentUIController.Instance != null)
         {
             List<Card> villagersInStack = new List<Card>();
@@ -352,7 +354,72 @@ public class Card : MonoBehaviour
 
             }
         }
+        
+        
+        
     }
+    
+    /// <summary>
+    /// 统一这一叠卡的 sortingOrder，保证从下到上顺序正确，topCard 在最前面
+    
+    private void NormalizeStackSortingForBoard(Card topCard)
+    {
+        if (stackRoot == null) return;
+
+        // root 卡（通常是这一叠底下那张）
+        Card rootCard = stackRoot.GetComponent<Card>();
+
+        // 如果这叠根本不在棋盘上
+        if (rootCard != null && !rootCard.IsOnBoard)
+            return;
+
+        // 按 Transform 顺序来决定从下到上
+        var ordered = new List<Card>();
+
+        if (rootCard != null)
+        {
+            ordered.Add(rootCard);
+        }
+
+        // 直接用 stackRoot 的子节点顺序
+        foreach (Transform child in stackRoot)
+        {
+            var c = child.GetComponent<Card>();
+            if (c == null) continue;
+            if (c == rootCard) continue;
+            ordered.Add(c);
+        }
+
+       
+        if (topCard != null && ordered.Contains(topCard))
+        {
+            ordered.Remove(topCard);
+            ordered.Add(topCard);
+        }
+
+        
+        int baseOrder = 0;
+        if (rootCard != null)
+        {
+            var rootSR = rootCard.GetComponent<SpriteRenderer>();
+            if (rootSR != null)
+            {
+                baseOrder = rootSR.sortingOrder;
+            }
+        }
+
+        // 从下到上依次递增 sortingOrder
+        int order = baseOrder;
+        foreach (var c in ordered)
+        {
+            var sr = c.GetComponent<SpriteRenderer>();
+            if (sr == null) continue;
+            sr.sortingOrder = order;
+            order++;
+        }
+    }
+
+
 
 
     // ================= LayoutStack 我改动比较大，怕出现ui问题把原版存在这了

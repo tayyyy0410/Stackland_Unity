@@ -8,8 +8,8 @@ public class CardSellArea : MonoBehaviour
     [Header("Sell Config")]
     public GameObject coinPrefab;
 
-    [Tooltip("找零的 coin 在卖卡区域附近随机一点偏移")]
-    public float coinSpawnRadius = 0.5f;
+    [Tooltip("金币生成位置锚点（可选，不设则用 SellArea 位置 + 偏移）")]
+    public Transform coinSpawnPoint;
     
     
     [Tooltip("金币生成位置相对卖卡区域的偏移）")]
@@ -120,37 +120,61 @@ public class CardSellArea : MonoBehaviour
             return;
         }
 
-        // 生成第一个 coin，当作这一叠的 root
-        Vector3 basePos = (Vector3)(coinSpawnOffset)+transform.position;
+        // ----------------------------
+        // 计算生成位置
+        // ----------------------------
+        Vector3 basePos;
+
+        // 使用锚点位置
+        if (coinSpawnPoint != null)
+        {
+            basePos = coinSpawnPoint.position;
+        }
+        else
+        {
+            // 用 SellArea 位置 
+            basePos = transform.position + (Vector3)coinSpawnOffset;
+        }
+
+        // ----------------------------
+        // 生成首个 coin
+        // ----------------------------
         GameObject rootObj = Instantiate(coinPrefab, basePos, Quaternion.identity);
         Card rootCard = rootObj.GetComponent<Card>();
 
         if (rootCard == null)
         {
-            Debug.LogWarning("[SellArea] coinPrefab 上没有 Card 组件，无法做成一叠，只能生成一个。");
+            Debug.LogWarning("[SellArea] coinPrefab 上没有 Card 组件，只能生成 1 个 coin。");
             return;
         }
 
-        // 确保它自己是 stackRoot
+        // ROOT 自己做 stackRoot
         rootCard.stackRoot = rootCard.transform;
 
-        // 生成剩下的 coin全部挂在 root 下面
+        // ----------------------------
+        // 生成剩余 coin挂在 root 下面
+        // ----------------------------
         for (int i = 1; i < count; i++)
         {
             GameObject coinObj = Instantiate(coinPrefab, basePos, Quaternion.identity);
             Card c = coinObj.GetComponent<Card>();
             if (c != null)
             {
-                // 设置它们的 stackRoot 都是 root
                 c.stackRoot = rootCard.transform;
                 coinObj.transform.SetParent(rootCard.transform);
             }
         }
+
         
         rootCard.LayoutStack();
+        
+       
 
-        Debug.Log($"[SellArea] 卖卡完成：生成了一叠 {count} 个 coin。");
+        Debug.Log($"[SellArea] GiveCoins：生成了一叠 {count} 个 coin。位置 = {basePos}");
     }
+    
+    // 
+    
 
     
 }

@@ -669,6 +669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDragging: 0
   radius: 0.1
+  hoverLiftAmount: 0.01
 --- !u!114 &-2615846190882381163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,7 +689,11 @@ MonoBehaviour:
   currentSaturation: -1
   currentHunger: 0
   isTopVisual: 1
+  stackFollowSpeed: 20
+  perCardLagFactor: 0.3
+  currentOwnHP: 0
   currentHP: 0
+  currentAttack: 0
   hasInitHP: 0
   runtimeState: 0
   defaultScale: {x: 0, y: 0, z: 0}
@@ -736,10 +741,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c1c87eecae7c84f93c8ef753348194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hopMoveDuration: 0.05
-  hopPauseDuration: 2
+  hopMoveDuration: 0.08
+  hopPauseDuration: 2.5
   moveDistanceFactor: 15
-  avoidRadius: 0.25
+  avoidRadius: 0.3
   avoidDistance: 0.4
   avoidStrength: 0.7
 --- !u!1 &7368958697183193996
