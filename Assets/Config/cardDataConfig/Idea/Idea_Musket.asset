@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Musket
   m_EditorClassIdentifier: 
   id: Idea_Musket_id
-  displayName: ' Musket'
+  displayName: "\u2022 Musket"
   description: "2\xD7 Stick\n2\xD7 Flint\n1\xD7 Pipe\n1\xD7 Gear"
   value: 1
   hasSaturation: 0

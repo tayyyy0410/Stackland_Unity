@@ -15,7 +15,7 @@ public class StartNewRun : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (isRunning) return;       // 防止多次点击
+        if (isRunning) return;      
         isRunning = true;
         StartCoroutine(FlyPlane());
     }

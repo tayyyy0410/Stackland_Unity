@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef42b8e33fc663a4e8a87a587f5087eb, type: 3}
+  m_Name: 7Lumber Camp
+  m_EditorClassIdentifier: 
+  id: Idea_Lumber_id
+  displayName: "\u2022 Lumber Camp"
+  description: "3\xD7 Wood\n1\xD7 Stone\n1\xD7 Passenger"
+  value: 1
+  hasSaturation: 0
+  saturation: 0
+  hasHunger: 0
+  hunger: 0
+  hasCapacity: 0
+  capacity: 0
+  hasHP: 0
+  baseHP: 0
+  hasAttack: 0
+  attack: 0
+  hasHitChance: 0
+  hitChance: 0
+  hasDeathLoot: 0
+  deathLootPack: {fileID: 0}
+  minDeathLoot: 1
+  maxDeathLoot: 1
+  equipSlot: 0
+  hasDamage: 0
+  damage: 0
+  hasIncreaseHP: 0
+  IncreasedHP: 0
+  showHP: 0
+  showHunger: 0
+  showValue: 0
+  useDarkText: 0
+  hasHealing: 0
+  healing: 0
+  cardClass: 8
+  backgroundSprite: {fileID: 400943140461129864, guid: 46172d16ae4113d4b981b522e5eed2ea, type: 3}
+  maxStackSize: 100
+  canStackWithSameClass: 1
+  isHarvestable: 0
+  maxHarvestUses: 1
+  harvestLootPack: {fileID: 0}
+  depletedCardData: {fileID: 0}
+  autoChaseVillagers: 0
+  enemyMoveSpeed: 1.5
+  enemyBattleTriggerDistance: 0.2
+  pickSfx: {fileID: 8300000, guid: 0f0dd687e7360054693faba094d0a93c, type: 3}
+  dropSfx: {fileID: 8300000, guid: 4af1fe3242da1d34381dee7ed160da4a, type: 3}

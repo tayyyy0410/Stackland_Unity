@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Christams Meal
   m_EditorClassIdentifier: 
   id: Idea_Christmas_Meal_id
-  displayName: Christmas Meal
+  displayName: "\u2022 Christmas Meal"
   description: "1\xD7 Plane Meal\n1\xD7 Wine"
   value: 1
   hasSaturation: 0

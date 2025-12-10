@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idea_Aspirin
   m_EditorClassIdentifier: 
   id: Idea_Aspirin_id
-  displayName: Aspirin
+  displayName: "\u2022 Aspirin"
   description: "2\xD7 Herb"
   value: 1
   hasSaturation: 0

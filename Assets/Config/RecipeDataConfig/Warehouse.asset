@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Warehouse
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 7b889c209ff4dae45a9c4cd05c0e575e, type: 2}
+  - cardData: {fileID: 11400000, guid: 2787c99a139732542ad1a2040f86fe8e, type: 2}
     amount: 1
     consume: 1
   - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}

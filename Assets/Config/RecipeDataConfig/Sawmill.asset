@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Sawmill
   m_EditorClassIdentifier: 
   ingredients:
-  - cardData: {fileID: 11400000, guid: 8e9764084e98e6944bf5b15719c9ae71, type: 2}
-    amount: 2
+  - cardData: {fileID: 11400000, guid: 31794f05d37351b46b7b8753f7896e9f, type: 2}
+    amount: 1
     consume: 1
   - cardData: {fileID: 11400000, guid: d336970fc25e93f46a5e4db5ab1057b9, type: 2}
     amount: 1
