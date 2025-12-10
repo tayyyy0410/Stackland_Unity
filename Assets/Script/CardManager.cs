@@ -62,6 +62,7 @@ public class CardManager : MonoBehaviour
         {
             NewCards.Add(name);
             Debug.Log($"[NewCard] 解锁新卡牌：{name}，一共解锁{NewCardCount}张新卡牌");
+            finalNewCardText.text = $"{NewCards.Count} New Cards Found";
         }
     }
 
