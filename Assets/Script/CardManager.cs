@@ -44,6 +44,7 @@ public class CardManager : MonoBehaviour
     public int NewCardCount => NewCards.Count;
 
     public TMP_Text finalNewCardText;
+    public TMP_Text finalNewCardTextSuccesss;
 
 
     //idea card////
@@ -100,6 +101,7 @@ public class CardManager : MonoBehaviour
         maxCardCapacity = fixedMaxCapcity;
 
         finalNewCardText.text = $"{NewCards.Count} New Cards Found";
+        finalNewCardTextSuccesss.text = NewCards.Count.ToString();
 
         Card[] cards = FindObjectsByType<Card>(FindObjectsSortMode.None);
 
