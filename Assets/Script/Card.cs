@@ -8,6 +8,7 @@ public enum CardRuntimeState
 {
     OnBoard,        // 在场/stack里，被记入total count
     InEquipmentUI,  // 在装备栏，不算进total count
+    InRecipe        // 合成中
 }
 
 //这个代码是接入CardData.cs 用来改变卡的数据和外观；目前的stack逻辑也写在这里

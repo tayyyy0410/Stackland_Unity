@@ -1,9 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
-using System.Threading;
 
 /// <summary>
 /// 管理天数，每天的倒计时条，每天结束之后的feed结算
@@ -428,6 +429,7 @@ public class DayManager : MonoBehaviour
                 }
             }
         }
+        cm.FoodCards = cm.FoodCards.OrderBy(f => f.RuntimeState == CardRuntimeState.InRecipe).ToList();
     }
 
     /// <summary>
@@ -607,6 +609,11 @@ public class DayManager : MonoBehaviour
     {
         if (villager == null) return;
         villager.TakeRootOutOfStack();
+
+        if (AudioManager.I != null && AudioManager.I.packOpenSfx != null)
+        {
+            AudioManager.I.PlaySFX(AudioManager.I.packOpenSfx);
+        }
 
         if (corpseCardData != null)
         {

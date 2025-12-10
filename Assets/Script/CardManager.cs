@@ -9,7 +9,7 @@ public class CardManager : MonoBehaviour
     public static CardManager Instance { get; private set; }
 
     public List<Card> AllCards { get; private set; } = new List<Card>();
-    public List<Card> FoodCards { get; private set; } = new List<Card>();
+    public List<Card> FoodCards { get; set; } = new List<Card>();
     public List<Card> VillagerCards { get; private set; } = new List<Card>();
     public List<string> NewCards { get; private set; } = new List<string>();
     

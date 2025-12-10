@@ -20,8 +20,8 @@ MonoBehaviour:
   saturation: 0
   hasHunger: 0
   hunger: 0
-  hasCapacity: 0
-  capacity: 0
+  hasCapacity: 1
+  capacity: 14
   hasHP: 0
   baseHP: 0
   hasAttack: 0

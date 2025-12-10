@@ -91,5 +91,7 @@ public class EquipBar : MonoBehaviour
             headIcon.color = hasHead ? Color.black : Color.white;
         if (bodyIcon != null)
             bodyIcon.color = hasBody ? Color.black : Color.white;
+
+        SyncIconsSorting();
     }
 }
