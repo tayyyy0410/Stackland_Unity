@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class QuestManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class QuestManager : MonoBehaviour
 
     [Header("所有可用任务")]
     public List<QuestData> allQuests = new List<QuestData>();
+
+    public TMP_Text displayText;
 
     [Serializable]
     public class QuestRuntime
@@ -342,5 +345,21 @@ public class QuestManager : MonoBehaviour
                 CheckQuestCompleted(qr);
             }
         }
+    }
+
+    public int GetCompletedQuestCount()
+    {
+        int count = 0;
+        foreach (var qr in runtimeQuests)
+        {
+            if (qr == null) continue;
+            if (qr.isCompleted) count++;
+        }
+        return count;
+    }
+
+    public void Update()
+    {
+        displayText.text = $"{GetCompletedQuestCount()} Quests Completed";
     }
 }

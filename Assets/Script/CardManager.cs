@@ -43,9 +43,9 @@ public class CardManager : MonoBehaviour
     public int CardToSellCount => NonCoinCount - MaxCardCapacity;
     public int NewCardCount => NewCards.Count;
 
-    
-    
-    
+    public TMP_Text finalNewCardText;
+
+
     //idea card////
     public bool HasDiscoveredIdea(CardData data)
     {
@@ -97,6 +97,8 @@ public class CardManager : MonoBehaviour
         totalHunger = 0;
         maxCardCapacity = fixedMaxCapcity;
 
+        finalNewCardText.text = $"{NewCards.Count} New Cards Found";
+
         Card[] cards = FindObjectsByType<Card>(FindObjectsSortMode.None);
 
         foreach (Card card in cards)
@@ -109,9 +111,9 @@ public class CardManager : MonoBehaviour
 
     // ===================================== Register Helpers =============================================
 
-    /// <summary>
-    /// 在 card enable时调用，把卡牌注册到 CardManager 并更新一遍数据
-    /// </summary>
+        /// <summary>
+        /// 在 card enable时调用，把卡牌注册到 CardManager 并更新一遍数据
+        /// </summary>
     public void RegisterCard(Card card)
     {
         if (card == null) return;
